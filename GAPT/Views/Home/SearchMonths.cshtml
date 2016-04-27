@@ -1,0 +1,52 @@
+﻿<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".selectedmonths").click(function () {
+            $.post('@Url.Action("SearchFilterMonths", "Home")', $('form').serialize(), function (data) {
+                $('#searchtours').html(data);
+
+            });
+        });
+    });
+</script>
+<div class="checkbox" id="5">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="5" />May 2016
+    </label>
+</div>
+<div class="checkbox" id="6">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="6"/>June 2016
+    </label>
+</div>
+<div class="checkbox" id="7">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="7" />July 2016
+    </label>
+</div>
+<div class="checkbox" id="8">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="8" />August 2016
+    </label>
+</div>
+<div class="checkbox" id="9">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="9" />September 2016
+    </label>
+</div>
+<div class="checkbox" id="10">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="10" />October 2016
+    </label>
+</div>
+<div class="checkbox" id="11">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="11" />November 2016
+    </label>
+</div>
+<div class="checkbox" id="12">
+    <label>
+        <input type="checkbox" class="selectedmonths" name="selectedmonths" value="12" />December 2016
+    </label>
+</div>

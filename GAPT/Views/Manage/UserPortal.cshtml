@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "Tours-Maltin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <h1 style="padding-top:20px;">My orders</h1>
+            </div>
+            <div class="col-md-5">
+                <ul class="breadcrumb">
+
+                    <li>
+                        <a href="@Url.Action("Index","Home")">Home</a>
+                    </li>
+                    <li>My orders</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="container">
+
+
+        <div class="row">
+
+            <!-- *** LEFT COLUMN ***
+            _________________________________________________________ -->
+
+            <div class="col-md-9" id="customer-orders">
+
+               
+                <div class="box" style="padding-bottom:0px;">
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date ordered</th>
+                                    <th colspan="1">Tour</th>
+                                    <th>Adults</th>
+                                    <th>Unit price</th>
+                                    <th>Children</th>
+                                    <th>Unit price</th>
+                                    <th colspan="2">Total</th>
+                                </tr>
+                            </thead>
+                           
+                            
+                            <tbody>
+
+                                <!--begin loop to show each tour bought-->
+                                <tr>
+                                    <td>
+                                        04/04/2014 <!--date ordered-->
+                                    </td>
+                                    <td>
+                                            <a href="#" style="display:block">Name of Tour</a>
+                                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
+                                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                                    </td>                                    
+                                    <td>
+                                        2 <!--number of adults in tour-->
+                                    </td>
+                                    <td>€123.00</td> <!--adult unit price-->
+                                    <td>
+                                        1 <!--number of children in tour-->
+                                    </td>
+                                    <td>€0.00</td>  <!--child unit price-->
+                                    <td>€246.00</td> <!--total of adult and child combined-->
+                                    <td>
+                                        <a href="@Url.Action("ViewCustomerInfo", "Manage")" class="btn btn-template-main btn-sm">View customer details</a>
+                                    </td>
+                                </tr>
+                                <!--end loop to show each tour bought-->
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!-- /.table-responsive -->
+
+
+                </div>
+                <!-- /.box -->
+                   </div>
+            <!-- /.col-md-9 -->
+           <!-- *** LEFT COLUMN END *** -->
+            <!-- *** RIGHT COLUMN ***
+            _________________________________________________________ -->
+
+            <div class="col-md-3">
+                <!-- *** CUSTOMER MENU ***
+                _________________________________________________________ -->
+                <div class="panel panel-default sidebar-menu">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Customer section</h3>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="active">
+                                <a href="@Url.Action("UserPortal", "Manage")"><i class="fa fa-list"></i> My orders</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Wishlist", "Manage")"><i class="fa fa-heart"></i> My wishlist</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("MyAccount", "Manage")"><i class="fa fa-user"></i> My account</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+                <!-- /.col-md-3 -->
+                <!-- *** CUSTOMER MENU END *** -->
+            </div>
+
+            <!-- *** RIGHT COLUMN END *** -->
+
+        </div>
+
+
+    </div>
+    <!-- /.container -->
+</div>

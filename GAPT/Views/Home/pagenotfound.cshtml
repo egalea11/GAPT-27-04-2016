@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "ToursMaltin.com - Page Not Found";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="content">
+    <div class="container">
+
+        <div class="col-sm-6 col-sm-offset-3" id="error-page">
+
+            <div class="box">
+                <h3>We are sorry - this page is not here anymore</h3>
+                <h5 class="test-muted">Check the Web address you entered and make sure that it is correct</h5>
+                <h5 class="test-muted">Choose one of our categories to explore our tours</h5>
+                <p class="buttons">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-template-main"><i class="fa fa-home"></i> Go to Homepage</a>
+                </p>
+            </div>
+
+
+        </div>
+        <!-- /.col-sm-6 -->
+    </div>
+    <!-- /.container -->
+</div>

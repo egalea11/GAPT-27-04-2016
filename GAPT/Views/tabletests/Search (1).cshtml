@@ -1,0 +1,238 @@
+﻿@model GAPT.Models.tabletest
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Search</h2>
+
+
+<div id="content">
+    <div class="container">
+
+        <div class="row">
+
+
+            <!-- *** LEFT COLUMN ***
+            _________________________________________________________ -->
+
+            <div class="col-sm-3">
+
+                <!-- *** MENUS AND FILTERS ***
+                _________________________________________________________ -->
+                <div class="panel panel-default sidebar-menu">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title" style="text-align:center">Attraction Type</h3>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <form>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Nature
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Historical
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Architecture
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Industrial Heritage
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Landmark
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Religious
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Museum
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Art Gallery
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Square
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Other
+                                    </label>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+                <div class="panel panel-default sidebar-menu">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Island</h3>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <form>
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Malta
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Gozo
+                                    </label>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox">Comino
+                                    </label>
+                                </div>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+                <!-- *** MENUS AND FILTERS END *** -->
+
+               
+                <!-- /.banner -->
+
+            </div>
+            <!-- /.col-md-3 -->
+            <!-- *** LEFT COLUMN END *** -->
+            <!-- *** RIGHT COLUMN ***
+            _________________________________________________________ -->
+
+            <div class="col-sm-9">
+
+                <p class="text-muted lead">Discover our unique tours across all areas in Malta.</p>
+
+                <div class="row products">
+                   
+                    <div class="col-md-4 col-sm-6">
+                        <div class="product">
+                            <div class="image">
+                                <a href="shop-detail.html">
+                                    <img src="~/Images/about malta 1.jpg" alt="" class="img-responsive image1">
+                                </a>
+                            </div>
+                            <!-- /.image -->
+                            <div class="text">
+                                <h3><a href="shop-detail.html"></a></h3>
+                                <p class="price"></p>
+                                <p class="buttons">
+                                    <a href="shop-detail.html" class="btn btn-default">View detail</a>
+                                    <a href="shop-basket.html" class="btn btn-template-main"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                </p>
+                            </div>
+                            <!-- /.text -->
+                        </div>
+                        <!-- /.product -->
+                    </div>
+                        
+
+                    <div class="col-md-4 col-sm-6">
+                        <div class="product">
+                            <div class="image">
+                                <a href="shop-detail.html">
+                                    <img src="img/product2.jpg" alt="" class="img-responsive image1">
+                                </a>
+                            </div>
+                            <!-- /.image -->
+                            <div class="text">
+                                <h3><a href="shop-detail.html">White Blouse Armani</a></h3>
+                                <p class="price"><del>$280</del> $143.00</p>
+                                <p class="buttons">
+                                    <a href="shop-detail.html" class="btn btn-default">View detail</a>
+                                    <a href="shop-basket.html" class="btn btn-template-main"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                </p>
+                            </div>
+                            <!-- /.text -->
+
+                            <div class="ribbon sale">
+                                <div class="theribbon">SALE</div>
+                                <div class="ribbon-background"></div>
+                            </div>
+                            <!-- /.ribbon -->
+
+                            <div class="ribbon new">
+                                <div class="theribbon">NEW</div>
+                                <div class="ribbon-background"></div>
+                            </div>
+                            <!-- /.ribbon -->
+                        </div>
+                        <!-- /.product -->
+                    </div>
+
+                                   
+
+                <!-- /.products -->
+
+               
+
+
+                <div class="pages">
+
+                    <ul class="pagination">
+                        <li>
+                            <a href="#">&laquo;</a>
+                        </li>
+                        <li class="active">
+                            <a href="#">1</a>
+                        </li>
+                        <li>
+                            <a href="#">2</a>
+                        </li>
+                        <li>
+                            <a href="#">3</a>
+                        </li>
+                        <li>
+                            <a href="#">4</a>
+                        </li>
+                        <li>
+                            <a href="#">5</a>
+                        </li>
+                        <li>
+                            <a href="#">&raquo;</a>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+            <!-- /.col-md-9 -->
+            <!-- *** RIGHT COLUMN END *** -->
+
+        </div>
+
+    </div>
+    <!-- /.container -->
+</div>
+</div>

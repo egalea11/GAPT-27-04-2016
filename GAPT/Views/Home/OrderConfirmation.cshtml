@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Tours-Maltin";
+}
+
+<div id="content">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-12 clearfix" id="checkout">
+
+                <div>
+                    <form method="post" action="shop-checkout2.html">
+
+                        <ul class="nav nav-pills nav-justified">
+                            <li class="disabled">
+                                <a href="@Url.Action("CustomerInfo","Home")"><i class="fa fa-user"></i><br>Customer Details</a>
+                            </li>
+                            <li class="disabled">
+                                <a href="#"><i class="fa fa-money"></i><br>Payment</a>
+                            </li>
+                            <li class="active">
+                                <a href="#"><i class="fa fa-check"></i><br>Order Confirmation</a>
+                            </li>
+                        </ul>
+                        <div class="box info-bar" style="margin-top:2.75%;">
+                            <div style="text-align:center;">
+                                <h2>Thank you! Your booking has been received.</h2>
+                                <p>You will receive an e-mail shortly. Please present a copy of your receipt at the start of your tour.</p>
+                                <p>We wish you a pleasant time.</p>
+                                <a href="@Url.Action("Index","Home")" class="btn btn-template-main">Explore More<i class="fa fa-chevron-right"></i></a>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

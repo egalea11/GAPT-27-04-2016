@@ -1,0 +1,21 @@
+﻿@using GAPT.Models
+@model ViewModelLookUp
+
+<script>
+    $(document).ready(function () {
+        $(".selectedattr").click(function () {
+            $.post('@Url.Action("SearchFilterAttr", "Home")', $('form').serialize(), function (data) {
+                $('#searchtours').html(data);
+            });
+        });
+    });
+</script>
+
+@foreach (var attractionType in Model.attractionTypes)
+{
+    <div class="checkbox" id="@{@attractionType.Id}">
+        <label>
+            <input type="checkbox" class="selectedattr" name="selectedattr" value="@{@attractionType.Id}">@attractionType.Name
+        </label>
+    </div>
+}

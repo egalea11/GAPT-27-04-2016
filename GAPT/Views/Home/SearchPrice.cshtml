@@ -1,0 +1,41 @@
+﻿@*@model GAPT.Models.Price*@
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".selectedprice").click(function () {
+            $.post('@Url.Action("SearchFilterPrice", "Home")', $('form').serialize(), function (data) {
+                $('#searchtours').html(data);
+
+            });
+        });
+    });
+</script>
+
+<div class="radio" id="4">
+    <label>
+        <input type="radio" class="selectedprice" name="selectedprice" value="4" />None
+    </label>
+</div>
+<div class="radio" id="0">
+    <label>
+        <input type="radio" class="selectedprice" name="selectedprice" value="0" />€&nbsp;0.00 - €&nbsp;10.00
+    </label>
+</div>
+<div class="radio" id="1">
+    <label>
+        <input type="radio" class="selectedprice" name="selectedprice" value="1" />€&nbsp;10.00 - €&nbsp;20.00
+    </label>
+</div>
+<div class="radio" id="2">
+    <label>
+        <input type="radio" class="selectedprice" name="selectedprice" value="2" />€&nbsp;20.00 - €&nbsp;30.00
+    </label>
+</div>
+@*<div class="form-group" style="width:100%;">*@
+    @*€&nbsp;<input type="text" class="form-control" id="lowestprice" style="width: 20%;display:inline-block">&nbsp;to&nbsp;€&nbsp;<input type="text" class="form-control" id="highestprice" style="width: 20%;display:inline-block">&nbsp;<button type="submit" class="form-control" id="refineprice" style="width:15%; display:inline-block;border-color:white;padding-left:0px;padding-right:0px;"><i class="fa fa-arrow-right" style="color:#da4d4d"></i></button>*@
+@*</div>*@
+
+@*@using (Html.BeginForm("SearchFilterPrice", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+}*@

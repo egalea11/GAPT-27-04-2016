@@ -1,0 +1,213 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    <script src="https://js.braintreegateway.com/js/braintree-2.21.0.min.js"></script>
+    <script>
+        var cButton = document.getElementById("confirm_button");
+        var card = document.getElementById("card_number");
+        var name = document.getElementById("full_name");
+        var cvv = document.getElementById("cvv");
+        var expMonth = document.getElementById("expiration_month");
+        var expYear = document.getElementById("expiration_year");
+
+        cButton.setActive(false);
+    </script>
+}
+@using System.Configuration
+
+
+
+
+<div id="content">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-9 clearfix" id="checkout" align="center">
+
+                <div class="box">
+
+
+                    <ul class="nav nav-pills nav-justified">
+                        <li class="disabled">
+                            <a href="@Url.Action("CustomerInfo","Home")"><i class="fa fa-user"></i><br>Customer Details</a>
+                        </li>
+                        <li class="active">
+                            <a href="#"><i class="fa fa-money"></i><br>Payment</a>
+                        </li>
+                        <li class="disabled">
+                            <a href="#"><i class="fa fa-check"></i><br>Order Confirmation</a>
+                        </li>
+                    </ul>
+                    <!--The following code is the payment code -->
+                    <div>
+                    <a class="btn btn-template-main" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Checkout using your card information
+                    </a>
+                    <p>OR</p>
+                       
+                    <!--PayPal Section-->
+                    <form method="post" action="@ConfigurationManager.AppSettings["PayPalSubmitUrl"]">
+                        <input type="image" value="PayPal" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
+
+                        <input type="hidden" name="upload" value="1" />
+                        <input type="hidden" name="return" value="@ConfigurationManager.AppSettings["returnurl"]" />
+                        <input type="hidden" name="cmd" value="_cart" />
+                        <input type="hidden" name="business" value="@ConfigurationManager.AppSettings["PayPalUsername"]" />
+
+                        <!--The following are test products-->
+                        <!--Product 1-->
+                        <input type="hidden" name="item_name_1" value="Product 1" />
+                        <input type="hidden" name="item_number_1" value="p1" />
+                        <input type="hidden" name="amount_1" value="2" />
+                        <input type="hidden" name="quantity_1" value="3" />
+
+                        <!--Product 2-->
+                        <input type="hidden" name="item_name_2" value="Product 2" />
+                        <input type="hidden" name="item_number_2" value="p2" />
+                        <input type="hidden" name="amount_2" value="3" />
+                        <input type="hidden" name="quantity_2" value="4" />
+
+                        <!--Product 3-->
+                        <input type="hidden" name="item_name_3" value="Product 3" />
+                        <input type="hidden" name="item_number_3" value="p3" />
+                        <input type="hidden" name="amount_3" value="4" />
+                        <input type="hidden" name="quantity_3" value="5" />
+
+                        <!--When paying for a Tour we can do the following
+
+                         <input type="hidden" name="item_name_1" value="model.ProductName" />
+                         <input type="hidden" name="item_number_1" value="model.tournumber" />
+                         <input type="hidden" name="amount_1" value="model.TourPricePerPerson" />
+                         <input type="hidden" name="quantity_1" value="model.NumberOfPeople" />
+
+                             The total is generate automatically.
+                             Since the user can only pay for 1 tour at a time this should work. But if we change this and the user can pay for multiple
+                             tours, we can change the code by doing:
+
+                             (at symbol)foreach(var Tours in Tours){
+                                 <input type="hidden" name="item_name_(at symbol)model.TourNum" value="model.ProductName" />
+                                 <input type="hidden" name="item_number_(at symbol)model.TourNum" value="model.tournumber" />
+                                 <input type="hidden" name="amount_(at symbol)model.TourNum" value="model.TourPricePerPerson" />
+                                 <input type="hidden" name="quantity_(at symbol)model.TourNum" value="model.NumberOfPeople" />
+                             }
+
+
+                        -->
+
+
+
+
+                    </form>
+                  </div>
+
+                    <form method="post"  action="@Url.Action("OrderConfirmation","Home")">
+                        <div class="collapse" id="collapseExample">
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="full_name" class="label label-default">FULL NAME</label>
+                                            <input type="text" id="full_name" class="form-control" placeholder="FULL NAME" style="width:100%" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label label-default">CARD NUMBER</label>
+                                            <input type="text" class="form-control" placeholder="CARD NUMBER" style="width:100%" required/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                               <!--Added-->
+                                
+                                <!--Added-->
+
+
+                                <div class="row" style="margin-top:2.5%">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="cvv" class="label label-default">CVV</label>
+                                            <!--<span class="label label-default">CCV</span>-->
+                                            <input type="text" id="cvv" class="form-control" placeholder="CVV" style="width:100%" required>
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label  class="label label-default">EXPIRATION</label>
+                                            <div class="row">
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <input type="text" id="expiration_month" class="form-control" placeholder="MONTH" style="width:100%" required/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" id="expiration_year" placeholder="YEAR"  style="width:100%" required />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!-- /input-group -->
+                                    </div><!-- /.col-lg-6 -->
+                                    <button type="submit" class="btn btn-template-main" style="margin-top:3%; margin-bottom:2%;">Confirm Order<i class="fa fa-chevron-right"></i></button>
+                                </div><!-- /.row -->
+
+                                <img src=http://www.worldpay.com/images/cardlogos/VISA.gif border=0>
+
+                                <img src=http://www.worldpay.com/images/cardlogos/visa_electron.gif border=0>
+
+                                <img src=http://www.worldpay.com/images/cardlogos/mastercard.gif border=0>
+
+                                <img src=http://www.worldpay.com/images/cardlogos/maestro.gif border=0>
+
+
+                            </div>
+                        </div>
+                    </form>
+
+                    <!--End of the payment code-->
+                    <div class="box-footer">
+                        <div class="pull-left">
+                            <a href="@Url.Action("CustomerInfo","Home")" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to customer details</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="box" id="order-summary" style="padding-left:15px;padding-right:15px;">
+                    <div class="box-header" style="margin-bottom:13px;">
+                        <h3>Order summary</h3>
+                    </div>
+                    <div style="padding-left: 3%;padding-right: 2%;">
+                        <a href="#" style="display:block">Name of Tour</a>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Order subtotal</td>
+                                    <th>€446.00</th>
+                                </tr>
+                                <tr>
+                                    <td>VAT (18%)</td>
+                                    <th>€0.00</th>
+                                </tr>
+                                <tr class="total">
+                                    <td>Total</td>
+                                    <th>€456.00</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,21 @@
+﻿@using GAPT.Models
+@model ViewModelLookUp
+
+<script>
+    $(document).ready(function () {
+        $(".selectedislands").click(function () {
+            $.post('@Url.Action("SearchFilterIslands", "Home")', $('form').serialize(), function (data) {
+                $('#searchtours').html(data);
+            });
+        });
+    });
+</script>
+
+@foreach (var island in Model.islands)
+{
+    <div class="checkbox" id="@{@island.Id}">
+        <label>
+            <input type="checkbox" class="selectedislands" name="selectedislands" value="@{@island.Id}">@island.Name
+        </label>
+    </div>
+}

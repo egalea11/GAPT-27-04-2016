@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Confirm Email";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="content" class="clearfix">
+
+    <div class="container">
+
+        <div class="row">
+
+            <!-- *** LEFT COLUMN ***
+            _________________________________________________________ -->
+
+            <br><br><br>
+            <div class="box" style="padding-right:20px;padding-left:20px;margin-bottom:60px;">
+
+                <div class="heading" style="margin-bottom:30px;" id="ClickHere">
+                    <h3 class="text-uppercase">@ViewBag.Title.</h3>
+                    <p>
+                        Thank you for confirming your email. Please @Html.ActionLink("click here to return to Homepage", "Index", "Home")
+                        @*, routeValues: null, htmlAttributes: new { id = "loginLink" }*@
+                        @*Please @Html.ActionLink("Click here to Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })*@
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

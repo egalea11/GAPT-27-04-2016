@@ -1,0 +1,91 @@
+﻿@using GAPT.Models
+@model ViewModelWishlist
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+    function removeFromWishlistFun(tourid) {
+        window.event.preventDefault();
+        //$("#wishlisttours").empty();
+        $.post('@Url.Action("RemoveWishlist", "Manage")', { id: tourid }, function (data) {
+            var containerSelector = "div.wishlist.container";
+            var wishlist = $(data).siblings(containerSelector);
+            $(containerSelector).empty().html(wishlist.html());
+        });
+    }
+</script>
+
+<div class="wishlist container">
+    @if (Model.wishlisttours.Count == 0)
+    {
+        <h5 class="test-muted">Currently you have no tours added to your Wishlist. Feel free to check the tours available.</h5>
+    }
+    else
+    {
+        <div id="wishlisttours">
+            @foreach (var tour in Model.wishlisttours)
+            {
+                using (Html.BeginForm("Tourpage", "Home", new { id = tour.Id }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row products col-md-12" style="margin:0 auto;">
+                        <!--testing start-->
+                        <section class="post" style="border: solid 1px #ccc;margin-bottom:20px;margin-top:0.5%;">
+                            <div class="row" style="padding-top: 1%;padding-bottom: 1%;padding-left: 1%;padding-right: 1%;">
+                                <div class="col-md-3 col-xs-3">
+                                    <div class="image" style="height: 197px;">
+                                        <a href="blog-post.html">
+                                            <img src="@Url.Content(tour.ThumbImage)" class="img-responsive" alt="Example blog post alt">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 col-xs-9">
+                                    <h2><a href="post.htmls" style="font-size:75%">@tour.Name</a></h2>
+                                    <div class="clearfix">
+                                        @*<p class="author-category">
+                                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i></i><a href="blog-post.html"> *Insert Number of Reviews*</a>
+                                            </p>*@
+                                        @if (tour.AverageRatingId == 6)
+                                        {
+                                            <p class="author-category">
+                                                <h5>Be the first to rate this tour!</h5>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="author-category">
+                                                @for (int i = 0; i < tour.AverageRatingId; i++)
+                                                {
+                                                    <i class="fa fa-star"></i>
+                                                }
+                                                @for (int k = 0; k < 5 - tour.AverageRatingId; k++)
+                                                {
+                                                    <i class="fa fa-star-o"></i>
+                                                }
+                                            </p>
+                                        }
+                                    </div>
+                                    <p class="intro">
+                                        @tour.ShortDescription
+                                    </p>
+                                    <p class="intro" style="margin-bottom: 0px;margin-top: 0px;font-size: 13px;">
+                                        Duration: @tour.Duration    <span style="float:right;padding-right: 6%;">Price:&nbsp;€<strong style="font-size:20px;"> @tour.AdultPrice</strong></span>
+                                    </p>
+
+                                    <p class="read-more" style="padding-top:1%;">
+                                        <button type="submit" value="Tourpage" id="Tourpage" class="btn btn-template-main hidden-sm hidden-xs" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></button>
+                                        @*<a href="@Url.Action("Index2","Home")" class="btn btn-template-main hidden-sm hidden-xs" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></a>*@
+                                        <a href="@Url.Action("Wishlist","Manage")" class="center-btn-sm" style="text-align:left;float:left;" onclick="removeFromWishlistFun(@tour.Id)" id="wishlist@{@tour.Id}"><i class="fa fa-times"></i>Remove from Wishlist</a>
+                                        @*<a href="@Url.Action("Index2","Home")" class="center-btn-sm visible-sm visible-xs" style="float:right;">See More<i class="fa fa-arrow-right"></i></a>*@
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                        <!--testing end-->
+                    </div>
+
+                }
+            }
+        </div>
+    }
+</div>

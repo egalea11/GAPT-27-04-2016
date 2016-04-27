@@ -1,0 +1,18 @@
+﻿<script>
+    $(document).ready(function () {
+        $("#sortby").change(function () {
+            var sort = $("#sortby option:selected").val();
+            $.post('@Url.Action("SearchSortby", "Home")', { sortby : sort}, function (data) {
+                $('#searchtours').html(data);
+            });
+        });
+    });
+</script>
+
+<select name="sort-by" class="form-control" style="border-radius:5px;" id="sortby">
+    <option value="bestmatch" selected="selected">Best Match</option>
+    <option value="name">Name</option>
+    <option value="popular">Most Popular</option>
+    <option value="pricelow">Price (Lowest - Highest)</option>
+    <option value="pricehigh">Price (Highest - Lowest)</option>
+</select>

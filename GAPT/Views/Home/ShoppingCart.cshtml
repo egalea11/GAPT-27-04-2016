@@ -1,0 +1,154 @@
+﻿
+@{
+    ViewBag.Title = "Tours-Maltin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="heading-breadcrumbs" style="margin-bottom:0px">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6" style="margin-top: 7px;">
+                <h1>Shopping cart</h1>
+            </div>
+            <div class="col-md-6">
+                <ul class="breadcrumb" style="padding-bottom: 0px; margin-top: 0px;">
+                    <li>
+                        <a href="~/Home/Index">Home</a>
+                    </li>
+                    <li>My Basket</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12">
+                <p class="text-muted lead">You currently have 3 item(s) in your basket.</p>
+            </div>
+
+
+            <div class="col-md-9 clearfix" id="basket">
+
+                <div class="box" style="padding-left: 15px;border-right-width: 15px;">
+
+                    <form method="post" action="shop-checkout1.html">
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Tour</th>
+                                        <th>Adults</th>
+                                        <th>Unit price</th>
+                                        <th>Children</th>
+                                        <th>Unit price</th>
+                                        <th colspan="2">Total</th>
+                                    </tr>
+                                </thead>
+                                <!--begin loop to show row for each item in basket-->
+                                <tbody>
+
+                                   
+                                    <tr>
+                                        <td>
+                                            <a href="#">
+                                                <img src="~/Images/rsz_product2.jpg" alt="White Blouse Armani">
+                                            </a>
+                                        </td>
+                                        <td valign="top">
+                                            <a href="#" style="display:block">Name of Tour</a>
+                                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
+                                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                                         </td>
+                                        <td>
+                                            <input type="number" value="2" class="form-control" id="noOfAdults">
+                                        </td>
+                                        <td>€123.00</td>
+                                        <td>
+                                            <input type="number" value="2" class="form-control" id="noOfChildren">
+                                        </td>
+                                        <td>€0.00</td>
+                                        <td>€246.00</td>
+                                        <td>
+                                            <a href="#"><i class="fa fa-trash-o"></i></a>
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>                              
+                                <!--end loop to show row for each item in basket-->
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="6">Total</th>
+                                        <th colspan="2">€446.00</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+                        <!-- /.table-responsive -->
+
+                        <div class="box-footer" style="margin-right:15px;margin-top:22px;">
+                            <div class="pull-left">
+                                <a href="~/Home/Search" class="btn btn-default"><i class="fa fa-chevron-left"></i> Continue shopping</a>
+                            </div>
+                            <div class="pull-right">
+                                <a class="btn btn-default" href="~/Home/ShoppingCart"><i class="fa fa-refresh fa-spin"></i> Update cart</a>
+                                <a class="btn btn-template-main" href="~/Home/CustomerInfo">Proceed to Checkout<i class="fa fa-chevron-right"></i></a>
+                               
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+                <!-- /.box -->
+
+
+            </div>
+            <!-- /.col-md-9 -->
+
+            <div class="col-md-3">
+                <div class="box" id="order-summary" style="padding-left:15px;padding-right:15px;">
+                    <div class="box-header" style="margin-bottom:13px;">
+                        <h3>Order summary</h3>
+                    </div>
+                    <div style="padding-left: 3%;padding-right: 2%;">
+                        <a href="#" style="display:block">Name of Tour</a>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Order subtotal</td>
+                                    <th>€446.00</th>
+                                </tr>
+                                <tr>
+                                    <td>VAT (18%)</td>
+                                    <th>€0.00</th>
+                                </tr>
+                                <tr class="total">
+                                    <td>Total</td>
+                                    <th>€456.00</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- /.col-md-3 -->
+
+        </div>
+
+    </div>
+    <!-- /.container -->
+</div>
+

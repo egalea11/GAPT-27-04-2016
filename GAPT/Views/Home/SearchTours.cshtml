@@ -1,0 +1,164 @@
+﻿@using GAPT.Models
+@model ViewModelLookUp
+
+
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<!--<script src="~/Scripts/bootstrap.min.js"></script>-->
+
+<!--You must be logged in-->
+<div class="modal fade" id="must-be-logged-in" tabindex="-1" role="dialog" aria-labelledby="Log-In" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="Login">Must be logged in</h4>
+            </div>
+            <div class="modal-body">
+                <form action="@Url.Action("Register","Account")" method="post">
+                    <label for="confirm">Tour could not be added to Wishlist. Please make sure that you are logged in.</label>                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--You must be logged in-->
+
+<script>
+    function addToWishlistFun(tourid) {
+        if (document.getElementById("wishlist" + tourid).value == "added")
+        {
+            $.post('@Url.Action("RemoveFromWishlist", "Home")', { id: tourid }, function (data) {
+                if (data) {
+                    var elementid = "wishlist" + tourid;
+                    document.getElementById(elementid).innerHTML = "Add to wishlist" + "<i class=\"fa fa-heart-o\"></i>";
+                    document.getElementById(elementid).value = "notadded";
+                }
+                else {
+                    //$('#must-be-logged-in').modal('show');
+                    alert("Tour could not be removed from wishlist. Please make sure that you are logged in.");
+                }
+            });
+        }
+        else
+        {
+            $.post('@Url.Action("AddToWishlist", "Home")', { id: tourid }, function (data) {
+                if (data)
+                {
+                    var elementid = "wishlist" + tourid;
+                    document.getElementById(elementid).innerHTML = "Added to wishlist" + "<i class=\"fa fa-heart\"></i>";
+                    document.getElementById(elementid).value = "added";
+                }
+                else
+                {
+                    
+                   //$('#must-be-logged-in').modal('show');
+                   alert("Tour could not be added to wishlist. Please make sure that you are logged in.");
+                }
+            });
+        }
+    }
+</script>
+
+@if (Model.tours.Count == 0)
+{
+    <h5 class="test-muted">Sorry, no matches were found. Please try different search options.</h5>
+}
+<div id="searchtours">
+    @foreach (var tour in Model.tours)
+    {
+        using (Html.BeginForm("Tourpage", "Home", new { id = tour.Id }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="row products col-md-12" style="margin:0 auto;" id="@{@tour.Id}">
+                <!--testing start-->
+                <section class="post" style="border: solid 1px #ccc;margin-bottom:20px;margin-top:3%;">
+                    <div class="row" style="padding-top: 1%;padding-bottom: 1%;padding-left: 1%;padding-right: 1%;">
+                        <div class="col-md-3 col-xs-3">
+                            <div class="image" style="height: 180px;">
+                                <a href="blog-post.html">
+                                    <img src="@Url.Content(tour.ThumbImage)" class="img-responsive" alt="Example blog post alt">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-9 col-xs-9">
+                            <h2><a href="post.htmls" style="font-size:75%">@tour.Name</a></h2>
+                            <div class="clearfix">
+                                @*<p class="author-category">
+                                        <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i></i><a href="blog-post.html"> *Insert Number of Reviews*</a>
+                                    </p>*@
+                                @if (tour.AverageRatingId == 6)
+                                {
+                                    <p class="author-category">
+                                        <h5>Be the first to rate this tour!</h5>
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="author-category">
+                                        @for (int i = 0; i < tour.AverageRatingId; i++)
+                                        {
+                                            <i class="fa fa-star"></i>
+                                        }
+                                        @for (int k = 0; k < 5 - tour.AverageRatingId; k++)
+                                        {
+                                            <i class="fa fa-star-o"></i>
+                                        }
+                                    </p>
+                                }
+
+                            </div>
+                            <p class="intro">
+                                @tour.ShortDescription
+                            </p>
+                            <p class="intro" style="margin-bottom: 0px;margin-top: 0px;font-size: 13px;">
+                                Duration: @tour.Duration    <span style="float:right;padding-right: 6%;">Price:&nbsp;€<strong style="font-size:20px;"> @tour.AdultPrice</strong></span>
+                            </p>
+
+                            <p class="read-more">
+                                <button type="submit" value="Tourpage" id="Tourpage" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></button>
+                                @*<a href="@Url.Action("Tourpage","Home")" id="seemore" onclick="test(@tour.Id);" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></a>*@
+                                @*<a href="@Url.Action("Tourpage","Home")" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></a>*@
+                                @if (Model.wishlist != null && Model.wishlist.Count != 0)
+                                {
+                                    var currtourwishlist = Model.wishlist.Where(w => w.TourId == tour.Id).ToList();
+                                    if (currtourwishlist != null && currtourwishlist.Count > 0)
+                                    {
+                                        <button type="button" class="btn btn-template-main hidden-md hidden-sm hidden-xs" value="added" style="float:left;border-radius:5px;margin-left:0%" onclick="addToWishlistFun(@tour.Id)" id="wishlist@{@tour.Id}">Added to wishlist<i class="fa fa-heart"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-template-main hidden-md hidden-sm hidden-xs" value="notadded" style="float:left;border-radius:5px;margin-left:0%" onclick="addToWishlistFun(@tour.Id)" id="wishlist@{@tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
+                                    }
+
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-template-main hidden-md hidden-sm hidden-xs" value="notadded" style="float:left;border-radius:5px;margin-left:0%" onclick="addToWishlistFun(@tour.Id)" id="wishlist@{@tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
+                                }
+                            </p>
+                            <a class="visible-sm visible-xs"><i class="fa fa-heart-o"></i>Add to Wishlist</a>
+                        </div>
+                    </div>
+                </section>
+
+                @*<script>
+                function changetext(id, value) {
+                    if (value == "notadded") {
+                        document.getElementById(id).innerHTML = "Added to wishlist" + "<i class=\"fa fa-heart\"></i>";
+                        document.getElementById(id).value = "added";
+                    } else if (value == "added") {
+                        document.getElementById(id).innerHTML = "Add to Wishlist" + "<i class=\"fa fa-heart-o\"></i>";
+                        document.getElementById(id).value = "notadded";
+                    }
+                }
+                </script>*@
+                <!--testing end-->
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Tours-Maltin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <h1 style="padding-top:20px;">My wishlist</h1>
+            </div>
+            <div class="col-md-5">
+                <ul class="breadcrumb">
+
+                    <li>
+                        <a href="@Url.Action("Index","Home")">Home</a>
+                    </li>
+                    <li>My wishlist</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="container">
+
+        <div class="row">
+
+            <!-- *** LEFT COLUMN ***
+            _________________________________________________________ -->
+
+            <div class="col-md-9 clearfix" style="margin-bottom: 27px;">
+                <div class="row ">
+                      <!--Place in for each to show an entry for each item in database-->
+                      @{Html.RenderAction("MyWishlist");}
+                </div>
+                <!-- /.products -->
+
+            </div>
+            <!-- /.col-md-9 -->
+            <!-- *** LEFT COLUMN END *** -->
+            <!-- *** RIGHT COLUMN ***
+                         _________________________________________________________ -->
+
+            <div class="col-md-3">
+                <!-- *** CUSTOMER MENU ***
+                _________________________________________________________ -->
+                <div class="panel panel-default sidebar-menu" style="padding-top:1%;padding-left:1%;padding-right:1%;">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Customer section</h3>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <ul class="nav nav-pills nav-stacked">
+                            <li>
+                                <a href="@Url.Action("UserPortal", "Manage")"><i class="fa fa-list"></i> My orders</a>
+                            </li>
+                            <li class="active">
+                                <a href="@Url.Action("Wishlist", "Manage")"><i class="fa fa-heart"></i> My wishlist</a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("MyAccount","Manage")"><i class="fa fa-user"></i> My account</a>
+                            </li>
+                            @*<li>
+                                <a href="@Url.Action("Index","Home")"><i class="fa fa-sign-out"></i> Logout</a>
+                            </li>*@
+                        </ul>
+                    </div>
+
+                </div>
+                <!-- /.col-md-3 -->
+                <!-- *** CUSTOMER MENU END *** -->
+            </div>
+
+            <!-- *** RIGHT COLUMN END *** -->
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+</div>
+<!-- /#content -->
