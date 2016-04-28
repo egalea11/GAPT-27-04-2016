@@ -143,6 +143,28 @@
         $("#login-to-buy").click(function () {
             alert("Please login in order to proceed to check out");
         });
+
+        setInterval(function () {
+            if ($("#TourTime").val() == null || $("#TourTime").val() == "")
+            {
+                return false;
+            }
+            var dateAndTimeOfTour = { tourDateTime: $("#TourDate").val() + ";" + $("#TourTime").val() + ";" + $("#TourId").val() };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }, 60 * 1000);
     });
 </script>
 
