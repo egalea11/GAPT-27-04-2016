@@ -64,10 +64,12 @@ namespace GAPT.Models
         public TourDateTime TourDateTime { get; set; }
         public List<AdultDetails> AdultDetails { get; set; }
         public List<ChildDetails> ChildDetails { get; set; }
+        public string TourStartingLocation { get; set; }
     }
 
     public class AdultDetails
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -75,6 +77,7 @@ namespace GAPT.Models
 
     public class ChildDetails
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

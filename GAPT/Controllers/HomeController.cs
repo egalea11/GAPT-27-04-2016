@@ -313,7 +313,14 @@ namespace GAPT.Controllers
             decimal totalAdultPrice = model.AdultAmount * tourDetails.AdultPrice;
             decimal totalChildPrice = model.ChildAmount * tourDetails.ChildPrice;
             decimal totalPrice = totalAdultPrice + totalChildPrice;
-
+            var tourDate = db.TourDate.Where(t => t.TourId == model.Tour.Id && t.DateOfTour == model.TourDate).FirstOrDefault();
+            string[] times = model.TourTime.Split('-');
+            string startTime = times[0];
+            string endTime = times[1];
+            var tourTime = db.TourTime.Where(t => t.TourId == model.Tour.Id && t.StartTime == startTime && t.EndTime == endTime).FirstOrDefault();
+            var tourDateTime = db.TourDateTime.Where(t => t.TourDateId == tourDate.Id && t.TourTimeId == tourTime.Id).FirstOrDefault();
+            var tourLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
+            var tourLocationName = db.Location.Where(l => l.Id == tourLocationId).FirstOrDefault().Name;
 
             CustomerInfoModel customerModel = new CustomerInfoModel()
             {
@@ -323,11 +330,36 @@ namespace GAPT.Controllers
                 ChildTotalPrice = totalChildPrice,
                 TotalPrice = totalPrice,
                 Tour = tourDetails,
-                //TourDate = ,
-                //TourTime = ,
-                //TourDateTime =
+                TourDate = tourDate,
+                TourTime = tourTime,
+                TourDateTime = tourDateTime,
+                TourStartingLocation = tourLocationName
             };
-            return View();
+
+            customerModel.AdultDetails = new List<AdultDetails>();
+            for (int i = 0; i < model.AdultAmount; i++)
+            {
+                AdultDetails adult = new AdultDetails() 
+                {
+                    Id = i + 1
+                };
+                customerModel.AdultDetails.Add(adult);
+            }
+
+            if (model.ChildAmount == 0)
+                return View(customerModel);
+
+            customerModel.ChildDetails = new List<ChildDetails>();
+            for (int i = 0; i < model.ChildAmount; i++)
+            {
+                ChildDetails child = new ChildDetails()
+                {
+                    Id = i + 1
+                };
+                customerModel.ChildDetails.Add(child);
+            }
+
+            return View(customerModel);
         }
 
         [HttpPost]

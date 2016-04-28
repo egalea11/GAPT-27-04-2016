@@ -1,4 +1,7 @@
-﻿@{
+﻿@using GAPT.Models
+@model CustomerInfoModel
+
+@{
     ViewBag.Title = "Tours-Maltin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -72,13 +75,13 @@
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="firstname">Firstname</label>
+                                        <label for="firstname">First Name</label>
                                         <input type="text"  required class="form-control" id="firstname">
                                     </div>
                                 </div>
                                 <div class="col-sm-4">
                                     <div class="form-group">
-                                        <label for="lastname">Lastname</label>
+                                        <label for="lastname">Last Name</label>
                                         <input type="text"  required class="form-control" id="lastname">
                                     </div>
                                 </div>
@@ -195,16 +198,16 @@
                         <h3>Order summary</h3>
                     </div>
                     <div style="padding-left: 3%;padding-right: 2%;">
-                        <a href="#" style="display:block">Name of Tour</a>
-                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
-                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                        <a href="#" style="display:block">@Model.Tour.Name</a>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime - @Model.TourTime.EndTime</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@Model.TourStartingLocation</span></p>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
                             <tbody>
                                 <tr>
                                     <td>Order subtotal</td>
-                                    <th>€446.00</th>
+                                    <th>€@Model.TotalPrice</th>
                                 </tr>
                                 <tr>
                                     <td>VAT (18%)</td>
@@ -212,7 +215,7 @@
                                 </tr>
                                 <tr class="total">
                                     <td>Total</td>
-                                    <th>€456.00</th>
+                                    <th>€@Model.TotalPrice</th>
                                 </tr>
                             </tbody>
                         </table>
