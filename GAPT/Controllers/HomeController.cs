@@ -295,7 +295,7 @@ namespace GAPT.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Payment(TourpageModel model)
+        public ActionResult Payment(CustomerInfoModel model)
         {
             return View();
         }
@@ -307,6 +307,7 @@ namespace GAPT.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
+                // check is already done on client side but could be added here as well
             }
 
             var tourDetails = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault();
@@ -322,6 +323,32 @@ namespace GAPT.Controllers
             var tourLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
             var tourLocationName = db.Location.Where(l => l.Id == tourLocationId).FirstOrDefault().Name;
 
+            // check if there are any available places left
+
+            int maxTourGroupSize = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault().MaxGroupSize;
+            var tourDateId = tourDate.Id;
+            var tourTimeId = tourTime.Id;
+            var tourDateTimeId = tourDateTime.Id;
+            var orders = db.Order.Where(o => o.TourDateTimeId == tourDateTimeId).ToList();
+
+            int totalAdultAmount = 0;
+            int totalChildAmount = 0;
+            foreach (var order in orders)
+            {
+                totalAdultAmount = totalAdultAmount + order.AdultQuantity;
+                totalChildAmount = totalChildAmount + order.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount;
+            int placesLeft = maxTourGroupSize - totalGroupSize;
+
+            //if (placesLeft <= 0)
+            //    return RedirectToAction("Tourpage", "Home", new { id = model.Tour.Id, places = placesLeft});
+            //if ((placesLeft - model.ChildAmount - model.AdultAmount) <= 0)
+            //    return RedirectToAction("Tourpage", "Home", new { id = model.Tour.Id, places = placesLeft });
+
+            // if there are enough places left continue
+
             CustomerInfoModel customerModel = new CustomerInfoModel()
             {
                 AdultAmount = model.AdultAmount,
@@ -333,7 +360,10 @@ namespace GAPT.Controllers
                 TourDate = tourDate,
                 TourTime = tourTime,
                 TourDateTime = tourDateTime,
-                TourStartingLocation = tourLocationName
+                TourStartingLocation = tourLocationName,
+                TourDateId = tourDate.Id,
+                TourTimeId = tourTime.Id,
+                TourDateTimeId = tourDateTime.Id
             };
 
             customerModel.AdultDetails = new List<AdultDetails>();
@@ -494,7 +524,7 @@ namespace GAPT.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Tourpage(int id)
+        public ActionResult Tourpage(int id, int? places = null)
         {
             //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
@@ -528,6 +558,9 @@ namespace GAPT.Controllers
                 var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
                 model.Wishlists = currUserWishlist;
             }
+
+            if (places != null)
+                ModelState.AddModelError("error", "There are only " + places + " available. Please reconsider order amount.");
 
             return View("Tourpage", model);
         }

@@ -62,9 +62,15 @@ namespace GAPT.Models
         public TourDate TourDate { get; set; }
         public TourTime TourTime { get; set; }
         public TourDateTime TourDateTime { get; set; }
-        public List<AdultDetails> AdultDetails { get; set; }
-        public List<ChildDetails> ChildDetails { get; set; }
+        public IList<AdultDetails> AdultDetails { get; set; }
+        public IList<ChildDetails> ChildDetails { get; set; }
         public string TourStartingLocation { get; set; }
+        public DateTime DateTimeTourDate { get; set; }
+        public string StringTourTime { get; set; }
+        public int TourTimeId { get; set; }
+        public int TourDateId { get; set; }
+        public int TourDateTimeId { get; set; }
+        public int TourId { get; set; }
     }
 
     public class AdultDetails

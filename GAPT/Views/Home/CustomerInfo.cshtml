@@ -5,8 +5,146 @@
     ViewBag.Title = "Tours-Maltin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<script>
+    $(document).ready(function () {
+        $("#DateAndTime").load(function () {
+            var DateAndTime = $("#DateAndTime").text().split(' ');
+            //var DateAndTime = document.getElementById("DateAndTime").innerHTML.split(' ');
+            var TourDate = DateAndTime[0];
+            var TourTime = DateAndTime[1];
+            $("#DateTimeTourDate").text(TourDate);
+            $("#StringTourTime").text(TourTime);
+            $("#DateTimeTourDate").val(TourDate);
+            $("#StringTourTime").val(TourTime);
+        });
 
+        var tourId = @Model.Tour.Id;
+        $("#TourId").val(tourId);
+        $(".adultTitle").text("Mr");
+        $(".childTitle").text("Master");
+        $(".adultTitle").val("Mr");
+        $(".childTitle").val("Master");
 
+        $("#login-to-buy").click(function () {
+            alert("Please login in order to proceed to check out");
+        });
+
+        setInterval(function () {
+            var DateAndTime = $("#DateAndTime").text().split(' ');
+            //var DateAndTime = document.getElementById("DateAndTime").innerHTML.split(' ');
+            var TourDate = DateAndTime[0];
+            var TourTime = DateAndTime[1];
+            $("#DateTimeTourDate").text(TourDate);
+            $("#StringTourTime").text(TourTime);
+            var dateAndTimeOfTour = { tourDateTime: $("#DateTimeTourDate").text() + ";" + $("#StringTourTime").text() + ";" + $("#TourId").val() };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }, 60 * 1000);
+    });
+</script>
+<script>
+    function adultTitleLoad(index)
+    {
+        var id = "#adult-title" + index;
+        var selectId = "select#adult-title" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function adultTitleChange(index)
+    {
+        var id = "#adult-title" + index;
+        var selectId = "select#adult-title" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function childTitleLoad(index)
+    {
+        var id = "#child-title" + index;
+        var selectId = "select#child-title" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function childTitleChange(index)
+    {
+        var id = "#child-title" + index;
+        var selectId = "select#child-title" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthdayLoad(index)
+    {
+        var id = "#child-birthday" + index;
+        var selectId = "select#birthday" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthdayChange(index)
+    {
+        var id = "#child-birthday" + index;
+        var selectId = "select#birthday" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthmonthLoad(index)
+    {
+        var id = "#child-birthmonth" + index;
+        var selectId = "select#birthmonth" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthmonthChange(index)
+    {
+        var id = "#child-birthmonth" + index;
+        var selectId = "select#birthmonth" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthyearLoad(index)
+    {
+        var id = "#child-birthyear" + index;
+        var selectId = "select#birthyear" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+
+    function birthyearChange(index)
+    {
+        var id = "#child-birthyear" + index;
+        var selectId = "select#birthyear" + index + " option:selected";
+        var selectedTitle = $(selectId).val();
+        $(id).text(selectedTitle);
+        $(id).val(selectedTitle);
+    }
+</script>
 <div id="content">
     <div class="container">
 
@@ -15,8 +153,26 @@
             <div class="col-md-9 clearfix" id="checkout">
 
                 <div class="box">
-                    <form method="post" action="@Url.Action("Payment","Home")">
-
+                    @using(Html.BeginForm("Payment", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @*@Html.HiddenFor(m => m.TourDate)*@
+                        @*@Html.HiddenFor(m => m.TourDateTime)*@
+                        @*@Html.HiddenFor(m => m.TourTime)*@
+                        @Html.HiddenFor(m => m.TourDateId)
+                        @Html.HiddenFor(m => m.TourDateTimeId)
+                        @Html.HiddenFor(m => m.TourTimeId)
+                        @Html.HiddenFor(m => m.TourId)
+                        @Html.HiddenFor(m => m.TourStartingLocation)
+                        @*@Html.HiddenFor(m => m.Tour)*@
+                        @Html.HiddenFor(m => m.AdultAmount)
+                        @Html.HiddenFor(m => m.ChildAmount)
+                        @Html.HiddenFor(m => m.AdultTotalPrice)
+                        @Html.HiddenFor(m => m.ChildTotalPrice)
+                        @Html.HiddenFor(m => m.TotalPrice)
+                        @*@Html.TextBoxFor(m => m.Tour.Id, new { id = "TourId", style = "display: none;" })
+                        @Html.TextBoxFor(m => m.DateTimeTourDate, new { id = "DateTimeTourDate", style = "display: none;" })
+                        @Html.TextBoxFor(m => m.StringTourTime, new { id = "StringTourTime", style = "display: none;" })*@
                         <ul class="nav nav-pills nav-justified">
                             <li class="active">
                                 <a href="#"><i class="fa fa-user"></i><br>Customer Details</a>
@@ -30,161 +186,184 @@
                         </ul>
 
                         <!--start loop for each number of adult-->
-                        <div class="content" style="margin-top:4%;margin-bottom:4%;border:solid 1px #ccc; border-radius:10px;">
-                            <h4 style="color:#da4d4d;margin-top: 1%;margin-bottom: 0px;padding-left: 2%;border-bottom: solid 1px #ccc;padding-bottom:1%;"><i style="color:#555555"class="fa fa-male fa-lg"></i>  &nbsp;Adult</h4>
-                            <div class="row" style="padding-left: 2%;padding-right: 2%;padding-bottom: 1%;padding-top: 2%;">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="title">Title</label>
-                                        <select class="form-control" id="title">
-                                            <option value="mr" selected="selected">Mr</option>
-                                            <option value="mrs">Mrs</option>
-                                            <option value="ms">Ms</option>
-                                        </select>
+                        for (int i = 0; i < Model.AdultAmount; i++)
+                        {
+                            <div class="content" style="margin-top:4%;margin-bottom:4%;border:solid 1px #ccc; border-radius:10px;">
+                                <h4 style="color:#da4d4d;margin-top: 1%;margin-bottom: 0px;padding-left: 2%;border-bottom: solid 1px #ccc;padding-bottom:1%;"><i style="color:#555555" class="fa fa-male fa-lg"></i>  &nbsp;Adult</h4>
+                                <div class="row" style="padding-left: 2%;padding-right: 2%;padding-bottom: 1%;padding-top: 2%;">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="title">Title</label>
+                                            @Html.TextBoxFor(m => m.AdultDetails[i].Title, new { id = "adult-title" + i, style = "display: none;", @class = "adultTitle" })
+                                            <select class="form-control" id="adult-title@{@i}" onload="adultTitleLoad(@i)" onchange="adultTitleChange(@i);">
+                                                <option value="Mr" selected="selected">Mr</option>
+                                                <option value="Mrs">Mrs</option>
+                                                <option value="Ms">Ms</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="firstname">First Name</label>
+                                            @Html.TextBoxFor(m => m.AdultDetails[i].FirstName, new { id = "adult-firstname" + i, required = "required", @class = "form-control" })
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="lastname">Last Name</label>
+                                            @Html.TextBoxFor(m => m.AdultDetails[i].LastName, new { id = "adult-lastname" + i, required = "required", @class = "form-control" })
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="firstname">Firstname</label>
-                                        <input type="text" class="form-control" id="firstname" required/>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="lastname">Lastname</label>
-                                        <input type="text" class="form-control" id="lastname"  required/>
-                                    </div>
-                                </div>
+                                <!-- /.row -->
                             </div>
-                            <!-- /.row -->
-                            </div>
+                        }
                         <!--end loop for each number of adult-->
-                     
+
                         <!--start loop for each number of child-->
-                        <div class="content" style="margin-top:4%;margin-bottom:4%;border:solid 1px #ccc;border-radius:10px;">
-                            <h4 style="color:#da4d4d;margin-top: 1%;margin-bottom: 0px;padding-left: 2%;border-bottom: solid 1px #ccc;padding-bottom:1%;"><i style="color:#555555;" class="fa fa-child fa-lg"></i>  Child</h4>
-                            <div class="row" style="padding-left: 2%;padding-right: 2%;padding-bottom: 1%;padding-top: 2%;">
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="title">Title</label>
-                                        <select class="form-control" id="title">
-                                            <option value="master" selected="selected">Master</option>
-                                            <option value="miss">Miss</option>
-                                        </select>
+                        for (int k = 0; k < Model.ChildAmount; k++)
+                        {
+                            <div class="content" style="margin-top:4%;margin-bottom:4%;border:solid 1px #ccc;border-radius:10px;">
+                                <h4 style="color:#da4d4d;margin-top: 1%;margin-bottom: 0px;padding-left: 2%;border-bottom: solid 1px #ccc;padding-bottom:1%;"><i style="color:#555555;" class="fa fa-child fa-lg"></i>  Child</h4>
+                                <div class="row" style="padding-left: 2%;padding-right: 2%;padding-bottom: 1%;padding-top: 2%;">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="title">Title</label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].Title, new { id = "child-title" + k, style = "display: none;", @class = "childTitle" })
+                                            <select class="form-control" id="child-title@{@k}" onload="childTitleLoad(@k)" onchange="childTitleChange(@k);">
+                                                <option value="Master" selected="selected">Master</option>
+                                                <option value="Miss">Miss</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="firstname">First Name</label>
-                                        <input type="text"  required class="form-control" id="firstname">
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="firstname">First Name</label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].FirstName, new { id = "child-firstname" + k, required = "required", @class = "form-control" })
+                                            
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="lastname">Last Name</label>
-                                        <input type="text"  required class="form-control" id="lastname">
-                                    </div>
-                                </div>
-                           
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="dob" style="margin-bottom:0px;">Date of Birth</label>
-                                        <select class="form-control" name="DOBDay" required>
-                                            <option value=""> - Day - </option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5</option>
-                                            <option value="6">6</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
-                                            <option value="10">10</option>
-                                            <option value="11">11</option>
-                                            <option value="12">12</option>
-                                            <option value="13">13</option>
-                                            <option value="14">14</option>
-                                            <option value="15">15</option>
-                                            <option value="16">16</option>
-                                            <option value="17">17</option>
-                                            <option value="18">18</option>
-                                            <option value="19">19</option>
-                                            <option value="20">20</option>
-                                            <option value="21">21</option>
-                                            <option value="22">22</option>
-                                            <option value="23">23</option>
-                                            <option value="24">24</option>
-                                            <option value="25">25</option>
-                                            <option value="26">26</option>
-                                            <option value="27">27</option>
-                                            <option value="28">28</option>
-                                            <option value="29">29</option>
-                                            <option value="30">30</option>
-                                            <option value="31">31</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="dob"></label>
-                                        <select name="DOBMonth" class="form-control" required>
-                                            <option value=""> - Month - </option>
-                                            <option value="January">January</option>
-                                            <option value="Febuary">Febuary</option>
-                                            <option value="March">March</option>
-                                            <option value="April">April</option>
-                                            <option value="May">May</option>
-                                            <option value="June">June</option>
-                                            <option value="July">July</option>
-                                            <option value="August">August</option>
-                                            <option value="September">September</option>
-                                            <option value="October">October</option>
-                                            <option value="November">November</option>
-                                            <option value="December">December</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group">
-                                        <label for="dob"></label>
-                                        <select name="DOBYear" class="form-control" required>
-                                            <option value=""> - Year - </option>
-                                            <option value="2006">2006</option>
-                                            <option value="2007">2007</option>
-                                            <option value="2008">2008</option>
-                                            <option value="2009">2009</option>
-                                            <option value="2010">2010</option>
-                                            <option value="2011">2011</option>
-                                            <option value="2012">2012</option>
-                                            <option value="2013">2013</option>
-                                            <option value="2014">2014</option>
-                                            <option value="2015">2015</option>
-                                            <option value="2016">2016</option>
-                                        </select>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="lastname">Last Name</label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].LastName, new { id = "child-lastname" + k, required = "required", @class = "form-control" })
+
                                         </div>
                                     </div>
 
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="dob" style="margin-bottom:0px;">Date of Birth</label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthDay, new { id = "child-birthday" + k, style = "display: none;" })
+                                            <select class="form-control" id="birthday@{@k}" name="DOBDay" onload="birthdayLoad(@k);" onclick="birthdayChange(@k);" required>
+                                                <option value=""> - Day - </option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                                <option value="9">9</option>
+                                                <option value="10">10</option>
+                                                <option value="11">11</option>
+                                                <option value="12">12</option>
+                                                <option value="13">13</option>
+                                                <option value="14">14</option>
+                                                <option value="15">15</option>
+                                                <option value="16">16</option>
+                                                <option value="17">17</option>
+                                                <option value="18">18</option>
+                                                <option value="19">19</option>
+                                                <option value="20">20</option>
+                                                <option value="21">21</option>
+                                                <option value="22">22</option>
+                                                <option value="23">23</option>
+                                                <option value="24">24</option>
+                                                <option value="25">25</option>
+                                                <option value="26">26</option>
+                                                <option value="27">27</option>
+                                                <option value="28">28</option>
+                                                <option value="29">29</option>
+                                                <option value="30">30</option>
+                                                <option value="31">31</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <!-- /.row -->
-                                </div>
-                        <!--end loop for each number of child-->
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="dob"></label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthMonth, new { id = "child-birthmonth" + k, style = "display: none;" })
+                                            <select class="form-control" id="birthmonth@{@k}" name="DOBMonth" onload="birthmonthLoad(@k);" onclick="birthmonthChange(@k);" required>
+                                                <option value=""> - Month - </option>
+                                                <option value="January">January</option>
+                                                <option value="Febuary">Febuary</option>
+                                                <option value="March">March</option>
+                                                <option value="April">April</option>
+                                                <option value="May">May</option>
+                                                <option value="June">June</option>
+                                                <option value="July">July</option>
+                                                <option value="August">August</option>
+                                                <option value="September">September</option>
+                                                <option value="October">October</option>
+                                                <option value="November">November</option>
+                                                <option value="December">December</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="dob"></label>
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthYear, new { id = "child-birthyear" + k, style = "display: none;" })
+                                            <select name="DOBYear" id="birthyear@{@k}" class="form-control" onload="birthyearLoad(@k);" onclick="birthyearChange(@k);" required>
+                                                <option value=""> - Year - </option>
+                                                <option value="2006">2006</option>
+                                                <option value="2007">2007</option>
+                                                <option value="2008">2008</option>
+                                                <option value="2009">2009</option>
+                                                <option value="2010">2010</option>
+                                                <option value="2011">2011</option>
+                                                <option value="2012">2012</option>
+                                                <option value="2013">2013</option>
+                                                <option value="2014">2014</option>
+                                                <option value="2015">2015</option>
+                                                <option value="2016">2016</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                            <div class="checkbox">
-                                <label style="float:right">
-                                    <input type="checkbox" required>I agree to the <a href="#">Terms and Conditions</a> 
-                                </label>
+                                </div>
+                                <!-- /.row -->
                             </div>
 
-                                <div class="box-footer">
-                                    <div class="pull-left">
-                                        <a href="@Url.Action("ShoppingCart","Home")" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to shopping cart</a>
-                                    </div>
-                                    <div class="pull-right">
-                                        <button type="submit" class="btn btn-template-main">Continue to payment<i class="fa fa-chevron-right"></i></button>
-                                    </div>
-                                </div>
-                </form>
+                        }
+                        <!--end loop for each number of child-->
+
+                        <div class="checkbox">
+                            <label style="float:right">
+                                <input type="checkbox" required>I agree to the <a href="#">Terms and Conditions</a>
+                            </label>
+                        </div>
+
+                        <div class="box-footer">
+                            <div class="pull-left">
+                                <a href="@Url.Action("ShoppingCart", "Home" )" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to shopping cart</a>
+                            </div>
+                            <div class="pull-right">
+                                @using Microsoft.AspNet.Identity
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <button type="submit" id="Payment" class="btn btn-template-main">Continue to payment<i class="fa fa-chevron-right"></i></button>
+                                }
+                                else
+                                {
+                                    <button type="button" id="login-to-buy" class="btn btn-template-main">Continue to payment<i class="fa fa-chevron-right"></i></button>
+                                }
+                            </div>
+                        </div>
+                    }
                 </div>
                 <!-- /.box -->
 
@@ -199,7 +378,7 @@
                     </div>
                     <div style="padding-left: 3%;padding-right: 2%;">
                         <a href="#" style="display:block">@Model.Tour.Name</a>
-                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime - @Model.TourTime.EndTime</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p id="DateAndTime" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime-@Model.TourTime.EndTime</p>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@Model.TourStartingLocation</span></p>
                     </div>
                     <div class="table-responsive">

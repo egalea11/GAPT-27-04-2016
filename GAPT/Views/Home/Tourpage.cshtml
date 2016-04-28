@@ -61,6 +61,8 @@
                 data: dateAndTimeOfTour,
                 //async: false,
                 success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
                     alert("places available " + places);
                 },
                 error: function () {
@@ -124,6 +126,8 @@
                 data: dateAndTimeOfTour,
                 //async: false,
                 success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
                     alert("places available " + places);
                 },
                 error: function () {
@@ -158,6 +162,8 @@
                 data: dateAndTimeOfTour,
                 //async: false,
                 success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
                     //alert("places available " + places);
                 },
                 error: function () {
@@ -344,7 +350,6 @@
                                     </div>
                                 </div>
                                 <div class="space30"></div>
-
                                 @using (Html.BeginForm("CustomerInfo", "Home", FormMethod.Post))
                                 {
                                     @Html.AntiForgeryToken()
@@ -366,6 +371,9 @@
                                                 @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;"})
                                                 @*style = "visibility:hidden;height:1;width:1",*@ 
                                                 @*"display: none;"*@
+                                            </div>
+                                            <div>
+                                                <span> Places left: </span><span id="places-available"></span>
                                             </div>
                                         </div>
 
@@ -429,6 +437,7 @@
                                             @using Microsoft.AspNet.Identity
                                             @if (Request.IsAuthenticated)
                                             {
+                                                @Html.ValidationMessage("error")
                                                 <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
                                             }
                                             else
