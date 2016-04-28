@@ -38,6 +38,11 @@
 
         $("#dropdown").change(function () {
             var selectedDate = $("select#dropdown option:selected").val()
+            if (selectedDate == null || selectedDate == "")
+            {
+                $("#TourTime").val("");
+                return false;
+            }
             $("#TourTime").val(selectedDate).trigger('change');
         });
 
@@ -67,28 +72,37 @@
         $("#TourDate").change(function () {
             var tourId = $("#TourId").val();
             var tourDate = $("#TourDate").val();
+
+            //var tourDates = Html.Raw(Model.TourDates.Select(t => t.DateOfTour));
+            //if ($.inArray(tourDate, tourDates) == -1)
+            //{
+                //alert("This tour is not scheduled on that date. Please choose another date");
+                //$("#dropdown").empty();
+                //return false;
+            //}
+
             var data = tourDate + ":" + tourId;
             var dateOfTour = { tourDate: tourDate + ":" + tourId };
-
-            @*$("#TourDate").change(function () {
-                $.post('@Url.Action("GetTourTime", "Home")', { tourDate: data }, function (tourTime) {
-                    //{ tourDate: tourDate, tourDate: tourDate },
-                    //$('#searchtours').html(data);
-                    alert(tourTime);
-                });
-            });*@
+            var state = true;
 
             $.ajax({
                 url: "/Home/GetTourTime",
                 type: "POST",
                 dataType: "html",
                 data: dateOfTour,
-                //async: false,
+                async: false,
                 success: function (tourTime) {
                     $("#dropdown").empty();
+                    if (tourTime == "false")
+                    {
+                        alert("This tour is not scheduled on that date. Please choose another date");
+                        state = false;
+                        return false;
+                    }
+                    
                     $("#dropdown").html(tourTime);
                     var tourTimeSelected = $("select#dropdown option:selected").val();
-                    $("#TourTime").val(tourTimeSelected);
+                    $("#TourTime").val(tourTimeSelected)//.trigger('change');
                     alert("test");
                 },
                 error: function () {
@@ -96,7 +110,11 @@
                 }
             });
             //return false;
-
+            if (!state)
+            {
+                $("#TourTime").val("");
+                return false;
+            }
             var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
 
             $.ajax({
@@ -106,10 +124,6 @@
                 data: dateAndTimeOfTour,
                 //async: false,
                 success: function (places) {
-                    //$("#dropdown").empty();
-                    //$("#dropdown").html(tourTime);
-                    //var tourTimeSelected = $("select.dropdown option:selected").val();
-                    //$("#TourTime").val(tourTimeSelected);
                     alert("places available " + places);
                 },
                 error: function () {
@@ -118,11 +132,17 @@
             });
         });
 
-        //$("#TourDate").text("2016-05-30");
-        $("#TourDate").val("2016-05-30")//.trigger('change');
-        //$("#TourTime").text("12:00-17:00");
-        $("#TourTime").val("12:00-17:00").trigger('change');
-        $("#TourDate").val("2016-05-30").trigger('change');
+        var tourId = $("#TourId").val();
+        $.post('@Url.Action("GetDateOfTour", "Home")', { tourId: tourId }, function (tourDate) {
+            $("#TourDate").val(tourDate).trigger('change');
+            alert(tourDate);
+        });
+
+        //$("#TourDate").val("2016-05-30").trigger('change');
+
+        $("#login-to-buy").click(function () {
+            alert("Please login in order to proceed to check out");
+        });
     });
 </script>
 
@@ -306,8 +326,8 @@
                                 @using (Html.BeginForm("CustomerInfo", "Home", FormMethod.Post))
                                 {
                                     @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                     @Html.TextBoxFor(m => m.TourDate, new { id = "TourDate", style = "display: none;" })
-                                    @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;" })
                                     @Html.TextBoxFor(m => m.Tour.Id, new { id = "TourId", style = "display: none;" })
                                     <section class="order-details">
                                         @* Data picker - jquery UI plugin *@
@@ -316,11 +336,14 @@
                                             <div class="space10"></div>
                                             <div style="margin-top:6%">
                                                 <span> Time: </span>
-                                                <select id="dropdown">
+                                                <select id="dropdown" required="required">
                                                     <option value="09:00" selected="selected">09:00</option>
                                                     <option value="12:00">12:00</option>
                                                     <option value="16:30">16:30</option>
                                                 </select>
+                                                @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;"})
+                                                @*style = "visibility:hidden;height:1;width:1",*@ 
+                                                @*"display: none;"*@
                                             </div>
                                         </div>
 
@@ -381,7 +404,15 @@
                                             {
                                                 <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="notadded" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
                                             }
-                                            <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
+                                            @using Microsoft.AspNet.Identity
+                                            @if (Request.IsAuthenticated)
+                                            {
+                                                <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <button id="login-to-buy" type="button" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
+                                            }
                                         </div>
                                     </section>
                                 }

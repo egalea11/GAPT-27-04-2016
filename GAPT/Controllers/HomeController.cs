@@ -331,7 +331,24 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public string GetTourTime(IEnumerable<string> tourDate) //, IEnumerable<int> tourId    dataType: "json"
+        public string GetDateOfTour(IEnumerable<int> tourId) //, IEnumerable<int> tourId    dataType: "json"
+        {
+            if (tourId == null || tourId.Count() == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                Response.StatusCode = 400;
+                Response.End();
+            }
+            var tourDate = db.TourDate.Where(d => d.TourId == tourId.FirstOrDefault() && d.DateOfTour > DateTime.Now).FirstOrDefault().DateOfTour;
+            DateTime temp = new DateTime(tourDate.Year, tourDate.Month, tourDate.Day);
+            string str = temp.ToString("yyyy-MM-dd");
+
+            return str;
+        }
+
+        [HttpPost]
+        public string GetTourTime(IEnumerable<string> tourDate)
         {
             if (tourDate == null || tourDate.Count() == 0)
             {
@@ -344,8 +361,14 @@ namespace GAPT.Controllers
             string[] TourDateAndId = tourDate.FirstOrDefault().Split(':');
             int tourId = Convert.ToInt32(TourDateAndId[1]);
             DateTime DateOfTour = Convert.ToDateTime(TourDateAndId[0]);
-            var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault().Id;
-            var tourTimesIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId).ToList().Select(t => t.TourTimeId).ToArray();
+            var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault();
+
+            if (tourDateId == null)
+                return "false";
+
+            var getDateId = tourDateId.Id;
+
+            var tourTimesIds = db.TourDateTime.Where(dt => dt.TourDateId == getDateId).ToList().Select(t => t.TourTimeId).ToArray();
             var tourTimes = db.TourTime.Where(t => tourTimesIds.Contains(t.Id)).ToList();
 
             string timeOptions = "";
@@ -362,7 +385,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public int GetPlacesAvailable(IEnumerable<string> tourDateTime) //, IEnumerable<int> tourId    dataType: "json"
+        public int GetPlacesAvailable(IEnumerable<string> tourDateTime)
         {
             if (tourDateTime == null || tourDateTime.Count() == 0)
             {

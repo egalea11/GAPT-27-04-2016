@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -99,6 +100,7 @@ namespace GAPT.Models
         public int TourDateId { get; set; }
         public int TourTimeId { get; set; }
         public DateTime TourDate { get; set; }
+        [Required]
         public string TourTime { get; set; }
     }
 }
