@@ -20,11 +20,6 @@
         var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
         $("#tour-price").text("€" + currTotalPrice);
 
-        //$("#TourDate").text("2016-05-30");
-        $("#TourDate").val("2016-05-30").trigger('change');
-        //$("#TourTime").text("12:00-17:00");
-        $("#TourTime").val("12:00-17:00").trigger('change');
-
         $("#adult-amount").click(function () {
             var adultPrice = $("#tour-adult-value").text().split('€');
             var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
@@ -122,6 +117,12 @@
                 }
             });
         });
+
+        //$("#TourDate").text("2016-05-30");
+        $("#TourDate").val("2016-05-30")//.trigger('change');
+        //$("#TourTime").text("12:00-17:00");
+        $("#TourTime").val("12:00-17:00").trigger('change');
+        $("#TourDate").val("2016-05-30").trigger('change');
     });
 </script>
 
