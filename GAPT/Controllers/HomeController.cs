@@ -145,7 +145,7 @@ namespace GAPT.Controllers
                 GlobalData.alltours = ViewAllTours;
                 GlobalData.islands = islands;
 
-                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories , wishlist = GlobalData.wishlist};
+                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories, wishlist = GlobalData.wishlist };
 
                 //return model;
             }
@@ -291,10 +291,114 @@ namespace GAPT.Controllers
         {
             return View();
         }
-        public ActionResult Payment()
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Payment(TourpageModel model)
         {
             return View();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult CustomerInfo(TourpageModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+            }
+
+            var tourDetails = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault();
+            decimal totalAdultPrice = model.AdultAmount * tourDetails.AdultPrice;
+            decimal totalChildPrice = model.ChildAmount * tourDetails.ChildPrice;
+            decimal totalPrice = totalAdultPrice + totalChildPrice;
+
+
+            CustomerInfoModel customerModel = new CustomerInfoModel()
+            {
+                AdultAmount = model.AdultAmount,
+                ChildAmount = model.ChildAmount,
+                AdultTotalPrice = totalAdultPrice,
+                ChildTotalPrice = totalChildPrice,
+                TotalPrice = totalPrice,
+                Tour = tourDetails,
+                //TourDate = ,
+                //TourTime = ,
+                //TourDateTime =
+            };
+            return View();
+        }
+
+        [HttpPost]
+        public string GetTourTime(IEnumerable<string> tourDate) //, IEnumerable<int> tourId    dataType: "json"
+        {
+            if (tourDate == null || tourDate.Count() == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                Response.StatusCode = 400;
+                Response.End();
+            }
+
+            string[] TourDateAndId = tourDate.FirstOrDefault().Split(':');
+            int tourId = Convert.ToInt32(TourDateAndId[1]);
+            DateTime DateOfTour = Convert.ToDateTime(TourDateAndId[0]);
+            var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault().Id;
+            var tourTimesIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId).ToList().Select(t => t.TourTimeId).ToArray();
+            var tourTimes = db.TourTime.Where(t => tourTimesIds.Contains(t.Id)).ToList();
+
+            string timeOptions = "";
+
+            for (int k = 0; k < tourTimes.Count; k++)
+            {
+                string time = tourTimes.ElementAt(k).StartTime + "-" + tourTimes.ElementAt(k).EndTime;
+                if (k == 0)
+                    timeOptions = "<option value=\"" + time + "\" selected=\"selected\">" + time + "</option>";
+                else
+                    timeOptions = timeOptions + "<option value=\"" + time + "\" selected=\"selected\">" + time + "</option>";
+            }
+            return timeOptions;
+        }
+
+        [HttpPost]
+        public int GetPlacesAvailable(IEnumerable<string> tourDateTime) //, IEnumerable<int> tourId    dataType: "json"
+        {
+            if (tourDateTime == null || tourDateTime.Count() == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                Response.StatusCode = 400;
+                Response.End();
+            }
+
+            string[] TourDateAndTimeAndId = tourDateTime.FirstOrDefault().Split(';');
+            int tourId = Convert.ToInt32(TourDateAndTimeAndId[2]);
+            DateTime DateOfTour = Convert.ToDateTime(TourDateAndTimeAndId[0]);
+            string[] stringTime = TourDateAndTimeAndId[1].Split('-');
+            string startTime = stringTime[0];
+            string endTime = stringTime[1];
+            int maxTourGroupSize = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().MaxGroupSize;
+
+            var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault().Id;
+            var tourTimeIds = db.TourTime.Where(t => t.TourId == tourId && t.StartTime == startTime && t.EndTime == endTime).ToList().Select(t => t.Id).ToArray();
+            var tourDateTimeIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId && tourTimeIds.Contains(dt.TourTimeId)).ToList().Select(t => t.Id).ToArray();
+            var orders = db.Order.Where(o => tourDateTimeIds.Contains(o.TourDateTimeId)).ToList();
+
+            int totalAdultAmount = 0;
+            int totalChildAmount = 0;
+            foreach (var order in orders)
+            {
+                totalAdultAmount = totalAdultAmount + order.AdultQuantity;
+                totalChildAmount = totalChildAmount + order.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount;
+            int placesLeft = maxTourGroupSize - totalGroupSize;
+
+            return placesLeft;
+        }
+
         public ActionResult PasswordReminder()
         {
             return View();
@@ -302,6 +406,34 @@ namespace GAPT.Controllers
         public ActionResult Error()
         {
             return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult Reviews(int id)
+        {
+            var reviews = db.Review.Where(r => r.TourId == id);
+            var userIds = reviews.Select(r => r.UserId).ToArray();
+            var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
+            ReviewViewModel model = new ReviewViewModel();
+            model.Reviews = new List<ReviewModel>();
+
+            foreach (var r in reviews)
+            {
+                ReviewModel reviewModel = new ReviewModel()
+                {
+                    Id = r.Id,
+                    RatingId = r.RatingId,
+                    Comment = r.Comment,
+                    DateTimeCreated = r.DateTimeCreated,
+                    TourId = r.TourId,
+                    Username = reviewUsers.Where(u => u.Id == r.UserId).FirstOrDefault().UserName
+                };
+
+                model.Reviews.Add(reviewModel);
+            }
+
+            return PartialView("Reviews", model);
         }
 
         [AllowAnonymous]
@@ -322,7 +454,7 @@ namespace GAPT.Controllers
             var tourLocations = db.Location.Where(l => tourLocationIds.Contains(l.Id)).ToList();
             var tourImages = db.Image.Where(i => i.TourId == id && !i.Link.Contains("rsz")).ToList();
 
-            TourpageModel model = new TourpageModel 
+            TourpageModel model = new TourpageModel
             {
                 Tour = tour,
                 TourCategory = category,
@@ -351,7 +483,7 @@ namespace GAPT.Controllers
             {
                 GetCategAttrTours();
                 //GlobalData.selectedcategories = null;
-                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories, wishlist = GlobalData.wishlist};
+                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories, wishlist = GlobalData.wishlist };
                 ViewData["CategAttrTours"] = model;
                 //GlobalData.searchtext = null;
                 return View(model);
@@ -657,7 +789,7 @@ namespace GAPT.Controllers
             if (GlobalData.selectedcategories != null)
             {
                 var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
-                
+
                 if (toursbysearch == null)
                     toursbysearch = toursbycategids;
                 else

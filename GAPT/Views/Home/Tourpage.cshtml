@@ -7,8 +7,12 @@
 
 @* load Google maps API *@
 <!--<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>--> <!--COMMENTED-->
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
+        $("#children-amount").val("1");
+        $("#adult-amount").val("1");
         var currAdultPrice = $("#tour-adult-value").text();
         $("#total-adult").text(currAdultPrice);
         var currChildPrice = $("#tour-children-value").text();
@@ -16,13 +20,11 @@
         var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
         $("#tour-price").text("€" + currTotalPrice);
 
-        @*@foreach (var date in Model.TourDates)
-        {
-            var month = date.DateOfTour.Month-1;
-            var day = date.DateOfTour.Day-1;
-             
-        }*@
-        
+        //$("#TourDate").text("2016-05-30");
+        $("#TourDate").val("2016-05-30").trigger('change');
+        //$("#TourTime").text("12:00-17:00");
+        $("#TourTime").val("12:00-17:00").trigger('change');
+
         $("#adult-amount").click(function () {
             var adultPrice = $("#tour-adult-value").text().split('€');
             var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
@@ -37,6 +39,88 @@
             $("#total-child").text("€" + totalChildPrice);
             var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
             $("#tour-price").text("€" + ChildPriceChangedTotal);
+        });
+
+        $("#dropdown").change(function () {
+            var selectedDate = $("select#dropdown option:selected").val()
+            $("#TourTime").val(selectedDate).trigger('change');
+        });
+
+        $("#TourTime").change(function () {
+            var tourId = $("#TourId").val();
+            var tourDate = $("#TourDate").val();
+            var data = tourDate + ":" + tourId;
+            var dateOfTour = { tourDate: tourDate + ":" + tourId };
+
+            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+        $("#TourDate").change(function () {
+            var tourId = $("#TourId").val();
+            var tourDate = $("#TourDate").val();
+            var data = tourDate + ":" + tourId;
+            var dateOfTour = { tourDate: tourDate + ":" + tourId };
+
+            @*$("#TourDate").change(function () {
+                $.post('@Url.Action("GetTourTime", "Home")', { tourDate: data }, function (tourTime) {
+                    //{ tourDate: tourDate, tourDate: tourDate },
+                    //$('#searchtours').html(data);
+                    alert(tourTime);
+                });
+            });*@
+
+            $.ajax({
+                url: "/Home/GetTourTime",
+                type: "POST",
+                dataType: "html",
+                data: dateOfTour,
+                //async: false,
+                success: function (tourTime) {
+                    $("#dropdown").empty();
+                    $("#dropdown").html(tourTime);
+                    var tourTimeSelected = $("select#dropdown option:selected").val();
+                    $("#TourTime").val(tourTimeSelected);
+                    alert("test");
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            //return false;
+
+            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    //$("#dropdown").empty();
+                    //$("#dropdown").html(tourTime);
+                    //var tourTimeSelected = $("select.dropdown option:selected").val();
+                    //$("#TourTime").val(tourTimeSelected);
+                    alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
         });
     });
 </script>
@@ -161,26 +245,6 @@
                                                         <img data-u="thumb" src="@Url.Content(image.Link)" />
                                                     </div>
                                                 }
-                                                @*<div data-p="144.50" style="display: none;">
-                                                    <img data-u="image" src="~/Images/product_details/buskett01.jpg" />
-                                                    <img data-u="thumb" src="~/Images/product_details/buskett01.jpg" />
-                                                </div>
-                                                <div data-p="144.50" style="display: none;">
-                                                    <img data-u="image" src="~/Images/product_details/buskett02.jpg" />
-                                                    <img data-u="thumb" src="~/Images/product_details/buskett02.jpg" />
-                                                </div>
-                                                <div data-p="144.50" style="display: none;">
-                                                    <img data-u="image" src="~/Images/product_details/buskett03.jpg" />
-                                                    <img data-u="thumb" src="~/Images/product_details/buskett03.jpg" />
-                                                </div>
-                                                <div data-p="144.50" style="display: none;">
-                                                    <img data-u="image" src="~/Images/product_details/buskett04.jpg" />
-                                                    <img data-u="thumb" src="~/Images/product_details/buskett04.jpg" />
-                                                </div>
-                                                <div data-p="144.50" style="display: none;">
-                                                    <img data-u="image" src="~/Images/product_details/dingli01.jpg" />
-                                                    <img data-u="thumb" src="~/Images/product_details/dingli01.jpg" />
-                                                </div>*@
                                                 @*<a data-u="ad" href="http://www.jssor.com" style="display:none">jQuery Slider</a>*@
 
                                             </div>
@@ -238,76 +302,88 @@
                                 </div>
                                 <div class="space30"></div>
 
-                                <section class="order-details">
-                                    @* Data picker - jquery UI plugin *@
-                                    <div class="col-md-4 datepicker centre-block">
-                                        <div id="datepicker"></div>
-                                        <div class="space10"></div>
-                                        <div style="margin-top:6%">
-                                            <span> Time: </span>
-                                            <select id="dropdown">
-                                                <option value="09:00" selected="selected">09:00</option>
-                                                <option value="12:00">12:00</option>
-                                                <option value="16:30">16:30</option>
-                                            </select>
+                                @using (Html.BeginForm("CustomerInfo", "Home", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.TextBoxFor(m => m.TourDate, new { id = "TourDate", style = "display: none;" })
+                                    @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;" })
+                                    @Html.TextBoxFor(m => m.Tour.Id, new { id = "TourId", style = "display: none;" })
+                                    <section class="order-details">
+                                        @* Data picker - jquery UI plugin *@
+                                        <div class="col-md-4 datepicker centre-block">
+                                            <div id="datepicker"></div>
+                                            <div class="space10"></div>
+                                            <div style="margin-top:6%">
+                                                <span> Time: </span>
+                                                <select id="dropdown">
+                                                    <option value="09:00" selected="selected">09:00</option>
+                                                    <option value="12:00">12:00</option>
+                                                    <option value="16:30">16:30</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    @* quantity for order - table *@
-                                    <div class="col-md-4 order" style="margin-left:0px;padding-left:0px;">
-                                        <table>
-                                            <tr>
-                                                <td> </td>
-                                                <td> <b>Price</b></td>
-                                                <td> </td>
-                                                <td> <b>Total</b> </td>
-                                            </tr>
-                                            <tr>
-                                                <td> Adults: </td>
-                                                <td id="tour-adult-value" class="tour-value"> €@Model.Tour.AdultPrice </td>
-                                                <td>
-                                                    <input id="adult-amount" type="number" min="1" max="100" value="1">
-                                                </td>
-                                                <td id="total-adult"></td>
-                                            </tr>
-                                            <tr>
-                                                <td> Child: </td>
-                                                <td id="tour-children-value" class="tour-value"> €@Model.Tour.ChildPrice </td>
-                                                <td>
-                                                    <input id="children-amount" type="number" min="0" max="100" value="1">
-                                                </td>
-                                                <td id="total-child"></td>
-                                            </tr>
-                                            <tr>
-                                                <td> </td>
-                                                <td> </td>
-                                                <td> </td>
-                                                <td id="tour-price"> <b></b></td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                                        @* quantity for order - table *@
+                                        <div class="col-md-4 order" style="margin-left:0px;padding-left:0px;">
+                                            <table>
+                                                <tr>
+                                                    <td> </td>
+                                                    <td> <b>Price</b></td>
+                                                    <td> </td>
+                                                    <td> <b>Total</b> </td>
+                                                </tr>
+                                                <tr>
+                                                    <td> Adults: </td>
+                                                    <td id="tour-adult-value" class="tour-value"> €@Model.Tour.AdultPrice </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(m => m.AdultAmount, new { id = "adult-amount", @type = "number", min = "1", max = "100", @value = "1" })
+                                                        @*<input id="adult-amount" type="number" min="1" max="100" value="1">*@
+                                                    </td>
+                                                    @*<td>
+                                                        @Html.TextAreaFor(m => m.AdultTotalPrice, new { id = "total-adult" })
+                                                    </td>*@
+                                                    <td id="total-adult"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> Child: </td>
+                                                    <td id="tour-children-value" class="tour-value"> €@Model.Tour.ChildPrice </td>
+                                                    <td>
+                                                        @Html.TextBoxFor(m => m.ChildAmount, new { id = "children-amount", @type = "number", min = "0", max = "100", @value = "1" })
+                                                        @*<input id="children-amount" type="number" min="0" max="100" value="1">*@
+                                                    </td>
+                                                    <td id="total-child"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    <td> </td>
+                                                    <td id="tour-price"> <b></b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
 
 
-                                    <div class="col-md-12 text-center" style="margin-top:2%">
-                                        @if (Model.Wishlists != null && Model.Wishlists.Count != 0)
-                                        {
-                                            var currtourwishlist = Model.Wishlists.Where(w => w.TourId == Model.Tour.Id).ToList();
-                                            if (currtourwishlist != null && currtourwishlist.Count > 0)
+                                        <div class="col-md-12 text-center" style="margin-top:2%">
+                                            @if (Model.Wishlists != null && Model.Wishlists.Count != 0)
                                             {
-                                                <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="added" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Added to wishlist<i class="fa fa-heart"></i></button>
+                                                var currtourwishlist = Model.Wishlists.Where(w => w.TourId == Model.Tour.Id).ToList();
+                                                if (currtourwishlist != null && currtourwishlist.Count > 0)
+                                                {
+                                                    <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="added" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Added to wishlist<i class="fa fa-heart"></i></button>
+                                                }
+                                                else
+                                                {
+                                                    <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="notadded" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
+                                                }
                                             }
                                             else
                                             {
                                                 <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="notadded" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
                                             }
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="col-md-5 btn btn-template-main order-btn center-block" value="notadded" onclick="addToWishlistFun(@Model.Tour.Id)" id="wishlist@{@Model.Tour.Id}">Add to wishlist<i class="fa fa-heart-o"></i></button>
-                                        }
-                                        <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
-                                    </div>
-                                </section>
+                                            <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
+                                        </div>
+                                    </section>
+                                }
 
                                 <div class="space30"></div>
                                 @* --- integrating custom google map --- *@
@@ -338,29 +414,6 @@
 
                                     <form>
                                         <div class="row">
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label id="profile-name" for="name">
-                                                        Name <span class="required">*</span>
-                                                    </label>
-                                                    <input type="text" class="form-control" id="name">
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <div class="form-group">
-                                                    <label id="profile-email" for="email">
-                                                        Email <span class="required">*</span>
-                                                    </label>
-                                                    <input type="text" class="form-control" id="email">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
                                             <div class="col-sm-12">
                                                 <div class="form-group">
                                                     <label id="post-content" for="comment">
@@ -376,15 +429,15 @@
                                         <div class="text-center">
                                             <fieldset class="rating">
                                                 <input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5"></label>
-                                                <input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half"></label>
+                                                @*<input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half"></label>*@
                                                 <input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4"></label>
-                                                <input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half"></label>
+                                                @*<input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half"></label>*@
                                                 <input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3"></label>
-                                                <input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half"></label>
+                                                @*<input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half"></label>*@
                                                 <input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2"></label>
-                                                <input type="radio" id="star1half" name="rating" value="1 and a half" /><label class="half" for="star1half"></label>
+                                                @*<input type="radio" id="star1half" name="rating" value="1 and a half" />*@<label class="half" for="star1half"></label>
                                                 <input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1"></label>
-                                                <input type="radio" id="starhalf" name="rating" value="half" /><label class="half" for="starhalf"></label>
+                                                @*<input type="radio" id="starhalf" name="rating" value="half" />*@<label class="half" for="starhalf"></label>
                                             </fieldset>
                                         </div>
 
@@ -405,28 +458,8 @@
 
                                 @* comment section *@
 
-                                <span id="comment-no" class="text-uppercase"><h4>1 comment</h4></span>
-
-
-                                <div class="row comment">
-                                    @*<div class="col-sm-3 col-md-2 text-center-xs">
-                                <p>
-                                    <img id="profile-img" src="~/Images/White-Ostrich.jpg" class="img-responsive img-circle" alt="">
-                                </p>
-                            </div>*@
-                                    <div class="col-sm-9 col-md-10">
-                                        <h5 id="profile-name" class="text-uppercase">Francine Alma</h5>
-                                        <p id="time-of-post" class="posted"><i class="fa fa-clock-o"></i> September 23, 2011 at 12:00 am</p>
-                                        <p id="post-content">
-                                            Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper.
-                                            Aenean ultricies mi vitae est. Mauris placerat eleifend leo.
-                                            <br /> <br />
-                                            10/10 would go again.
-                                        </p>
-                                    </div>
-                                </div>
-                                <!-- /.comment -->
-                                <div class="space30"></div>
+                                @{Html.RenderAction("Reviews", new { id = @Model.Tour.Id });}
+                                
                                 @* END of Comment section *@
                             </div>
                             <!-- /.row -->

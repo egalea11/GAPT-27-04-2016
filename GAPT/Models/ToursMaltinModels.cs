@@ -26,6 +26,21 @@ namespace GAPT.Models
         public DateTime DateTimeCreated { get; set; }
     }
 
+    public class ReviewModel
+    {
+        public int? Id { get; set; }
+        public string Username { get; set; }
+        public int TourId { get; set; }
+        public int? RatingId { get; set; }
+        public string Comment { get; set; }
+        public DateTime DateTimeCreated { get; set; }
+    }
+
+    public class ReviewViewModel
+    {
+        public List<ReviewModel> Reviews { get; set; }
+    }
+
     public class WishList
     {
         public int? Id { get; set; }
@@ -35,16 +50,55 @@ namespace GAPT.Models
         public DateTime DateTimeCreated { get; set; }
     }
 
+    public class CustomerInfoModel
+    {
+        public int AdultAmount { get; set; }
+        public int ChildAmount { get; set; }
+        public decimal AdultTotalPrice { get; set; }
+        public decimal ChildTotalPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public Tour Tour { get; set; }
+        public TourDate TourDate { get; set; }
+        public TourTime TourTime { get; set; }
+        public TourDateTime TourDateTime { get; set; }
+        public List<AdultDetails> AdultDetails { get; set; }
+        public List<ChildDetails> ChildDetails { get; set; }
+    }
+
+    public class AdultDetails
+    {
+        public string Title { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    public class ChildDetails
+    {
+        public string Title { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
+        public int BirthDay { get; set; }
+        public string BirthMonth { get; set; }
+        public int BirthYear { get; set; }
+    }
+
     public class TourpageModel
     {
         public Tour Tour { get; set; }
         public string TourCategory { get; set; }
-        public List<Image> Images {get; set;}
+        public List<Image> Images { get; set; }
         public List<TourDate> TourDates { get; set; }
         public List<TourTime> TourTimes { get; set; }
         public List<TourDateTime> TourDateTimes { get; set; }
         public List<TourTimeTable> TourTimeTables { get; set; }
         public List<Location> TourLocations { get; set; }
         public List<WishList> Wishlists { get; set; }
+        public int AdultAmount { get; set; }
+        public int ChildAmount { get; set; }
+        public int TourDateId { get; set; }
+        public int TourTimeId { get; set; }
+        public DateTime TourDate { get; set; }
+        public string TourTime { get; set; }
     }
 }
