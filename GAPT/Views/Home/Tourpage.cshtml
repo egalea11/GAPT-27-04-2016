@@ -359,8 +359,13 @@
                                     <section class="order-details">
                                         @* Data picker - jquery UI plugin *@
                                         <div class="col-md-4 datepicker centre-block">
-                                            <div id="datepicker"></div>
                                             <div class="space10"></div>
+                                            <p>
+                                                Choose a date:
+                                                <div class="space10"></div>
+                                                <input id="datepicker" placeholder="dd-mm-yyyy" style="text-align: center;"/>
+                                            </p>
+                                            <div class="space30"></div>
                                             <div style="margin-top:6%">
                                                 <span> Time: </span>
                                                 <select id="dropdown" required="required">
@@ -368,6 +373,7 @@
                                                     <option value="12:00">12:00</option>
                                                     <option value="16:30">16:30</option>
                                                 </select>
+                                                <div class="space30"></div>
                                                 @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;"})
                                                 @*style = "visibility:hidden;height:1;width:1",*@ 
                                                 @*"display: none;"*@
@@ -555,36 +561,24 @@
         // calls function for carousel slider
         jssor_1_slider_init();
     </script>
+
+
+    @* disable days in datepicker (JQUERY UI) *@
     <script>
-        //$('#datepicker').datepicker();
+        var unavailableDates = ["9-4-2016", "14-4-2016", "15-4-2016"];
 
-        var disabledDays = ["2016-4-13", "2016-4-14", "2016-4-16", "2016-4-17"];
-        var date = new Date();
-        jQuery(document).ready(function () {
-            $("#datepicker").datepicker({
-                dateFormat: 'yy-mm-dd',
-                beforeShowDay: function (date) {
-                    var m = date.getMonth(), d = date.getDate(), y = date.getFullYear();
-                    for (i = 0; i < disabledDays.length; i++) {
-                        if ($.inArray(y + '-' + (m + 1) + '-' + d, disabledDays) != -1) {
-                            //return [false];
-                            return [true, 'not-available', ''];
-                        }
-                    }
-                    return [true];
-
-                }
-            });
-        });
-        @*if ($('td a') != ) {
-        $('td a').removeClass('ui-state-default').addClass('not-available');
+        function unavailable(date) {
+            dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+            if ($.inArray(dmy, unavailableDates) < 0) {
+                return [true, "", "Book Now"];
+            } else {
+                return [false, "", "Booked Out"];
+            }
         }
-        @foreach (var date in Model.TourDates)
-        {
-            var month = date.DateOfTour.Month-1;
-            var day = date.DateOfTour.Day-1;
-        }*@
+
+        $('#datepicker').datepicker({ beforeShowDay: unavailable });
     </script>
+
     <!--<script src="js/jquery.cookie.js"></script>
     <script src="js/waypoints.min.js"></script>-->
     @*<script src="js/jquery.counterup.min.js"></script>*@
