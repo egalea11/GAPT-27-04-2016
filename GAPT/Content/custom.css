@@ -1409,17 +1409,18 @@ section{
     width: 100%;
 }
 
-.checkbox{
-    margin-left: 0;
-    padding-left: 0;
-}
 .radio label{
     margin-left: -20px;
 }
 
-.checkbox input[type=checkbox]{
+/*.checkbox input[type=checkbox]{
     margin-left: 20px;
 }
+
+.checkbox{
+    margin-left: 0;
+    padding-left: 0;
+}*/
 
 .radio input[type=radio]{
     margin-left: 20px;
