@@ -565,18 +565,20 @@
 
     @* disable days in datepicker (JQUERY UI) *@
     <script>
-        var unavailableDates = ["9-4-2016", "14-4-2016", "15-4-2016"];
+		var jsonObj = {0:"9-4-2016", 1:"14-4-2016", 2:"15-4-2016"};
 
-        function unavailable(date) {
-            dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-            if ($.inArray(dmy, unavailableDates) < 0) {
-                return [true, "", "Book Now"];
-            } else {
-                return [false, "", "Booked Out"];
-            }
-        }
+		var unavailableDates = $.map(jsonObj, function(el) { return el });
 
-        $('#datepicker').datepicker({ beforeShowDay: unavailable });
+		function unavailable(date) {
+		  dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+		  if ($.inArray(dmy, unavailableDates) < 0) {
+			return [false, "", "Unavailable"];
+		  } else {
+			return [true, "", "Available"];
+		  }
+		}
+
+		$('input').datepicker({ beforeShowDay: unavailable });
     </script>
 
     <!--<script src="js/jquery.cookie.js"></script>
