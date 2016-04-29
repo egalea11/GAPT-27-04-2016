@@ -1,1 +1,95 @@
-﻿
+﻿@using GAPT.Models
+@model Review
+
+<script>
+    $(document).ready(function () {
+        var tourId = @Model.TourId;
+
+        $("#login-to-post").click(function () {
+            alert("Please login in order to post a review on this tour.");
+        });
+
+        $(".rating").change(function () {
+            var ratingId = $("fieldset.rating input:checked").val();
+            $("#ratingId").val(ratingId);
+        });
+
+        $("#post-review").click(function(e){
+            var comment = $("#comment").val();
+            var rating = $("#ratingId").val();
+
+            if(comment == "")
+            {
+                alert ("Please fill in the \'Comment\' section.");
+            }
+            else if (rating == "")
+            {
+                alert ("Please give a rating in order to submit review.");
+                //e.preventDefault()
+            }
+            else
+            {
+                var string = tourId + ";" + comment + ";" + $("#ratingId").val();
+                $.post('@Url.Action("InsertReview", "Home")', { review : string }, function (data) {
+                    $("#review-form").hide();
+                    $("#review-posted").show();
+                    $("#comments-section").html(data);
+                });
+            }
+
+        });
+    });
+</script>
+
+<div id="review-form">
+    <div class="order-details">
+        <h4 class="text-uppercase">Leave a comment</h4>
+        @*@using (Html.BeginForm("InsertReview", "Home", FormMethod.Post))
+        {*@
+            @*@Html.TextBoxFor(m => m.TourId, new { id = "tourId", style = "display: none;" })*@
+            <input type="text" name="tourId" id="tourId" style="display: none;" />
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label id="post-content" for="comment">
+                            Comment <span class="required">*</span>
+                        </label>
+                        @*@Html.TextAreaFor(m => m.Comment, new { id = "comment", @class = "form-control", style = "max-width:500px;", rows = "4", required = "required" })*@
+                        <textarea class="form-control" name="comment" id="comment" rows="4" style="max-width:500px;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            @Html.TextBoxFor(m => m.RatingId, new { id = "ratingId", style = "display: none;" })
+            @* star ratings *@
+            <div class="text-center">
+                <fieldset class="rating" name="rating">
+                    <input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5"></label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4"></label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3"></label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2"></label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1"></label>
+                </fieldset>
+            </div>
+
+            <div class="col-md-4 text-center">
+                @using Microsoft.AspNet.Identity
+                @if (Request.IsAuthenticated)
+                {
+                    <button type="button" name="post-review" id="post-review" class="btn btn-template-main"><i class="fa fa-comment-o"></i> Post comment</button>
+                }
+                else
+                {
+                    <button type="button" id="login-to-post" class="btn btn-template-main"><i class="fa fa-comment-o"></i> Post comment</button>
+                }
+            </div>
+
+        @*}*@
+        <div class="space10"></div>
+    </div>
+    <div class="space30"></div>
+    <br />
+    </div>
+<div id="review-posted" hidden>
+    Your review was successfully posted!
+</div>

@@ -515,8 +515,8 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        public ActionResult Reviews(int id)
+        //[HttpPost]
+        public PartialViewResult Reviews(int id)
         {
             var reviews = db.Review.Where(r => r.TourId == id);
             var userIds = reviews.Select(r => r.UserId).ToArray();
@@ -539,13 +539,80 @@ namespace GAPT.Controllers
                 model.Reviews.Add(reviewModel);
             }
 
-            return PartialView("Reviews", model);
+            return PartialView(model);
         }
 
         [AllowAnonymous]
         [HttpPost]
+        public ActionResult ReviewTour(int id)
+        {
+            Review model = new Review() 
+            {
+                TourId = id
+            };
+
+            return PartialView("ReviewTour", model);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult> InsertReview(IEnumerable<string> review) //async Task<ActionResult>
+        {
+            string[] result = review.FirstOrDefault().Split(';');
+            int tourId = Convert.ToInt32(result[0]);
+            var comment = result[1];
+            int? ratingId = null;
+
+            if(result[2] != null && result[2] != "")
+                ratingId = Convert.ToInt32(result[2]);
+
+            if (review != null)
+            {
+                var currentusername = User.Identity.Name;
+                var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
+
+                Review reviewToPost = new Review() 
+                {
+                    TourId = tourId,
+                    Comment = comment,
+                    RatingId = ratingId == null ? 6 : ratingId,
+                    DateTimeCreated = DateTime.Now,
+                    UserId = userid
+                };
+
+                db.Review.Add(reviewToPost);
+                //db.SaveChanges();
+                await db.SaveChangesAsync();
+            }
+
+            var reviews = db.Review.Where(r => r.TourId == tourId);
+            var userIds = reviews.Select(r => r.UserId).ToArray();
+            var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
+            ReviewViewModel model = new ReviewViewModel();
+            model.Reviews = new List<ReviewModel>();
+
+            foreach (var r in reviews)
+            {
+                ReviewModel reviewModel = new ReviewModel()
+                {
+                    Id = r.Id,
+                    RatingId = r.RatingId,
+                    Comment = r.Comment,
+                    DateTimeCreated = r.DateTimeCreated,
+                    TourId = r.TourId,
+                    Username = reviewUsers.Where(u => u.Id == r.UserId).FirstOrDefault().UserName
+                };
+
+                model.Reviews.Add(reviewModel);
+            }
+
+            return PartialView("Reviews", model);
+        }
+                    
+        [AllowAnonymous]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Tourpage(int id, int? places = null)
+        public ActionResult Tourpage(int id)
         {
             //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
@@ -580,8 +647,7 @@ namespace GAPT.Controllers
                 model.Wishlists = currUserWishlist;
             }
 
-            if (places != null)
-                ModelState.AddModelError("error", "There are only " + places + " available. Please reconsider order amount.");
+            //ViewBag.Message = model.Tour.Id;
 
             return View("Tourpage", model);
         }

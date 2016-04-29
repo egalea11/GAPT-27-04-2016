@@ -445,7 +445,6 @@
                                             @using Microsoft.AspNet.Identity
                                             @if (Request.IsAuthenticated)
                                             {
-                                                @Html.ValidationMessage("error")
                                                 <button id="proceed-to-checkout" type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
                                             }
                                             else
@@ -480,10 +479,10 @@
                                 <!-- /.col-md-9 -->
                                 <div class="space30"></div>
                                 @*  Comment form *@
-                                <div class="order-details">
-                                    <h4 class="text-uppercase">Leave a comment</h4>
-
-                                    <form>
+                                @*<div class="order-details">
+                                    <h4 class="text-uppercase">Leave a comment</h4>*@
+                                    @{Html.RenderAction("ReviewTour", new { id = @Model.Tour.Id });}
+                                    @*<form>
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <div class="form-group">
@@ -496,19 +495,14 @@
                                         </div>
 
 
-                                        @* star ratings *@
+                                        star ratings 
                                         <div class="text-center">
                                             <fieldset class="rating">
                                                 <input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5"></label>
-                                                @*<input type="radio" id="star4half" name="rating" value="4 and a half" /><label class="half" for="star4half"></label>*@
                                                 <input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4"></label>
-                                                @*<input type="radio" id="star3half" name="rating" value="3 and a half" /><label class="half" for="star3half"></label>*@
                                                 <input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3"></label>
-                                                @*<input type="radio" id="star2half" name="rating" value="2 and a half" /><label class="half" for="star2half"></label>*@
                                                 <input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2"></label>
-                                                @*<input type="radio" id="star1half" name="rating" value="1 and a half" />*@<label class="half" for="star1half"></label>
                                                 <input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1"></label>
-                                                @*<input type="radio" id="starhalf" name="rating" value="half" />*@<label class="half" for="starhalf"></label>
                                             </fieldset>
                                         </div>
 
@@ -517,11 +511,11 @@
                                         </div>
 
 
-                                    </form>
-                                    <div class="space10"></div>
+                                    </form>*@
+                                    @*<div class="space10"></div>
                                 </div>
                                 <div class="space30"></div>
-                                <br />
+                                <br />*@
 
                                 @* END of comment form *@
 
