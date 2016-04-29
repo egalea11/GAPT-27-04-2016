@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Web.Security;
+using System.Text;
 
 namespace GAPT.Controllers
 {
@@ -298,6 +299,39 @@ namespace GAPT.Controllers
         public ActionResult Payment(CustomerInfoModel model)
         {
             return View();
+        }
+
+        [HttpPost]
+        public string GetJsonDates(IEnumerable<int> tourId) //, IEnumerable<int> tourId    dataType: "json"
+        {
+            if (tourId == null || tourId.Count() == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                Response.StatusCode = 400;
+                Response.End();
+            }
+            var tourDates = db.TourDate.Where(d => d.TourId == tourId.FirstOrDefault() && d.DateOfTour > DateTime.Now).Select(d => d.DateOfTour);
+
+            if (tourDates.Count() == 0)
+                return "false";
+
+            var jsonString = new StringBuilder();
+            jsonString.Append("{\"availableDates\":[");
+
+            for (int i = 0; i < tourDates.Count(); i++)
+            {
+                DateTime temp = new DateTime(tourDates.ElementAt(i).Year, tourDates.ElementAt(i).Month, tourDates.ElementAt(i).Day);
+                string str = temp.ToString("yyyy-MM-dd");
+                if (i == (tourDates.Count()-1))
+                    jsonString.Append("{\"date\":\"" + str + "\"}");
+                else
+                    jsonString.Append("{\"date\":\"" + str + "\"},");
+            }
+
+            jsonString.Append("}]");
+
+            return jsonString.ToString();
         }
 
         [HttpPost]
