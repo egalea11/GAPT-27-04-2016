@@ -20,44 +20,6 @@
         var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
         $("#tour-price").text("€" + currTotalPrice);
 
-        $("#datepicker").load(function () {
-            var gettourId = $("#TourId").val();
-            var tourId = { tourId: gettourId };
-
-            $.ajax({
-                url: "/Home/GetJsonDates",
-                type: "POST",
-                //dataType: "html",
-                data: tourId,
-                //async: false,
-                success: function (jsonString) {
-                    alert(jsonString);
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-        });
-
-        $("#datepicker").change(function () {
-            var gettourId = $("#TourId").val();
-            var tourId = { tourId: gettourId };
-
-            $.ajax({
-                url: "/Home/GetJsonDates",
-                type: "POST",
-                //dataType: "html",
-                data: tourId,
-                //async: false,
-                success: function (jsonString) {
-                    alert(jsonString);
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-        });
-
         $("#adult-amount").click(function () {
             var adultPrice = $("#tour-adult-value").text().split('€');
             var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
@@ -75,18 +37,20 @@
         });
 
         $("#dropdown").change(function () {
-            var selectedDate = $("select#dropdown option:selected").val()
-            if (selectedDate == null || selectedDate == "")
+            var selectedTime = $("select#dropdown option:selected").val()
+            if (selectedTime == null || selectedTime == "")
             {
                 $("#TourTime").val("");
                 return false;
             }
-            $("#TourTime").val(selectedDate).trigger('change');
+            $("#TourTime").val(selectedTime).trigger('change');
         });
 
         $("#TourTime").change(function () {
             var tourId = $("#TourId").val();
-            var tourDate = $("#TourDate").val();
+            //var tourDate = $("#datepicker").val();
+            var tourDate = $('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
+
             var data = tourDate + ":" + tourId;
             var dateOfTour = { tourDate: tourDate + ":" + tourId };
 
@@ -109,17 +73,10 @@
             });
         });
 
-        $("#TourDate").change(function () {
+        $("#datepicker").change(function () {
             var tourId = $("#TourId").val();
-            var tourDate = $("#TourDate").val();
-
-            //var tourDates = Html.Raw(Model.TourDates.Select(t => t.DateOfTour));
-            //if ($.inArray(tourDate, tourDates) == -1)
-            //{
-                //alert("This tour is not scheduled on that date. Please choose another date");
-                //$("#dropdown").empty();
-                //return false;
-            //}
+            //var tourDate = $("#datepicker").val();
+            var tourDate = $('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
 
             var data = tourDate + ":" + tourId;
             var dateOfTour = { tourDate: tourDate + ":" + tourId };
@@ -139,7 +96,8 @@
                         state = false;
                         return false;
                     }
-                    
+                    $("#TourDate").val(tourDate);
+                    $("#TourDate").text(tourDate)
                     $("#dropdown").html(tourTime);
                     var tourTimeSelected = $("select#dropdown option:selected").val();
                     $("#TourTime").val(tourTimeSelected)//.trigger('change');
@@ -176,8 +134,11 @@
 
         var tourId = $("#TourId").val();
         $.post('@Url.Action("GetDateOfTour", "Home")', { tourId: tourId }, function (tourDate) {
-            $("#TourDate").val(tourDate).trigger('change');
-            alert(tourDate);
+            $("#datepicker").val(tourDate).trigger('change');
+            $("#datepicker").text(tourDate)
+            $("#TourDate").val(tourDate);
+            $("#TourDate").text(tourDate)
+            //alert(tourDate);
         });
 
         //$("#TourDate").val("2016-05-30").trigger('change');
@@ -186,12 +147,14 @@
             alert("Please login in order to proceed to check out");
         });
 
+        var maxGroupSize = @Html.Raw(Model.Tour.MaxGroupSize);
+
         setInterval(function () {
             if ($("#TourTime").val() == null || $("#TourTime").val() == "")
             {
                 return false;
             }
-            var dateAndTimeOfTour = { tourDateTime: $("#TourDate").val() + ";" + $("#TourTime").val() + ";" + $("#TourId").val() };
+            var dateAndTimeOfTour = { tourDateTime: $("#datepicker").val() + ";" + $("#TourTime").val() + ";" + $("#TourId").val() };
 
             $.ajax({
                 url: "/Home/GetPlacesAvailable",
@@ -209,6 +172,21 @@
                 }
             });
         }, 60 * 1000);
+
+        $("#proceed-to-checkout").click(function(e){
+            var totalAdultAmount = parseInt($("#adult-amount").val());
+            var totalChildAmount = parseInt($("#children-amount").val());
+            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
+            var placesLeft = parseInt($("#places-available").val());
+
+            //var totalAmount = 
+            if (totalAmount <= placesLeft) {         
+                $("#proceed-to-checkout").submit();
+            } else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
+            }
+        });
     });
 </script>
 
@@ -468,7 +446,7 @@
                                             @if (Request.IsAuthenticated)
                                             {
                                                 @Html.ValidationMessage("error")
-                                                <button type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
+                                                <button id="proceed-to-checkout" type="submit" class="col-md-5 btn btn-default order-btn center-block" style="margin-bottom: 1em;">Proceed to Checkout<i class="fa fa-chevron-right"></i></button>
                                             }
                                             else
                                             {
@@ -591,10 +569,41 @@
     <script>
 		var jsonObj = {0:"9-4-2016", 1:"14-4-2016", 2:"15-4-2016"};
 
-		var unavailableDates = $.map(jsonObj, function(el) { return el });
+		//var unavailableDates = $.map(jsonObj, function(el) { return el });
+		var gettourId = @Model.Tour.Id;
+		//var gettourId = $("#TourId").val();
+        var tourId = { tourId: gettourId };
+        var unavailableDates = $.map(jsonObj, function(el) { return el });
+
+		$.ajax({
+		    url: "/Home/GetJsonDates",
+		    type: "POST",
+		    //dataType: "json",
+		    data: tourId,
+		    async: false,
+		    success: function (jsonData) {
+		        unavailableDates = $.map(jsonData, function(el) { return el });
+		        //alert(jsonData);
+		    },
+		    error: function () {
+		        alert("error");
+		    }
+		});
 
 		function unavailable(date) {
-		  dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+		    var month = "";
+		    var day = "";
+		    if ((date.getMonth() + 1) < 10)
+		        month = "0" + (date.getMonth() + 1);
+		    else
+		        month = date.getMonth() + 1
+		    if (date.getDate() < 10)
+		        day = "0" + date.getDate();
+		    else
+		        day = date.getDate();
+		    dmy = date.getFullYear() + "-" + month + "-" + day;
+		    //dmy = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+		  //dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
 		  if ($.inArray(dmy, unavailableDates) < 0) {
 			return [false, "", "Unavailable"];
 		  } else {
@@ -602,7 +611,7 @@
 		  }
 		}
 
-		$('input').datepicker({ beforeShowDay: unavailable });
+		$('#datepicker').datepicker({ beforeShowDay: unavailable });
     </script>
 
     <!--<script src="js/jquery.cookie.js"></script>

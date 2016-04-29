@@ -302,7 +302,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetJsonDates(IEnumerable<int> tourId) //, IEnumerable<int> tourId    dataType: "json"
+        public JsonResult GetJsonDates(IEnumerable<int> tourId)
         {
             if (tourId == null || tourId.Count() == 0)
             {
@@ -317,28 +317,17 @@ namespace GAPT.Controllers
                 return null;
 
             var jsonString = new StringBuilder();
-            //jsonString.Append("{\"availableDates\":[");
+            List<string> dates = new List<string>();
 
             for (int i = 0; i < tourDates.Count(); i++)
             {
                 var tempDate = tourDates[i];
                 DateTime temp = new DateTime(tempDate.Year, tempDate.Month, tempDate.Day);
                 string str = temp.ToString("yyyy-MM-dd");
-                if (i == 0 && i != (tourDates.Count() - 1))
-                    jsonString.Append("[\"" + str + "\",");
-                else if (i == 0 && i == (tourDates.Count() - 1))
-                    jsonString.Append("[\"" + str + "\"]");
-                else if (i == (tourDates.Count()-1))
-                    jsonString.Append("\"" + str + "\"]");
-                else
-                    jsonString.Append("\"" + str + "\",");
+                dates.Add(str);
             }
 
-            return this.Json(tourDates, JsonRequestBehavior.AllowGet);
-
-            //jsonString.Append("}]");
-
-            //return jsonString.ToString();
+            return this.Json(dates, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -355,7 +344,14 @@ namespace GAPT.Controllers
             decimal totalAdultPrice = model.AdultAmount * tourDetails.AdultPrice;
             decimal totalChildPrice = model.ChildAmount * tourDetails.ChildPrice;
             decimal totalPrice = totalAdultPrice + totalChildPrice;
-            var tourDate = db.TourDate.Where(t => t.TourId == model.Tour.Id && t.DateOfTour == model.TourDate).FirstOrDefault();
+
+            DateTime temp = Convert.ToDateTime(model.TourDate);
+            string Temp = temp.Date.ToShortDateString();
+            string fromFormat = "MM/dd/yyyy";
+            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+
+            var tourDate = db.TourDate.Where(t => t.TourId == model.Tour.Id && t.DateOfTour == DateOfTour).FirstOrDefault();
+            
             string[] times = model.TourTime.Split('-');
             string startTime = times[0];
             string endTime = times[1];
@@ -363,32 +359,6 @@ namespace GAPT.Controllers
             var tourDateTime = db.TourDateTime.Where(t => t.TourDateId == tourDate.Id && t.TourTimeId == tourTime.Id).FirstOrDefault();
             var tourLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
             var tourLocationName = db.Location.Where(l => l.Id == tourLocationId).FirstOrDefault().Name;
-
-            // check if there are any available places left
-
-            int maxTourGroupSize = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault().MaxGroupSize;
-            var tourDateId = tourDate.Id;
-            var tourTimeId = tourTime.Id;
-            var tourDateTimeId = tourDateTime.Id;
-            var orders = db.Order.Where(o => o.TourDateTimeId == tourDateTimeId).ToList();
-
-            int totalAdultAmount = 0;
-            int totalChildAmount = 0;
-            foreach (var order in orders)
-            {
-                totalAdultAmount = totalAdultAmount + order.AdultQuantity;
-                totalChildAmount = totalChildAmount + order.ChildQuantity;
-            }
-
-            int totalGroupSize = totalAdultAmount + totalChildAmount;
-            int placesLeft = maxTourGroupSize - totalGroupSize;
-
-            //if (placesLeft <= 0)
-            //    return RedirectToAction("Tourpage", "Home", new { id = model.Tour.Id, places = placesLeft});
-            //if ((placesLeft - model.ChildAmount - model.AdultAmount) <= 0)
-            //    return RedirectToAction("Tourpage", "Home", new { id = model.Tour.Id, places = placesLeft });
-
-            // if there are enough places left continue
 
             CustomerInfoModel customerModel = new CustomerInfoModel()
             {
@@ -445,7 +415,7 @@ namespace GAPT.Controllers
             }
             var tourDate = db.TourDate.Where(d => d.TourId == tourId.FirstOrDefault() && d.DateOfTour > DateTime.Now).FirstOrDefault().DateOfTour;
             DateTime temp = new DateTime(tourDate.Year, tourDate.Month, tourDate.Day);
-            string str = temp.ToString("yyyy-MM-dd");
+            string str = temp.ToString("MM/dd/yyyy");
 
             return str;
         }
@@ -463,7 +433,12 @@ namespace GAPT.Controllers
 
             string[] TourDateAndId = tourDate.FirstOrDefault().Split(':');
             int tourId = Convert.ToInt32(TourDateAndId[1]);
-            DateTime DateOfTour = Convert.ToDateTime(TourDateAndId[0]);
+
+            DateTime temp = Convert.ToDateTime(TourDateAndId[0]);
+            string Temp = temp.ToShortDateString();
+            string fromFormat = "MM/dd/yyyy";
+            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+
             var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault();
 
             if (tourDateId == null)
@@ -500,7 +475,12 @@ namespace GAPT.Controllers
 
             string[] TourDateAndTimeAndId = tourDateTime.FirstOrDefault().Split(';');
             int tourId = Convert.ToInt32(TourDateAndTimeAndId[2]);
-            DateTime DateOfTour = Convert.ToDateTime(TourDateAndTimeAndId[0]);
+
+            DateTime temp = Convert.ToDateTime(TourDateAndTimeAndId[0]);
+            string Temp = temp.ToShortDateString();
+            string fromFormat = "MM/dd/yyyy";
+            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+
             string[] stringTime = TourDateAndTimeAndId[1].Split('-');
             string startTime = stringTime[0];
             string endTime = stringTime[1];
