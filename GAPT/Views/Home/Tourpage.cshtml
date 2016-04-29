@@ -20,6 +20,44 @@
         var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
         $("#tour-price").text("€" + currTotalPrice);
 
+        $("#datepicker").load(function () {
+            var gettourId = $("#TourId").val();
+            var tourId = { tourId: gettourId };
+
+            $.ajax({
+                url: "/Home/GetJsonDates",
+                type: "POST",
+                //dataType: "html",
+                data: tourId,
+                //async: false,
+                success: function (jsonString) {
+                    alert(jsonString);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+        $("#datepicker").change(function () {
+            var gettourId = $("#TourId").val();
+            var tourId = { tourId: gettourId };
+
+            $.ajax({
+                url: "/Home/GetJsonDates",
+                type: "POST",
+                //dataType: "html",
+                data: tourId,
+                //async: false,
+                success: function (jsonString) {
+                    alert(jsonString);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
         $("#adult-amount").click(function () {
             var adultPrice = $("#tour-adult-value").text().split('€');
             var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
@@ -320,8 +358,6 @@
                                         <p id="tour-desc"> <b>Description:</b>@Model.Tour.LongDescription</p>
                                         <div id="tour-category">
                                             <span class="center-block">@Model.TourCategory</span>
-                                            @*<span class="center-block"> leisure </span>
-                                            <span class="center-block"> historical </span>*@
                                         </div>
                                         @* star ratings *@
                                         <div class="space30"></div>
@@ -341,11 +377,6 @@
                                                     <div class="fa fa-star-o"></div>
                                                 }
                                             }
-                                            @*<div class="fa fa-star"></div>
-                                            <div class="fa fa-star"></div>
-                                            <div class="fa fa-star"></div>
-                                            <div class="fa fa-star-o"></div>
-                                            <div class="fa fa-star-o"></div>*@
                                         </div>
                                     </div>
                                 </div>
@@ -375,8 +406,6 @@
                                                 </select>
                                                 <div class="space30"></div>
                                                 @Html.TextBoxFor(m => m.TourTime, new { id = "TourTime", style = "display: none;"})
-                                                @*style = "visibility:hidden;height:1;width:1",*@ 
-                                                @*"display: none;"*@
                                             </div>
                                             <div>
                                                 <span> Places left: </span><span id="places-available"></span>
@@ -397,11 +426,7 @@
                                                     <td id="tour-adult-value" class="tour-value"> €@Model.Tour.AdultPrice </td>
                                                     <td>
                                                         @Html.TextBoxFor(m => m.AdultAmount, new { id = "adult-amount", @type = "number", min = "1", max = "100", @value = "1" })
-                                                        @*<input id="adult-amount" type="number" min="1" max="100" value="1">*@
                                                     </td>
-                                                    @*<td>
-                                                        @Html.TextAreaFor(m => m.AdultTotalPrice, new { id = "total-adult" })
-                                                    </td>*@
                                                     <td id="total-adult"></td>
                                                 </tr>
                                                 <tr>
@@ -409,7 +434,6 @@
                                                     <td id="tour-children-value" class="tour-value"> €@Model.Tour.ChildPrice </td>
                                                     <td>
                                                         @Html.TextBoxFor(m => m.ChildAmount, new { id = "children-amount", @type = "number", min = "0", max = "100", @value = "1" })
-                                                        @*<input id="children-amount" type="number" min="0" max="100" value="1">*@
                                                     </td>
                                                     <td id="total-child"></td>
                                                 </tr>

@@ -302,7 +302,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public string GetJsonDates(IEnumerable<int> tourId) //, IEnumerable<int> tourId    dataType: "json"
+        public JsonResult GetJsonDates(IEnumerable<int> tourId) //, IEnumerable<int> tourId    dataType: "json"
         {
             if (tourId == null || tourId.Count() == 0)
             {
@@ -311,27 +311,34 @@ namespace GAPT.Controllers
                 Response.StatusCode = 400;
                 Response.End();
             }
-            var tourDates = db.TourDate.Where(d => d.TourId == tourId.FirstOrDefault() && d.DateOfTour > DateTime.Now).Select(d => d.DateOfTour);
+            var tourDates = db.TourDate.Where(d => d.TourId == tourId.FirstOrDefault() && d.DateOfTour > DateTime.Now).Select(d => d.DateOfTour).ToArray();
 
-            if (tourDates.Count() == 0)
-                return "false";
+            if (tourDates == null || tourDates.Count() == 0)
+                return null;
 
             var jsonString = new StringBuilder();
-            jsonString.Append("{\"availableDates\":[");
+            //jsonString.Append("{\"availableDates\":[");
 
             for (int i = 0; i < tourDates.Count(); i++)
             {
-                DateTime temp = new DateTime(tourDates.ElementAt(i).Year, tourDates.ElementAt(i).Month, tourDates.ElementAt(i).Day);
+                var tempDate = tourDates[i];
+                DateTime temp = new DateTime(tempDate.Year, tempDate.Month, tempDate.Day);
                 string str = temp.ToString("yyyy-MM-dd");
-                if (i == (tourDates.Count()-1))
-                    jsonString.Append("{\"date\":\"" + str + "\"}");
+                if (i == 0 && i != (tourDates.Count() - 1))
+                    jsonString.Append("[\"" + str + "\",");
+                else if (i == 0 && i == (tourDates.Count() - 1))
+                    jsonString.Append("[\"" + str + "\"]");
+                else if (i == (tourDates.Count()-1))
+                    jsonString.Append("\"" + str + "\"]");
                 else
-                    jsonString.Append("{\"date\":\"" + str + "\"},");
+                    jsonString.Append("\"" + str + "\",");
             }
 
-            jsonString.Append("}]");
+            return this.Json(tourDates, JsonRequestBehavior.AllowGet);
 
-            return jsonString.ToString();
+            //jsonString.Append("}]");
+
+            //return jsonString.ToString();
         }
 
         [HttpPost]
