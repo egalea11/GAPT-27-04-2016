@@ -434,10 +434,10 @@ namespace GAPT.Controllers
             string[] TourDateAndId = tourDate.FirstOrDefault().Split(':');
             int tourId = Convert.ToInt32(TourDateAndId[1]);
 
-            DateTime temp = Convert.ToDateTime(TourDateAndId[0]);
-            string Temp = temp.ToShortDateString();
+            //DateTime temp = Convert.ToDateTime(TourDateAndId[0]);
+            //string Temp = temp.ToShortDateString();
             string fromFormat = "MM/dd/yyyy";
-            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+            DateTime DateOfTour = DateTime.ParseExact(TourDateAndId[0], fromFormat, CultureInfo.InvariantCulture);
 
             var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault();
 
@@ -476,10 +476,10 @@ namespace GAPT.Controllers
             string[] TourDateAndTimeAndId = tourDateTime.FirstOrDefault().Split(';');
             int tourId = Convert.ToInt32(TourDateAndTimeAndId[2]);
 
-            DateTime temp = Convert.ToDateTime(TourDateAndTimeAndId[0]);
-            string Temp = temp.ToShortDateString();
+            //DateTime temp = Convert.ToDateTime(TourDateAndTimeAndId[0]);
+            //string Temp = temp.ToShortDateString();
             string fromFormat = "MM/dd/yyyy";
-            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+            DateTime DateOfTour = DateTime.ParseExact(TourDateAndTimeAndId[0], fromFormat, CultureInfo.InvariantCulture);
 
             string[] stringTime = TourDateAndTimeAndId[1].Split('-');
             string startTime = stringTime[0];

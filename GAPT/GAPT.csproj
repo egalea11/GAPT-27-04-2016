@@ -530,6 +530,7 @@
     <Content Include="Views\Manage\HomeCategDropDown.cshtml" />
     <Content Include="Views\Manage\ChangePersonalDetails.cshtml" />
     <Content Include="Views\Home\Reviews.cshtml" />
+    <Content Include="Views\Home\ReviewTour.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
