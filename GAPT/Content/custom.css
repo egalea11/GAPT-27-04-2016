@@ -105,10 +105,6 @@
     color: white;
 }
 
-.form-group{
-    color: white;
-}*/
-
 .contact-text{
     color: dimgray;
 }
@@ -1404,27 +1400,10 @@ section{
     border-style: dashed;
 }
 
-.form-group input{
+/*.form-group input{
     max-width: 350px;
     width: 100%;
-}
-
-.radio label{
-    margin-left: -20px;
-}
-
-/*.checkbox input[type=checkbox]{
-    margin-left: 20px;
-}
-
-.checkbox{
-    margin-left: 0;
-    padding-left: 0;
 }*/
-
-.radio input[type=radio]{
-    margin-left: 20px;
-}
 
 #star-ratings{
     text-align: center;
@@ -1539,7 +1518,28 @@ td, th{
 
 
 .userAccountStyle {
-    position: fixed;
+    position: relative;
     padding-left: 30px;
     margin-top: 20px;
+}
+
+/* navigation buttons */
+
+.navbar ul.nav > li > a:hover {
+    border-top: solid 3px #da4d4d;
+    border-bottom: solid 3px #a06161;
+    border-radius: 50px;
+    background-color: #fff;
+}
+
+.navbar ul.nav > li.active > a, .navbar ul.nav > li.open > a {
+    text-decoration: none !important;
+    border-top: solid 3px #da4d4d;
+    border-bottom: solid 3px #da4d4d;
+}
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    background-color: #da4d4d;
+    border-radius: 50px;
+    color: #ffffff;
 }
