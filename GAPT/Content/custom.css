@@ -1295,7 +1295,6 @@ h1, h2, h3, h4, h5, h6 {
         border: inset;
         border-color: #eaeaea;
         border-radius: 25px;
-        /*box-shadow: 1em 1em grey;*/
     }
 }
 
@@ -1303,6 +1302,7 @@ h1, h2, h3, h4, h5, h6 {
     background: #fff;
     margin: 0 0 30px;
     padding: 20px 0;
+    border: none;
 }
 
 @media (min-width: 991px) {
@@ -1542,4 +1542,8 @@ td, th{
     background-color: #da4d4d;
     border-radius: 50px;
     color: #ffffff;
+}
+
+.checkbox label, .radio label {
+    padding-left: 0; 
 }
