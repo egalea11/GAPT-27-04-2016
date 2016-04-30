@@ -463,6 +463,50 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
+        public int GetPlacesAvailableCustomerInfo(IEnumerable<string> tourDateTime)
+        {
+            if (tourDateTime == null || tourDateTime.Count() == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                Response.StatusCode = 400;
+                Response.End();
+            }
+
+            string[] TourDateAndTimeAndId = tourDateTime.FirstOrDefault().Split(';');
+            int tourId = Convert.ToInt32(TourDateAndTimeAndId[2]);
+
+            //DateTime temp = Convert.ToDateTime(TourDateAndTimeAndId[0]);
+            //string Temp = temp.ToShortDateString();
+            //string fromFormat = "MM/dd/yyyy";
+            string fromFormat = "dd/MM/yyyy";
+            DateTime DateOfTour = DateTime.ParseExact(TourDateAndTimeAndId[0], fromFormat, CultureInfo.InvariantCulture);
+
+            string[] stringTime = TourDateAndTimeAndId[1].Split('-');
+            string startTime = stringTime[0];
+            string endTime = stringTime[1];
+            int maxTourGroupSize = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().MaxGroupSize;
+
+            var tourDateId = db.TourDate.Where(d => d.TourId == tourId && d.DateOfTour == DateOfTour).FirstOrDefault().Id;
+            var tourTimeIds = db.TourTime.Where(t => t.TourId == tourId && t.StartTime == startTime && t.EndTime == endTime).ToList().Select(t => t.Id).ToArray();
+            var tourDateTimeIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId && tourTimeIds.Contains(dt.TourTimeId)).ToList().Select(t => t.Id).ToArray();
+            var orders = db.Order.Where(o => tourDateTimeIds.Contains(o.TourDateTimeId)).ToList();
+
+            int totalAdultAmount = 0;
+            int totalChildAmount = 0;
+            foreach (var order in orders)
+            {
+                totalAdultAmount = totalAdultAmount + order.AdultQuantity;
+                totalChildAmount = totalChildAmount + order.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount;
+            int placesLeft = maxTourGroupSize - totalGroupSize;
+
+            return placesLeft;
+        }
+
+        [HttpPost]
         public int GetPlacesAvailable(IEnumerable<string> tourDateTime)
         {
             if (tourDateTime == null || tourDateTime.Count() == 0)

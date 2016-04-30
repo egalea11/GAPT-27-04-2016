@@ -7,16 +7,6 @@
 }
 <script>
     $(document).ready(function () {
-        //$("#DateAndTime").load(function () {
-        //    var DateAndTime = $("#DateAndTime").text().split(' ');
-        //    //var DateAndTime = document.getElementById("DateAndTime").innerHTML.split(' ');
-        //    var TourDate = DateAndTime[0];
-        //    var TourTime = DateAndTime[1];
-        //    $("#DateTimeTourDate").text(TourDate);
-        //    $("#StringTourTime").text(TourTime);
-        //    $("#DateTimeTourDate").val(TourDate);
-        //    $("#StringTourTime").val(TourTime);
-        //});
 
         var tourId = @Model.Tour.Id;
         $("#TourId").val(tourId);
@@ -25,28 +15,48 @@
         $(".adultTitle").val("Mr");
         $(".childTitle").val("Master");
 
+        var DateAndTime = $("#DateAndTime").text().split(' ');
+        var TourDate = DateAndTime[0];
+        var TourTime = DateAndTime[1];
+
+        var dateAndTimeOfTour = { tourDateTime: TourDate + ";" + TourTime + ";" + tourId };
+
+        $.ajax({
+            url: "/Home/GetPlacesAvailableCustomerInfo",
+            type: "POST",
+            //dataType: "html",
+            data: dateAndTimeOfTour,
+            //async: false,
+            success: function (places) {
+                $("#places-available").val(places);
+                $("#places-available").text(places);
+                //alert("places available " + places);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
         $("#login-to-buy").click(function () {
             alert("Please login in order to proceed to check out");
         });
 
         setInterval(function () {
             var DateAndTime = $("#DateAndTime").text().split(' ');
-            //var DateAndTime = document.getElementById("DateAndTime").innerHTML.split(' ');
             var TourDate = DateAndTime[0];
             var TourTime = DateAndTime[1];
-            //$("#DateTimeTourDate").text(TourDate);
-            //$("#StringTourTime").text(TourTime);
-            //$("#DateTimeTourDate").val(TourDate);
-            //$("#StringTourTime").val(TourTime);
+
             var dateAndTimeOfTour = { tourDateTime: TourDate + ";" + TourTime + ";" + $("#TourId").val() };
 
             $.ajax({
-                url: "/Home/GetPlacesAvailable",
+                url: "/Home/GetPlacesAvailableCustomerInfo",
                 type: "POST",
                 //dataType: "html",
                 data: dateAndTimeOfTour,
                 //async: false,
                 success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
                     //alert("places available " + places);
                 },
                 error: function () {
@@ -54,6 +64,21 @@
                 }
             });
         }, 60 * 1000);
+
+        $("#Payment").click(function(e){
+            var totalAdultAmount = parseInt($("#adult-amount").val());
+            var totalChildAmount = parseInt($("#child-amount").val());
+            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
+            var placesLeft = parseInt($("#places-available").val());
+
+            //var totalAmount = 
+            if (totalAmount <= placesLeft) {         
+                $("#Payment").submit();
+            } else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
+            }
+        });
     });
 </script>
 <script>
@@ -385,6 +410,9 @@
                         <a href="#" style="display:block">@Model.Tour.Name</a>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p id="DateAndTime" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime-@Model.TourTime.EndTime</p>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@Model.TourStartingLocation</span></p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Adult Amount:</p><p id="adult-amount" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.AdultAmount</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Child Amount:</p><p id="child-amount" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.ChildAmount</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Places Available:</p><p id="places-available" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block"></p>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
