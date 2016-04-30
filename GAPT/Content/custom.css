@@ -105,10 +105,6 @@
     color: white;
 }
 
-.form-group{
-    color: white;
-}*/
-
 .contact-text{
     color: dimgray;
 }
@@ -1256,9 +1252,17 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   z-index: 1000;
   min-height: 50px;
-  margin-bottom: 20px;
-  border: 1px solid transparent;
   background: white;
+}
+
+.navbar-affixed-top.affix {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
 }
 
 .slim-page{
@@ -1299,7 +1303,6 @@ h1, h2, h3, h4, h5, h6 {
         border: inset;
         border-color: #eaeaea;
         border-radius: 25px;
-        /*box-shadow: 1em 1em grey;*/
     }
 }
 
@@ -1307,6 +1310,7 @@ h1, h2, h3, h4, h5, h6 {
     background: #fff;
     margin: 0 0 30px;
     padding: 20px 0;
+    border: none;
 }
 
 @media (min-width: 991px) {
@@ -1404,27 +1408,10 @@ section{
     border-style: dashed;
 }
 
-.form-group input{
+/*.form-group input{
     max-width: 350px;
     width: 100%;
-}
-
-.radio label{
-    margin-left: -20px;
-}
-
-/*.checkbox input[type=checkbox]{
-    margin-left: 20px;
-}
-
-.checkbox{
-    margin-left: 0;
-    padding-left: 0;
 }*/
-
-.radio input[type=radio]{
-    margin-left: 20px;
-}
 
 #star-ratings{
     text-align: center;
@@ -1535,4 +1522,47 @@ td, th{
     border: 1px solid #dad55e;
     background: #fffa90;
     color: #777620;
+}
+
+
+.userAccountStyle {
+    position: relative;
+    padding-left: 30px;
+    margin-top: 20px;
+}
+
+/* navigation buttons */
+
+.navbar ul.nav > li > a:hover {
+    border-top: solid 3px #da4d4d;
+    border-bottom: solid 3px #a06161;
+    border-radius: 50px;
+    background-color: #fff;
+}
+
+.navbar ul.nav > li.active > a, .navbar ul.nav > li.open > a {
+    text-decoration: none !important;
+    border-top: solid 3px #da4d4d;
+    border-bottom: solid 3px #da4d4d;
+}
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    background-color: #da4d4d;
+    border-radius: 50px;
+    color: #ffffff;
+}
+
+.checkbox label, .radio label {
+    padding-left: 0; 
+}
+
+.btn-search{
+    background: #DA4D4D;
+    color: white;
+}
+
+.navbar #search {
+    clear: both;
+    border-top: solid 3px #da4d4d;
+    text-align: right;
 }

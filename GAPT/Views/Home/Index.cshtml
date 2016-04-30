@@ -159,22 +159,7 @@
     <form method="get" action="@Url.Action("Search","Home")" onSubmit="return validatesearchcarousel()">
         <div class="search-area" style="box-shadow:none">
             <div class="search-box" style="box-shadow: 0 0 2em black;">
-                    <input type="text" class="hidden-sm hidden-xs search-text" id="tourname" placeholder="Search Tour" size="100">
-                
-                </div>
-            <div class="dropdown hidden-sm hidden-xs">
-                <!--<span class="btn btn-primary dropdown-toggle" style="background-color:#da4d4d;font-size:12px;height:35px;width:170px;">-->
-                <select class="search-dropdown" id="category">
-                    <option value="default" selected="selected" style="font-size:15px;">All Categories</option>
-                    <option value="art" style="font-size:15px">Art and Exhibition</option>
-                    <option value="history" style="font-size:15px">History</option>
-                    <option value="stage" style="font-size:15px">Stage</option>
-                    <option value="festivals" style="font-size:15px">Festivals and Events</option>
-                    <option value="day-tours" style="font-size:15px">Day Tours</option>
-                    <option value="leisure" style="font-size:15px">Leisure</option>
-                    <option value="family" style="font-size:15px">Family</option>
-                </select>
-                <!--</span>-->
+                <input type="text" class="hidden-sm hidden-xs search-text" id="tourname" placeholder="Search Tour" size="100">    
             </div>
             <div style="padding-left:20px;">
                 <a href="@Url.Action("Search","Home")" style="text-decoration:none"><input type="submit" class="search-button hidden-sm hidden-xs" value="Search" style="width:82px; text-decoration:none" /></a>
@@ -186,9 +171,9 @@
         //If the form value is "" (nothing)
             if (document.getElementById("tourname").value == "" && (document.getElementById("category").value == ("default")) ) {
                  return false; //Stop the form from submitting
-        }
+            }
                 return true;
-        }
+            }
         </script>
        
          <!--bullet navigator item prototype-->
@@ -223,7 +208,7 @@
                                         
                                             <img src="~/Images/rsz_mdina.jpg" class="img-responsive" alt="">
                                        
-                                        <div class="valignmiddle item-overlay2" style="position: absolute; top: 50%; left: 0px; width: 100%; margin-top: -204px;">
+                                        <div class="item-overlay2" style="position: relative; top: 50%; left: 0px; width: 100%; margin-top: -204px;">
                                             <div class="item-overlay2a" style="margin-top:90px">
                                                 <h4 style="margin-top:0px"><span>mdina</span>Discover the maltese History</h4>
                                                 <p style="margin-bottom:130px;"><a href="#">See More <i class="fa fa-angle-right"></i></a></p>
