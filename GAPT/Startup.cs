@@ -13,7 +13,7 @@ namespace GAPT
         SmsReminder smsReminder = new SmsReminder();
         public void Configuration(IAppBuilder app)
         {
-            //ConfigureAuth(app);
+            ConfigureAuth(app);
 
             GlobalConfiguration.Configuration.UseSqlServerStorage("ConnectionString");
             JobStorage.Current = new SqlServerStorage("ConnectionString");
