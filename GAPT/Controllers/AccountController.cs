@@ -168,7 +168,7 @@ namespace GAPT.Controllers
             }
             if (ModelState.IsValid)
             {
-                int month = DateTime.ParseExact(model.BirthMonth.ToString(), "MMMM", CultureInfo.CurrentCulture).Month;
+                int month = DateTime.ParseExact(model.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
                 DateTime birthDate = new DateTime(model.BirthYear, month, model.BirthDay);
                 var user = new ApplicationUser { Email = model.Email, UserName = model.UserName, Name = model.Name, Surname = model.Surname, BirthDate = birthDate, Country = model.Country, PhoneNumber = model.NumberPrefix + " " + model.PhoneNumber };
                 var result = await UserManager.CreateAsync(user, model.Password);
