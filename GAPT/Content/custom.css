@@ -1252,9 +1252,17 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   z-index: 1000;
   min-height: 50px;
-  margin-bottom: 20px;
-  border: 1px solid transparent;
   background: white;
+}
+
+.navbar-affixed-top.affix {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
 }
 
 .slim-page{
@@ -1546,4 +1554,15 @@ td, th{
 
 .checkbox label, .radio label {
     padding-left: 0; 
+}
+
+.btn-search{
+    background: #DA4D4D;
+    color: white;
+}
+
+.navbar #search {
+    clear: both;
+    border-top: solid 3px #da4d4d;
+    text-align: right;
 }
