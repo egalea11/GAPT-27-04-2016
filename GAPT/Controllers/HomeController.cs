@@ -25,6 +25,13 @@ namespace GAPT.Controllers
         List<ViewModelTour> ViewAllTours = new List<ViewModelTour>();
         public List<Tour> AllTours = new List<Tour>();
 
+        public JsonResult GetTours(string term)
+        {
+            List<string> tours;
+            tours = db.Tour.Where(t => t.Name.Contains(term)).Select(x => x.Name).ToList();
+            return Json(tours, JsonRequestBehavior.AllowGet);
+        }
+
         public void GetCategAttrTours()
         {
             try
