@@ -66,8 +66,8 @@
         }, 60 * 1000);
 
         $("#Payment").click(function(e){
-            var totalAdultAmount = parseInt($("#adult-amount").val());
-            var totalChildAmount = parseInt($("#child-amount").val());
+            var totalAdultAmount = parseInt($("#adult-amount").text());
+            var totalChildAmount = parseInt($("#child-amount").text());
             var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
             var placesLeft = parseInt($("#places-available").val());
 
