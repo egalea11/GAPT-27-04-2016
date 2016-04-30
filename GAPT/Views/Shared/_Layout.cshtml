@@ -187,7 +187,7 @@ function googleTranslateElementInit() {
                             @using Microsoft.AspNet.Identity
                             @if (Request.IsAuthenticated)
                             {
-                                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                                using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-left" }))
                                 {
                                     @Html.AntiForgeryToken()
 
@@ -198,7 +198,7 @@ function googleTranslateElementInit() {
                                         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                                     </ul>*@
 
-                                    <div align="right" class="log-in-checkout hidden-sm hidden-xs text-uppercase pull-right" id="left-nav" style="margin-top:11%   ;margin-right: -49px;">
+                                    <div id="left-nav" class="log-in-checkout hidden-sm hidden-xs text-uppercase pull-left userAccountStyle" align="left">
                                        @Html.ActionLink("Hi " + User.Identity.GetUserName() + "!", "MyAccount", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
                                         <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
 

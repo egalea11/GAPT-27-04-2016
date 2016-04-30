@@ -1536,3 +1536,10 @@ td, th{
     background: #fffa90;
     color: #777620;
 }
+
+
+.userAccountStyle {
+    position: fixed;
+    padding-left: 30px;
+    margin-top: 20px;
+}
