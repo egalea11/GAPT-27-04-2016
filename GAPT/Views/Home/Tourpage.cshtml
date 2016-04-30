@@ -28,7 +28,33 @@
             $("#tour-price").text("€" + AdultPriceChangedTotal);
         });
 
+        $("#adult-amount").keyup(function () {
+            var adultAmount = $("#adult-amount").val();
+            if (adultAmount == "" || adultAmount == "0")
+            {
+                $("#adult-amount").val("1");
+            }
+            var adultPrice = $("#tour-adult-value").text().split('€');
+            var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
+            $("#total-adult").text("€" + totalAdultPrice);
+            var AdultPriceChangedTotal = +$("#total-child").text().split('€')[1] + totalAdultPrice;
+            $("#tour-price").text("€" + AdultPriceChangedTotal);
+        });
+
         $("#children-amount").click(function () {
+            var childPrice = $("#tour-children-value").text().split('€');
+            var totalChildPrice = childPrice[1] * $("#children-amount").val();
+            $("#total-child").text("€" + totalChildPrice);
+            var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
+            $("#tour-price").text("€" + ChildPriceChangedTotal);
+        });
+
+        $("#children-amount").keyup(function () {
+            var adultAmount = $("#children-amount").val();
+            if (adultAmount == "")
+            {
+                $("#children-amount").val("1");
+            }
             var childPrice = $("#tour-children-value").text().split('€');
             var totalChildPrice = childPrice[1] * $("#children-amount").val();
             $("#total-child").text("€" + totalChildPrice);
@@ -339,7 +365,7 @@
                                         </div>
                                         @* star ratings *@
                                         <div class="space30"></div>
-                                        @{Html.RenderAction("TourpageAverageRating", "Home", new { ratingId = Model.Tour.AverageRatingId });}
+                                        @{Html.RenderAction("TourpageAverageRating", "Home", new { tourId = Model.Tour.Id });}
                                     </div>
                                 </div>
                                 <div class="space30"></div>
@@ -387,7 +413,7 @@
                                                     <td> Adults: </td>
                                                     <td id="tour-adult-value" class="tour-value"> €@Model.Tour.AdultPrice </td>
                                                     <td>
-                                                        @Html.TextBoxFor(m => m.AdultAmount, new { id = "adult-amount", @type = "number", min = "1", max = "100", @value = "1" })
+                                                        @Html.TextBoxFor(m => m.AdultAmount, new { id = "adult-amount", @type = "number", min = "1", max = "100", @value = "1"})
                                                     </td>
                                                     <td id="total-adult"></td>
                                                 </tr>

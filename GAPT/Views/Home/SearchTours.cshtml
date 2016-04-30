@@ -90,7 +90,8 @@
                             @*<h2><a href="Url.Action("Tourpage", "Home", new { id = tour.Id })" style="font-size:75%">@tour.Name</a></h2>*@
                             @*<h2>@Html.ActionLink(tour.Name, "Tourpage", new { id = tour.Id }, null)</h2>*@
                             <div class="clearfix">
-                                @if (tour.AverageRatingId == 6)
+                                @{Html.RenderAction("SearchToursAverageRating", "Home", new { tourId = tour.Id });}
+                                @*@if (tour.AverageRatingId == 6)
                                 {
                                     <p class="author-category">
                                         <h5>This tour is not rated yet.</h5>
@@ -108,7 +109,7 @@
                                             <i class="fa fa-star-o"></i>
                                         }
                                     </p>
-                                }
+                                }*@
 
                             </div>
                             <p class="intro">

@@ -644,10 +644,24 @@ namespace GAPT.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult TourpageAverageRating(int ratingId)
+        public ActionResult TourpageAverageRating(int tourId)
         {
+            var ratingId = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().AverageRatingId;
+
             AverageRatingModel model = new AverageRatingModel() 
             { 
+                AverageRating = ratingId
+            };
+            return PartialView(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult SearchToursAverageRating(int tourId)
+        {
+            var ratingId = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().AverageRatingId;
+
+            AverageRatingModel model = new AverageRatingModel()
+            {
                 AverageRating = ratingId
             };
             return PartialView(model);
@@ -696,6 +710,7 @@ namespace GAPT.Controllers
             return View("Tourpage", model);
         }
 
+        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search()
         {
             try
