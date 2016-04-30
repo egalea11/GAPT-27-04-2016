@@ -1,4 +1,7 @@
-﻿@{
+﻿@using GAPT.Models
+@model CustomerInfoModel
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
@@ -16,6 +19,77 @@
 }
 @using System.Configuration
 
+<script>
+    $(document).ready(function () {
+        var tourId = @Model.Tour.Id;
+        //$("#TourId").val(tourId);
+
+        var DateAndTime = $("#DateAndTime").text().split(' ');
+        var TourDate = DateAndTime[0];
+        var TourTime = DateAndTime[1];
+
+        var dateAndTimeOfTour = { tourDateTime: TourDate + ";" + TourTime + ";" + tourId };
+
+        $.ajax({
+            url: "/Home/GetPlacesAvailableCustomerInfo",
+            type: "POST",
+            //dataType: "html",
+            data: dateAndTimeOfTour,
+            //async: false,
+            success: function (places) {
+                $("#places-available").val(places);
+                $("#places-available").text(places);
+                //alert("places available " + places);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+
+        $("#login-to-buy").click(function () {
+            alert("Please login in order to proceed to check out");
+        });
+
+        setInterval(function () {
+            var DateAndTime = $("#DateAndTime").text().split(' ');
+            var TourDate = DateAndTime[0];
+            var TourTime = DateAndTime[1];
+
+            var dateAndTimeOfTour = { tourDateTime: TourDate + ";" + TourTime + ";" + tourId };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailableCustomerInfo",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }, 60 * 1000);
+
+        $("#confirm-order").click(function(e){
+            var totalAdultAmount = parseInt($("#adult-amount").text());
+            var totalChildAmount = parseInt($("#child-amount").text());
+            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
+            var placesLeft = parseInt($("#places-available").val());
+
+            //var totalAmount =
+            if (totalAmount <= placesLeft) {
+                $("#confirm-order").submit();
+            } else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
+            }
+        });
+    });
+</script>
 
 
 
@@ -63,16 +137,26 @@
                         <input type="hidden" name="quantity_1" value="3" />
 
                         <!--Product 2-->
-                        <input type="hidden" name="item_name_2" value="Product 2" />
+                        @*<input type="hidden" name="item_name_2" value="Product 2" />
                         <input type="hidden" name="item_number_2" value="p2" />
                         <input type="hidden" name="amount_2" value="3" />
-                        <input type="hidden" name="quantity_2" value="4" />
+                        <input type="hidden" name="quantity_2" value="4" />*@
 
                         <!--Product 3-->
-                        <input type="hidden" name="item_name_3" value="Product 3" />
+                        @*<input type="hidden" name="item_name_3" value="Product 3" />
                         <input type="hidden" name="item_number_3" value="p3" />
                         <input type="hidden" name="amount_3" value="4" />
-                        <input type="hidden" name="quantity_3" value="5" />
+                        <input type="hidden" name="quantity_3" value="5" />*@
+
+                        <input type="hidden" name="item_name_1" value="@Model.Tour.Name" />
+                        <input type="hidden" name="item_number_1" value="Adult" />
+                        <input type="hidden" name="amount_1" value="@Model.Tour.AdultPrice"/>
+                        <input type="hidden" name="quantity_1" value="@Model.AdultAmount" />
+
+                        <input type="hidden" name="item_name_2" value="@Model.Tour.Name" />
+                        <input type="hidden" name="item_number_2" value="Child" />
+                        <input type="hidden" name="amount_2" value="@Model.Tour.ChildPrice" />
+                        <input type="hidden" name="quantity_2" value="@Model.ChildAmount" />
 
                         <!--When paying for a Tour we can do the following
 
@@ -149,7 +233,15 @@
                                             </div>
                                         </div><!-- /input-group -->
                                     </div><!-- /.col-lg-6 -->
-                                    <button type="submit" class="btn btn-template-main" style="margin-top:3%; margin-bottom:2%;">Confirm Order<i class="fa fa-chevron-right"></i></button>
+                                    @using Microsoft.AspNet.Identity
+                                    @if (!Request.IsAuthenticated)
+                                    {
+                                        <button id="confirm-order" type="submit" class="btn btn-template-main" style="margin-top:3%; margin-bottom:2%;">Confirm Order<i class="fa fa-chevron-right"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button id="login-to-buy" type="button" class="btn btn-template-main" style="margin-top:3%; margin-bottom:2%;">Confirm Order<i class="fa fa-chevron-right"></i></button>
+                                    }
                                 </div><!-- /.row -->
 
                                 <img src=http://www.worldpay.com/images/cardlogos/VISA.gif border=0>
@@ -181,13 +273,19 @@
                         <h3>Order summary</h3>
                     </div>
                     <div style="padding-left: 3%;padding-right: 2%;">
-                        <a href="#" style="display:block">Name of Tour</a>
+                        @*<a href="#" style="display:block">Name of Tour</a>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">Monday 4th April,2016 9:00am</p>
-                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">Imdina</span></p>*@
+                        <a href="#" style="display:block">@Model.Tour.Name</a>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p id="DateAndTime" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime-@Model.TourTime.EndTime</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@Model.TourStartingLocation</span></p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Adult Amount: </p><p id="adult-amount" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block"> @Model.AdultAmount</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">&nbsp;Child Amount: </p><p id="child-amount" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block"> @Model.ChildAmount</p>
+                        <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Places Available:  </p><p id="places-available" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block"></p>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
-                            <tbody>
+                            @*<tbody>
                                 <tr>
                                     <td>Order subtotal</td>
                                     <th>€446.00</th>
@@ -200,7 +298,22 @@
                                     <td>Total</td>
                                     <th>€456.00</th>
                                 </tr>
+                            </tbody>*@
+                            <tbody>
+                                <tr>
+                                    <td>Order subtotal</td>
+                                    <th>€@Model.TotalPrice</th>
+                                </tr>
+                                <tr>
+                                    <td>VAT (18%)</td>
+                                    <th>€0.00</th>
+                                </tr>
+                                <tr class="total">
+                                    <td>Total</td>
+                                    <th>€@Model.TotalPrice</th>
+                                </tr>
                             </tbody>
+
                         </table>
                     </div>
 

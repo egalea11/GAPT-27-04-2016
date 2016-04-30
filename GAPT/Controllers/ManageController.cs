@@ -427,6 +427,53 @@ namespace GAPT.Controllers
             ViewModelWishlist wishlist = new ViewModelWishlist() { wishlisttours = tours };
             return PartialView(wishlist);
         }
+        public ActionResult MyOrders()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                // User not authenticated
+                // Response 401 Unauthenticated
+                Response.StatusCode = 401;
+                Response.End();
+            }
+            var currUserName = User.Identity.Name;
+            var userId = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault().Id;
+            var orders = db.Order.Where(o => o.UserId == userId).ToList();
+
+            OrderHistoryModel model = new OrderHistoryModel();
+            model.Orders = new List<OrderDetails>();
+
+            foreach (var o in orders)
+            {
+                var tourDateTime = db.TourDateTime.Where(t => t.Id == o.TourDateTimeId).FirstOrDefault();
+                var tourDateId = tourDateTime.TourDateId;
+                var tourTimeId = tourDateTime.TourTimeId;
+                var tourDate = db.TourDate.Where(t => t.Id == tourDateId).FirstOrDefault();
+                var tourTime = db.TourTime.Where(t => t.Id == tourTimeId).FirstOrDefault();
+                var tourLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
+                var tourLocationName = db.Location.Where(l => l.Id == tourLocationId).FirstOrDefault().Name;
+                var tour = db.Tour.Where(t => t.Id == tourTime.TourId).FirstOrDefault();
+
+                OrderDetails order = new OrderDetails() 
+                {
+                    AdultQuantity = o.AdultQuantity,
+                    ChildQuantity = o.ChildQuantity,
+                    TotalPrice = o.TotalPrice,
+                    DateTimeCreated = o.DateTimeCreated,
+                    UserId = o.UserId,
+                    TourDateTimeId = o.TourDateTimeId,
+                    StartingLocation = tourLocationName,
+                    StringTourTime = tourTime.StartTime + "-" + tourTime.EndTime,
+                    DateTimeTourDate = tourDate.DateOfTour,
+                    TourName = tour.Name,
+                    TotalChildPrice = o.ChildQuantity * tour.ChildPrice,
+                    TotalAdultPrice = o.AdultQuantity * tour.AdultPrice,
+                };
+                model.Orders.Add(order);
+            }
+
+            return PartialView(model);
+        }
 
         public ActionResult UserPortal()
         {

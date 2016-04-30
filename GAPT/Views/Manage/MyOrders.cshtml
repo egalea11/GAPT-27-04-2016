@@ -1,0 +1,60 @@
+﻿@using GAPT.Models
+@model OrderHistoryModel
+
+@foreach (var order in Model.Orders)
+{
+    <div class="box" style="padding-bottom:0px;">
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date ordered</th>
+                        <th colspan="1">Tour</th>
+                        <th>Adults</th>
+                        <th>Unit price</th>
+                        <th>Children</th>
+                        <th>Unit price</th>
+                        <th colspan="2">Total</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    <!--begin loop to show each tour bought-->
+                    <tr>
+                        <td>
+                            @order.DateTimeCreated
+                            @*04/04/2014*@ <!--date ordered-->
+                        </td>
+                        <td>
+                            <a href="#" style="display:block">@order.TourName</a>
+                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@order.DateTimeTourDate.ToShortDateString() @order.StringTourTime</p>
+                            <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@order.StartingLocation</span></p>
+                        </td>
+                        <td>
+                            @order.AdultQuantity <!--number of adults in tour-->
+                        </td>
+                        <td>€@order.TotalAdultPrice</td> <!--adult unit price-->
+                        <td>
+                            @order.ChildQuantity <!--number of children in tour-->
+                        </td>
+                        <td>€@order.TotalChildPrice</td>  <!--child unit price-->
+                        <td>€@order.TotalPrice</td> <!--total of adult and child combined-->
+                        @*<td>
+                            <a href="Url.Action("ViewCustomerInfo", "Manage")" class="btn btn-template-main btn-sm">View customer details</a>
+                        </td>*@
+                    </tr>
+                    <!--end loop to show each tour bought-->
+
+                </tbody>
+            </table>
+
+        </div>
+        <!-- /.table-responsive -->
+
+
+    </div>
+
+}

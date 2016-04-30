@@ -109,6 +109,7 @@ namespace GAPT.Models
         public int TourDateId { get; set; }
         public int TourTimeId { get; set; }
         public DateTime TourDate { get; set; }
+        public string StringTourDate { get; set; }
         [Required]
         public string TourTime { get; set; }
     }
@@ -116,5 +117,27 @@ namespace GAPT.Models
     public class AverageRatingModel
     {
         public int AverageRating { get; set; }
+    }
+
+    public class OrderDetails
+    {
+        public int? Id { get; set; }
+        public int UserId { get; set; }
+        public int TourDateTimeId { get; set; }
+        public int AdultQuantity { get; set; }
+        public int ChildQuantity { get; set; }
+        public decimal TotalPrice { get; set; }
+        public DateTime DateTimeCreated { get; set; }
+        public decimal TotalAdultPrice { get; set; }
+        public decimal TotalChildPrice { get; set; }
+        public string TourName { get; set; }
+        public string StringTourTime { get; set; }
+        public DateTime DateTimeTourDate { get; set; }
+        public string StartingLocation { get; set; }
+    }
+
+    public class OrderHistoryModel
+    {
+        public List<OrderDetails> Orders { get; set; }
     }
 }

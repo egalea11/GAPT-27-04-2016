@@ -35,8 +35,8 @@
 
             <div class="col-md-9" id="customer-orders">
 
-               
-                <div class="box" style="padding-bottom:0px;">
+               @{Html.RenderAction("MyOrders", "Manage");}
+                @*<div class="box" style="padding-bottom:0px;">
 
                     <div class="table-responsive">
                         <table class="table">
@@ -87,7 +87,7 @@
                     <!-- /.table-responsive -->
 
 
-                </div>
+                </div>*@
                 <!-- /.box -->
                    </div>
             <!-- /.col-md-9 -->

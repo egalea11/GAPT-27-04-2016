@@ -288,9 +288,64 @@ namespace GAPT.Controllers
                 return Json(false);
         }
 
-        public ActionResult OrderConfirmation()
+        public ActionResult OrderConfirmation(CustomerInfoModel model)
         {
-            return View();
+            CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+            var currUserName = User.Identity.Name;
+            var userId = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault().Id;
+            
+            Order order = new Order() 
+            { 
+                AdultQuantity = orderModel.AdultAmount,
+                ChildQuantity = orderModel.ChildAmount,
+                DateTimeCreated = DateTime.Now,
+                TotalPrice = orderModel.TotalPrice,
+                UserId = userId,
+                TourDateTimeId = orderModel.TourDateTimeId
+            };
+
+            db.Order.Add(order);
+            db.SaveChanges();
+            var orderId = order.Id;
+            //var orderId = db.Order.Where(o => o.UserId == userId && o.DateTimeCreated == order.DateTimeCreated).FirstOrDefault().Id;
+
+            foreach (var att in orderModel.AdultDetails)
+            {
+                TourAttendees attendeeAdult = new TourAttendees() 
+                { 
+                    Name = att.FirstName,
+                    Surname = att.LastName,
+                    Title = att.Title,
+                    OrderId = (int)orderId,
+                    DateTimeCreated = DateTime.Now,
+                    IsAdult = true,
+                };
+
+                db.TourAttendees.Add(attendeeAdult);
+                db.SaveChanges();
+            }
+            foreach (var att in orderModel.ChildDetails)
+            {
+                int month = DateTime.ParseExact(att.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
+
+                TourAttendees attendeeChild = new TourAttendees()
+                {
+                    Name = att.FirstName,
+                    Surname = att.LastName,
+                    Title = att.Title,
+                    OrderId = (int)orderId,
+                    DateTimeCreated = DateTime.Now,
+                    IsAdult = false,
+                    DateOfBirth = (DateTime)new DateTime(att.BirthYear, month, att.BirthDay)
+                };
+
+                db.TourAttendees.Add(attendeeChild);
+                db.SaveChanges();
+            }
+
+            Session["PaymentModel"] = null;
+            Session["Tourpage"] = null;
+            return View(orderModel);
         }
 
         [HttpPost]
@@ -298,7 +353,31 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Payment(CustomerInfoModel model)
         {
-            return View();
+            CustomerInfoModel paymentModel = new CustomerInfoModel()
+            {
+                Tour = db.Tour.Where(t => t.Id == model.TourId).FirstOrDefault(),
+                TourId = model.TourId,
+                TourDateId = model.TourDateId,
+                TourDate = db.TourDate.Where(t => t.Id == model.TourDateId).FirstOrDefault(),
+                TourTimeId = model.TourTimeId,
+                TourTime = db.TourTime.Where(t => t.Id == model.TourTimeId).FirstOrDefault(),
+                TourDateTimeId = model.TourDateTimeId,
+                TourDateTime = db.TourDateTime.Where(t => t.Id == model.TourDateTimeId).FirstOrDefault(),
+                TourStartingLocation = model.TourStartingLocation,
+                AdultAmount = model.AdultAmount,
+                ChildAmount = model.ChildAmount,
+                ChildTotalPrice = model.ChildTotalPrice,
+                AdultTotalPrice = model.AdultTotalPrice,
+                TotalPrice = model.TotalPrice,
+                ChildDetails = model.ChildDetails,
+                AdultDetails = model.AdultDetails
+            };
+
+            paymentModel.StringTourTime = paymentModel.TourTime.StartTime + "-" + paymentModel.TourTime.EndTime;
+
+            Session["PaymentModel"] = paymentModel;
+
+            return View(paymentModel);
         }
 
         [HttpPost]
@@ -340,15 +419,21 @@ namespace GAPT.Controllers
                 // check is already done on client side but could be added here as well
             }
 
+            CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+            if (orderModel != null)
+                return View(orderModel);
+
             var tourDetails = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault();
             decimal totalAdultPrice = model.AdultAmount * tourDetails.AdultPrice;
             decimal totalChildPrice = model.ChildAmount * tourDetails.ChildPrice;
             decimal totalPrice = totalAdultPrice + totalChildPrice;
 
-            DateTime temp = Convert.ToDateTime(model.TourDate);
-            string Temp = temp.Date.ToShortDateString();
+            //string[] date = model.StringTourDate.Split('/');
+            //DateTime temp = Convert.ToDateTime(model.TourDate);
+            //DateTime temp = Convert.ToDateTime(model.StringTourDate);
+            //string Temp = temp.Date.ToShortDateString();
             string fromFormat = "MM/dd/yyyy";
-            DateTime DateOfTour = DateTime.ParseExact(Temp, fromFormat, CultureInfo.InvariantCulture);
+            DateTime DateOfTour = DateTime.ParseExact(model.StringTourDate, fromFormat, CultureInfo.InvariantCulture);
 
             var tourDate = db.TourDate.Where(t => t.TourId == model.Tour.Id && t.DateOfTour == DateOfTour).FirstOrDefault();
             
@@ -399,6 +484,45 @@ namespace GAPT.Controllers
                 };
                 customerModel.ChildDetails.Add(child);
             }
+
+            var category = db.Category.Where(c => c.Id == customerModel.Tour.CategoryId).FirstOrDefault().Name;
+            var tourTimes = db.TourTime.Where(t => t.TourId == customerModel.Tour.Id).ToList();
+            var tourTimeIds = tourTimes.Select(t => t.Id).ToArray();
+            var tourDates = db.TourDate.Where(t => t.TourId == customerModel.Tour.Id && t.DateOfTour > DateTime.Now).ToList();
+            var tourDateIds = tourDates.Select(t => t.Id).ToArray();
+            var tourDateTimes = db.TourDateTime.Where(t => tourDateIds.Contains(t.Id)).ToList();
+            var tourTimeTables = db.TourTimeTable.Where(t => tourTimeIds.Contains(t.TourTimeId)).ToList();
+            var tourLocationIds = tourTimeTables.Select(t => t.LocationId).ToArray();
+            var tourLocations = db.Location.Where(l => tourLocationIds.Contains(l.Id)).ToList();
+            var tourImages = db.Image.Where(i => i.TourId == customerModel.Tour.Id && !i.Link.Contains("rsz")).ToList();
+
+            TourpageModel tourpageModel = new TourpageModel() 
+            {
+                Tour = customerModel.Tour,
+                AdultAmount = model.AdultAmount,
+                ChildAmount = model.ChildAmount,
+                TourDate = tourDate.DateOfTour,
+                TourTime = tourTime.StartTime + "-" + tourTime.EndTime,
+                TourDateId = tourDate.Id,
+                TourTimeId = tourTime.Id,
+                TourCategory = category,
+                TourTimes = tourTimes,
+                TourDates = tourDates,
+                TourDateTimes = tourDateTimes,
+                TourTimeTables = tourTimeTables,
+                TourLocations = tourLocations,
+                Images = tourImages,
+            };
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUserName = User.Identity.Name;
+                var userId = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault().Id;
+                var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
+                tourpageModel.Wishlists = currUserWishlist;
+            }
+
+            Session["Tourpage"] = tourpageModel;
 
             return View(customerModel);
         }
@@ -716,6 +840,10 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Tourpage(int id)
         {
+            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            if (sessionModel != null)
+                return View(sessionModel);
+
             //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
             var category = db.Category.Where(c => c.Id == tour.CategoryId).FirstOrDefault().Name;
@@ -738,7 +866,7 @@ namespace GAPT.Controllers
                 TourDateTimes = tourDateTimes,
                 TourTimeTables = tourTimeTables,
                 TourLocations = tourLocations,
-                Images = tourImages
+                Images = tourImages,
             };
 
             if (User.Identity.IsAuthenticated)
