@@ -1346,9 +1346,24 @@ h1, h2, h3, h4, h5, h6 {
     padding: 2rem;
 }
 
-.page-spacing{
-    padding: 2rem;
+@media only screen (min-width: 1200px) {
+    .page-spacing {
+        height: 55px;
+    }
 }
+
+@media only screen (min-width: 768px) and (max-width: 1200px) {
+    .page-spacing {
+        height: 120px;
+    }
+}
+
+@media only screen (max-width: 768px) {
+    .page-spacing {
+        height: 55px;
+    }
+}
+
 
 .form-control{
     width: 100%;
