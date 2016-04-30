@@ -35,6 +35,10 @@
                     $("#review-posted").show();
                     $("#comments-section").html(data);
                 });
+
+                $.post('@Url.Action("RecalculateAverageRating", "Home")', { tourId : tourId }, function (data) {
+                    $("#star-ratings").html(data);
+                });
             }
 
         });

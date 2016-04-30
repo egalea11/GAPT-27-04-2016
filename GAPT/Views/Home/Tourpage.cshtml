@@ -339,23 +339,7 @@
                                         </div>
                                         @* star ratings *@
                                         <div class="space30"></div>
-                                        <div id="star-ratings">
-                                            @if (@Model.Tour.AverageRatingId == 6)
-                                            {
-                                                <h5>Be the first to rate this tour!</h5>
-                                            }
-                                            else
-                                            {
-                                                for (int i = 0; i < @Model.Tour.AverageRatingId; i++)
-                                                {
-                                                    <div class="fa fa-star"></div>
-                                                }
-                                                for (int k = 0; k < 5 - @Model.Tour.AverageRatingId; k++)
-                                                {
-                                                    <div class="fa fa-star-o"></div>
-                                                }
-                                            }
-                                        </div>
+                                        @{Html.RenderAction("TourpageAverageRating", "Home", new { ratingId = Model.Tour.AverageRatingId });}
                                     </div>
                                 </div>
                                 <div class="space30"></div>

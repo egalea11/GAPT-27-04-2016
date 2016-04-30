@@ -553,6 +553,38 @@ namespace GAPT.Controllers
 
             return PartialView("ReviewTour", model);
         }
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult RecalculateAverageRating(IEnumerable<int> tourId) 
+        {
+            var ratings = db.Review.Where(r => r.TourId == tourId.FirstOrDefault() && r.RatingId != 6).ToList().Select(r => r.RatingId).ToArray();
+            int sumRating = 0;
+
+            foreach (var r in ratings)
+                sumRating += Convert.ToInt32(r);
+
+            float averageRating = sumRating / ratings.Count();
+            int tourRating = (int)averageRating;
+
+            try 
+            {
+                db.Database.ExecuteSqlCommand("update [Tour] set [AverageRatingId] = @p1 where [Id] = @p2",
+                new System.Data.SqlClient.SqlParameter("p1", tourRating),
+                new System.Data.SqlClient.SqlParameter("p2", tourId.FirstOrDefault()));
+            }
+            catch(Exception e) 
+            {
+                Trace.TraceError(e.Message);
+            }
+
+            var AverageRatingId = db.Tour.Where(t => t.Id == tourId.FirstOrDefault()).FirstOrDefault().AverageRatingId;
+            
+            AverageRatingModel model = new AverageRatingModel() 
+            {
+                AverageRating = AverageRatingId
+            };
+            return PartialView("TourpageAverageRating", model);
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -607,6 +639,18 @@ namespace GAPT.Controllers
             }
 
             return PartialView("Reviews", model);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TourpageAverageRating(int ratingId)
+        {
+            AverageRatingModel model = new AverageRatingModel() 
+            { 
+                AverageRating = ratingId
+            };
+            return PartialView(model);
         }
                     
         [AllowAnonymous]

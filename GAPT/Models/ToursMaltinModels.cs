@@ -112,4 +112,9 @@ namespace GAPT.Models
         [Required]
         public string TourTime { get; set; }
     }
+
+    public class AverageRatingModel
+    {
+        public int AverageRating { get; set; }
+    }
 }
