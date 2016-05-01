@@ -580,7 +580,8 @@ figure.effect-bubba figcaption::before, figure.effect-bubba figcaption::after {
 
 body
 {
-  background-color: #FFFFFF; 
+    padding-top: 105px;
+    background-color: #FFFFFF; 
 }
 
 .glyphicon-map-marker:before{content:"\e062"}
@@ -1544,6 +1545,13 @@ td, th{
     position: relative;
     padding-left: 30px;
     margin-top: 20px;
+}
+
+.navbar-fixed-top {
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
 }
 
 /* navigation buttons */
