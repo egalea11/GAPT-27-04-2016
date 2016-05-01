@@ -1,5 +1,5 @@
 ﻿@using GAPT.Models
-@model ViewModelLookUp
+@model ViewModelAttractionType
 
 <script>
     $(document).ready(function () {
@@ -11,7 +11,7 @@
     });
 </script>
 
-@foreach (var attractionType in Model.attractionTypes)
+@foreach (var attractionType in Model.AttractionTypes)
 {
     <div class="checkbox" id="@{@attractionType.Id}">
         <label>

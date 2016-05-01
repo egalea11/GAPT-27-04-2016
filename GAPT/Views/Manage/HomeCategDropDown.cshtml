@@ -8,14 +8,18 @@
 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type='text/javascript'>
-    function categFun(categid) {
-        $.post('@Url.Action("SearchCategory", "Home")', {id : categid}, function (data) {
-            $('#searchtours').html(data);
+    function categFun(event, categid) {
+        var categId = { id: categid };
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/Home/SearchCategory",
+            data: categId,
         });
     }
 </script>
 
-@foreach (var category in Model.categories)
+@foreach (var category in Model.Categories)
 {
     <li class="selectedcategory" id="@{@category.Id}" onclick="categFun(@category.Id)">
         <a href="@Url.Action("Search","Home")">@category.Name</a>

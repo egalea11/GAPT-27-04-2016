@@ -120,8 +120,6 @@
                 </script>
                 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-                @*<div class="navbar navbar-default yamm" role="navigation" id="navbar" style="margin-bottom:0px;">*@
-
                     <div class="container">
                         <div class="navbar-header">
 
@@ -246,48 +244,12 @@
                         <!--/.nav-collapse -->
                     </div>
 
-                    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
-                    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-                    <script type="text/javascript">
-                        $(document).ready(function () {
-                            $(".btn btn-search").click(function () {
-                                $.post('@Url.Action("SearchFilter", "Home")', { searchtext: document.getElementById("myInput") }, function (data) {
-                                    $('#searchtours').html(data);
-
-                                });
-                            });
-                        });
-                    </script>
-                    <script type="text/javascript">
-                        @*function searchFun() {
-                            $.post('@Url.Action("SearchFilter", "Home")', { searchtext: document.getElementById("myInput") }, function (data) {
-                                $('#searchtours').html(data);
-                            });
-                        }*@
-                        function searchFun() {
-                            var data= {
-                                searchtext: $('#myInput').val(),
-                            };
-                            $.ajax({
-                                url: "/Home/SearchFilter",
-                                type: "POST",
-                                dataType: "json",  
-                                data: data ,//JSON.stringify(data),
-                                success: function (mydata) {
-                                    $('#searchtours').html(data);
-                                }});
-                            return false;
-                        }
-                    </script>
-                   
-
                     <div class="collapse clearfix" id="search">
-                        <form  method="get" action="@Url.Action("Search","Home")" onSubmit="return validate()" role="search" style="display:block; padding-top:10px;padding-bottom:5px;padding-right: 12px;padding-left: 17px;" >
+                        <form method="post" action="@Url.Action("Search","Home")" onsubmit="return validate()" role="search" style="display:block; padding-top:10px;padding-bottom:5px;padding-right: 12px;padding-left: 17px;">
                             <div class="input-group" style="padding-bottom:5px; padding-left:-20px;display:inline-flex;">
-                                <input type="text" id="myInput" autocomplete="off" class="form-control pull-right" placeholder="Search" >
+                                <input type="text" name="searchText" id="searchText" autocomplete="off" class="form-control pull-right" placeholder="Search" required>
                                 <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-search" onclick="searchFun();"><i class=" fa fa-search"></i></button>
-                                    @*onclick="searchFun();"*@ 
+                                    <button type="submit" class="btn btn-search"><i class=" fa fa-search"></i></button>
                                 </span>
                             </div>
                         </form>

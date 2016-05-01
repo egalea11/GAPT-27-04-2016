@@ -1,5 +1,5 @@
 ﻿@using GAPT.Models
-@model ViewModelLookUp
+@model ViewModelCategory
 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -11,13 +11,12 @@
         $(".selectedcategories").click(function () {
             $.post('@Url.Action("SearchFilterCategories", "Home")', $('form').serialize(), function (data) {
                 $('#searchtours').html(data);
-
             });
         });
     });
 </script>
 
-@foreach (var category in Model.categories)
+@foreach (var category in Model.Categories)
 {
     if (Model.selectedcategory != null && Model.selectedcategory.Contains(category.Id))
     {

@@ -156,10 +156,10 @@
         </div>
     </div>
     <!--Dropdown and search-->
-    <form method="get" action="@Url.Action("Search","Home")" onSubmit="return validatesearchcarousel()">
+    <form method="post" action="@Url.Action("Search","Home")" onSubmit="return validatesearchcarousel()">
         <div class="search-area" style="box-shadow:none">
             <div class="search-box" style="box-shadow: 0 0 2em black;">
-                <input type="text" class="hidden-sm hidden-xs search-text" id="tourname" placeholder="Search Tour" size="100">    
+                <input type="text" name="searchText" class="hidden-sm hidden-xs search-text" id="tourname" placeholder="Search Tour" size="100">    
             </div>
             <div style="padding-left:20px;">
                 <a href="@Url.Action("Search","Home")" style="text-decoration:none"><input type="submit" class="search-button hidden-sm hidden-xs" value="Search" style="width:82px; text-decoration:none" /></a>

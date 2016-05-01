@@ -1,5 +1,4 @@
-﻿@using GAPT.Models
-@{
+﻿@{
     ViewBag.Title = "Tours-Maltin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -31,7 +30,7 @@
 
                         <form>
                             <div class="form-group">
-                                @{Html.RenderPartial("SearchCategories", new ViewDataDictionary(ViewData["CategAttrTours"]));}
+                                @{Html.RenderAction("SearchCategories");}
                             </div>
                         </form>
 
@@ -48,7 +47,7 @@
 
                         <form>
                             <div class="form-group">
-                                @{Html.RenderPartial("SearchAttractionTypes", new ViewDataDictionary(ViewData["CategAttrTours"]));}
+                                @{Html.RenderAction("SearchAttractionTypes");}
                             </div>
                         </form>
 
@@ -65,7 +64,7 @@
 
                         <form>
                             <div class="form-group">
-                                @{Html.RenderPartial("SearchIslands", new ViewDataDictionary(ViewData["CategAttrTours"]));}
+                                @{Html.RenderAction("SearchIslands");}
                             </div>
                         </form>
 
@@ -84,9 +83,6 @@
                         <form>
                             <div class="form-group">
                                 @{Html.RenderPartial("SearchPrice");}
-                                @*<div class="form-group" style="width:100%;">
-                                    €&nbsp;<input type="text"  class="form-control" id="lowestprice" style="width: 20%;display:inline-block">&nbsp;to&nbsp;€&nbsp;<input type="text" class="form-control" id="highestprice" style="width: 20%;display:inline-block">&nbsp;<button type="submit" class="form-control" id="refineprice" style="width:15%; display:inline-block;border-color:white;padding-left:0px;padding-right:0px;"><i class="fa fa-arrow-right" style="color:#da4d4d"></i></button>
-                                </div>*@
                             </div>
                         </form>
                     </div>
@@ -152,7 +148,7 @@
 
                                 <!--Place in for each to show an entry for each item in database-->
 
-                                @{Html.RenderPartial("SearchTours", new ViewDataDictionary(ViewData["CategAttrTours"]));}
+                                @{Html.RenderAction("SearchTours");}
 
                                 <!--Place end of for each here-->
                                     <!-- /.col-md-4 -->

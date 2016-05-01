@@ -32,143 +32,6 @@ namespace GAPT.Controllers
             return Json(tours, JsonRequestBehavior.AllowGet);
         }
 
-        public void GetCategAttrTours()
-        {
-            try
-            {
-                AllTours = db.Tour.ToList();
-                var categories = db.Category.ToList();
-                var attrtypes = db.AttractionType.ToList();
-                var alltours = db.Tour.ToList();
-                var tourTimes = db.TourTime.ToList();
-                var thumbImages = db.Image.Where(m => m.Link.Contains("rsz")).ToList();
-                var islands = db.Island.ToList();
-                var locations = db.Location.ToList();
-                var locationattractions = db.LocationAttraction.ToList();
-                var towns = db.Town.ToList();
-                var timetables = db.TourTimeTable.ToList();
-                var datetimes = db.TourDateTime.ToList();
-                var times = db.TourTime.ToList();
-                List<int> searchtexttourids = new List<int>();
-
-                if (User.Identity.IsAuthenticated)
-                {
-                    var currentusername = User.Identity.Name;
-                    var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
-                    //var user = HttpContext.User.Identity.
-                    //var currentuserid = User.Identity.
-                    //var currentuserid = Convert.ToInt32(Membership.GetUser().ProviderUserKey);
-                    var curruserwishlist = db.WishList.Where(w => w.UserId == userid && w.Expired == false).ToList();
-                    GlobalData.wishlist = curruserwishlist;
-                }
-                else
-                {
-                    GlobalData.wishlist = null;
-                }
-
-                foreach (Tour t in alltours)
-                {
-                    ViewModelTour currtour = new ViewModelTour()
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        ShortDescription = t.ShortDescription,
-                        LongDescription = t.LongDescription,
-                        AdultPrice = t.AdultPrice,
-                        ChildPrice = t.ChildPrice,
-                        CategoryId = t.CategoryId,
-                        AverageRatingId = t.AverageRatingId,
-                        DateTimeCreated = t.DateTimeCreated,
-                        MaxGroupSize = t.MaxGroupSize,
-                        ThumbImage = thumbImages.FirstOrDefault(ti => ti.TourId == t.Id).Link
-                    };
-
-                    string st = tourTimes.FirstOrDefault(tt => tt.TourId == t.Id).StartTime;
-                    string et = tourTimes.FirstOrDefault(tt => tt.TourId == t.Id).EndTime;
-
-                    DateTime dt1 = DateTime.ParseExact(st, "HH:mm", new DateTimeFormatInfo());
-                    DateTime dt2 = DateTime.ParseExact(et, "HH:mm", new DateTimeFormatInfo());
-                    TimeSpan ts = dt2.Subtract(dt1);
-
-                    currtour.Duration = ts.Hours.ToString() + "hrs";
-                    currtour.Duration = ts.Minutes == 0 ? currtour.Duration : currtour.Duration + " " + ts.Minutes.ToString() + "mins";
-                    ViewAllTours.Add(currtour);
-                }
-
-                GlobalData.priceslist = new List<decimal[]>();
-
-                decimal[] price1 = new decimal[2];
-                decimal[] price2 = new decimal[2];
-                decimal[] price3 = new decimal[2];
-
-                price1[0] = 0;
-                price1[1] = 10;
-                price2[0] = 10;
-                price2[1] = 20;
-                price3[0] = 20;
-                price3[1] = 30;
-
-                GlobalData.priceslist.Add(price1);
-                GlobalData.priceslist.Add(price2);
-                GlobalData.priceslist.Add(price3);
-
-                if (GlobalData.selectedcategories != null)
-                    GlobalData.tours = ViewAllTours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList();
-                else if (GlobalData.searchtext != null)
-                {
-                    //GlobalData.selectedcategories = null;
-                    string[] words = GlobalData.searchtext.Split(' ');
-                    foreach (string word in words)
-                    {
-                        //var searchtourids = alltours.Where(t => t.Name.Contains(word) || t.ShortDescription.Contains(word) || t.LongDescription.Contains(word)).ToList().Select(tt => tt.Id).ToArray();
-                        var categoryids = categories.Where(t => t.Name.ToLower().Contains(word)).ToList().Select(c => c.Id).ToArray();
-                        //var categtourids = alltours.Where(t => categoryids.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
-
-                        var islandids = islands.Where(i => i.Name.ToLower().Contains(word)).ToList().Select(t => t.Id).ToArray();
-                        var attractionids = attrtypes.Where(a => a.Name.ToLower().Contains(word)).ToList().Select(aa => aa.Id).ToArray();
-                        var locattrids = locationattractions.Where(la => attractionids.Contains(la.AttractionTypeId)).ToList().Select(l => l.LocationId).ToArray();
-                        var townids = towns.Where(t => islandids.Contains(t.IslandId) || t.Name.ToLower().Contains(word)).ToList().Select(tt => tt.Id).ToArray();
-                        var locationids = locations.Where(l => locattrids.Contains(l.Id) || townids.Contains(l.TownId)).ToList().Select(ll => ll.Id).ToArray();
-
-                        var timeids = timetables.Where(t => locationids.Contains(t.LocationId)).ToList().Select(tt => tt.TourTimeId).ToArray();
-                        var timetourids = times.Where(t => timeids.Contains(t.TourId)).ToList().Select(tt => tt.TourId).ToArray();
-
-                        var searchtourids = alltours.Where(t => t.Name.ToLower().Contains(word) || t.ShortDescription.ToLower().Contains(word) || t.LongDescription.ToLower().Contains(word) || categoryids.Contains(t.CategoryId) || timetourids.Contains(t.Id)).ToList().Select(tt => tt.Id).ToArray();
-
-                        foreach (var id in searchtourids)
-                        {
-                            if (!searchtexttourids.Contains(id))
-                                searchtexttourids.Add(id);
-                        }
-                    }
-                    //GlobalData.searchtext = null;
-                    GlobalData.tours = ViewAllTours.Where(t => searchtexttourids.Contains(t.Id)).ToList();
-                }
-                else
-                    GlobalData.tours = ViewAllTours;
-
-                GlobalData.attractionTypes = attrtypes;
-                GlobalData.categories = categories;
-                //GlobalData.tours = ViewAllTours;
-                GlobalData.alltours = ViewAllTours;
-                GlobalData.islands = islands;
-
-                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories, wishlist = GlobalData.wishlist };
-
-                //return model;
-            }
-            catch (Exception e)
-            {
-                Trace.TraceError(e.Message.ToString());
-            }
-            //finally
-            //{
-            //    GlobalData.selectedcategories = null;
-            //    GlobalData.searchtext = null;
-            //}
-            //return null;
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Contact(EmailFormModel model)
@@ -210,24 +73,32 @@ namespace GAPT.Controllers
                 case "bestmatch":
                     break;
                 case "name":
-                    var toursbyname = GlobalData.tours.OrderBy(t => t.Name).ToList();
-                    GlobalData.tours = toursbyname;
+                    List<ViewModelTour> tourByName = (List<ViewModelTour>)Session["SearchTours"];
+                    List<ViewModelTour> SortByName = tourByName.OrderBy(t => t.Name).ToList();
+                    Session["SearchTours"] = SortByName;
                     break;
                 case "popular":
-                    var toursbypopular = GlobalData.tours.OrderBy(t => t.AverageRatingId).ToList();
-                    GlobalData.tours = toursbypopular;
+                    List<ViewModelTour> tourByPopular = (List<ViewModelTour>)Session["SearchTours"];
+                    List<ViewModelTour> SortByPopular = tourByPopular.OrderBy(t => t.AverageRatingId).ToList();
+                    Session["SearchTours"] = SortByPopular;
                     break;
                 case "pricelow":
-                    var toursbypricelow = GlobalData.tours.OrderBy(t => t.AdultPrice).ToList();
-                    GlobalData.tours = toursbypricelow;
+                    List<ViewModelTour> tourByPriceLow = (List<ViewModelTour>)Session["SearchTours"];
+                    List<ViewModelTour> SortByPriceLow = tourByPriceLow.OrderBy(t => t.AdultPrice).ToList();
+                    Session["SearchTours"] = SortByPriceLow;
                     break;
                 case "pricehigh":
-                    var toursbypricehigh = GlobalData.tours.OrderByDescending(t => t.AdultPrice).ToList();
-                    GlobalData.tours = toursbypricehigh;
+                    List<ViewModelTour> tourByPriceHigh = (List<ViewModelTour>)Session["SearchTours"];
+                    List<ViewModelTour> SortByPriceHigh = tourByPriceHigh.OrderByDescending(t => t.AdultPrice).ToList();
+                    Session["SearchTours"] = SortByPriceHigh;
                     break;
             }
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            ViewModelSearch model = new ViewModelSearch()
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
 
             return PartialView("SearchTours", model);
         }
@@ -264,7 +135,7 @@ namespace GAPT.Controllers
             {
                 db.WishList.Remove(curruserwishlist.FirstOrDefault());
                 db.SaveChangesAsync();
-                GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
+                Session["Wishlists"] = wishlists.Where(w => w.UserId == userid).ToList();
                 return Json(true);
             }
             return Json(false);
@@ -300,7 +171,7 @@ namespace GAPT.Controllers
                 db.WishList.Add(wishlist);
                 db.SaveChangesAsync();
 
-                GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
+                Session["Wishlists"] = wishlists.Where(w => w.UserId == userid).ToList();
                 return Json(true);
             }
             return Json(false);         
@@ -1008,7 +879,6 @@ namespace GAPT.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Tourpage(int id)
         {
             Session["TourId"] = id;
@@ -1057,62 +927,316 @@ namespace GAPT.Controllers
             return View("Tourpage", model);
         }
 
+        [AllowAnonymous]
+        public ActionResult SearchTours()
+        {
+            ViewModelSearch model = new ViewModelSearch() 
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
+
+            return PartialView(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult SearchIslands()
+        {
+            ViewModelIsland model = new ViewModelIsland();
+            model.Islands = new List<Island>();
+            model.Islands = (List<Island>)Session["AllIslands"];
+            return PartialView(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult SearchAttractionTypes()
+        {
+            ViewModelAttractionType model = new ViewModelAttractionType();
+            model.AttractionTypes = new List<AttractionType>();
+            model.AttractionTypes = (List<AttractionType>)Session["AllAttractionTypes"];
+            return PartialView(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult SearchCategories()
+        {
+            ViewModelCategory model = new ViewModelCategory() 
+            {
+                Categories = (List<Category>)Session["AllCategories"],
+                selectedcategory = (IEnumerable<int>)Session["SelectedCategories"]
+            };
+            //model.Categories = new List<Category>();
+            //model.Categories = (List<Category>)Session["AllCategories"];
+            return PartialView(model);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search()
         {
             try
             {
-                GetCategAttrTours();
-                //GlobalData.selectedcategories = null;
-                ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories, wishlist = GlobalData.wishlist };
-                ViewData["CategAttrTours"] = model;
-                //GlobalData.searchtext = null;
-                return View(model);
+                #region Load all tours
+
+                var AllTours = db.Tour.ToList();
+                var AllCategories = db.Category.ToList();
+                var AllAttractionTypes = db.AttractionType.ToList();
+                var AllTourTimes = db.TourTime.ToList();
+                var ThumbImages = db.Image.Where(m => m.Link.Contains("rsz")).ToList();
+                var AllIslands = db.Island.ToList();
+                var AllLocations = db.Location.ToList();
+                var AllLocationAttractions = db.LocationAttraction.ToList();
+                var AllTowns = db.Town.ToList();
+                var AllTimeTables = db.TourTimeTable.ToList();
+                var AllTourDateTimes = db.TourDateTime.ToList();
+
+                Session["AllCategories"] = AllCategories;
+                Session["AllAttractionTypes"] = AllAttractionTypes;
+                Session["AllTourTimes"] = AllTourTimes;
+                Session["ThumbImages"] = ThumbImages;
+                Session["AllIslands"] = AllIslands;
+                Session["AllLocations"] = AllLocations;
+                Session["AllLocationAttractions"] = AllLocationAttractions;
+                Session["AllTowns"] = AllTowns;
+                Session["AllTimeTables"] = AllTimeTables;
+                Session["AllTourDateTimes"] = AllTourDateTimes;
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    var currentUserName = User.Identity.Name;
+                    var userId = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault().Id;
+                    var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
+                    Session["Wishlists"] = currUserWishlist;
+                }
+                else
+                    Session["Wishlists"] = null;
+
+                foreach (Tour t in AllTours)
+                {
+                    ViewModelTour tour = new ViewModelTour()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        ShortDescription = t.ShortDescription,
+                        LongDescription = t.LongDescription,
+                        AdultPrice = t.AdultPrice,
+                        ChildPrice = t.ChildPrice,
+                        CategoryId = t.CategoryId,
+                        AverageRatingId = t.AverageRatingId,
+                        DateTimeCreated = t.DateTimeCreated,
+                        MaxGroupSize = t.MaxGroupSize,
+                        ThumbImage = ThumbImages.FirstOrDefault(ti => ti.TourId == t.Id).Link
+                    };
+
+                    string st = AllTourTimes.FirstOrDefault(tt => tt.TourId == t.Id).StartTime;
+                    string et = AllTourTimes.FirstOrDefault(tt => tt.TourId == t.Id).EndTime;
+
+                    DateTime dt1 = DateTime.ParseExact(st, "HH:mm", new DateTimeFormatInfo());
+                    DateTime dt2 = DateTime.ParseExact(et, "HH:mm", new DateTimeFormatInfo());
+                    TimeSpan ts = dt2.Subtract(dt1);
+
+                    tour.Duration = ts.Hours.ToString() + "hrs";
+                    tour.Duration = ts.Minutes == 0 ? tour.Duration : tour.Duration + " " + ts.Minutes.ToString() + "mins";
+                    ViewAllTours.Add(tour);
+                }
+
+                Session["AllTours"] = ViewAllTours;
+
+                List<decimal[]> priceList = new List<decimal[]>();
+
+                decimal[] price1 = new decimal[2];
+                decimal[] price2 = new decimal[2];
+                decimal[] price3 = new decimal[2];
+
+                price1[0] = 0;
+                price1[1] = 10;
+                price2[0] = 10;
+                price2[1] = 20;
+                price3[0] = 20;
+                price3[1] = 30;
+
+                priceList.Add(price1);
+                priceList.Add(price2);
+                priceList.Add(price3);
+
+                Session["PriceList"] = priceList;
+
+                #endregion
+
+                IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+
+                if (selectedCategories != null)
+                    Session["SearchTours"] = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList();
+                else
+                    Session["SearchTours"] = ViewAllTours;
+
+                return View();
             }
             catch (Exception e)
             {
-                Trace.TraceError(e.Message);
+                Trace.TraceError(e.Message.ToString());
             }
-            finally
+
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        public ActionResult Search(string searchText)
+        {
+            try
             {
-                GlobalData.selectedcategories = null;
-                GlobalData.selectedattr = null;
-                GlobalData.searchtext = null;
-                GlobalData.selectedislands = null;
-                GlobalData.selectedmonths = null;
-                GlobalData.toprice = null;
-                GlobalData.fromprice = null;
+                #region Load all tours
+
+                var AllTours = db.Tour.ToList();
+                var AllCategories = db.Category.ToList();
+                var AllAttractionTypes = db.AttractionType.ToList();
+                var AllTourTimes = db.TourTime.ToList();
+                var ThumbImages = db.Image.Where(m => m.Link.Contains("rsz")).ToList();
+                var AllIslands = db.Island.ToList();
+                var AllLocations = db.Location.ToList();
+                var AllLocationAttractions = db.LocationAttraction.ToList();
+                var AllTowns = db.Town.ToList();
+                var AllTimeTables = db.TourTimeTable.ToList();
+                var AllTourDateTimes = db.TourDateTime.ToList();
+
+                Session["AllCategories"] = AllCategories;
+                Session["AllAttractionTypes"] = AllAttractionTypes;
+                Session["AllTourTimes"] = AllTourTimes;
+                Session["ThumbImages"] = ThumbImages;
+                Session["AllIslands"] = AllIslands;
+                Session["AllLocations"] = AllLocations;
+                Session["AllLocationAttractions"] = AllLocationAttractions;
+                Session["AllTowns"] = AllTowns;
+                Session["AllTimeTables"] = AllTimeTables;
+                Session["AllTourDateTimes"] = AllTourDateTimes;
+
+                List<int> searchTextTourIds = new List<int>();
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    var currentUserName = User.Identity.Name;
+                    var userId = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault().Id;
+                    var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
+                    Session["Wishlists"] = currUserWishlist;
+                }
+                else
+                    Session["Wishlists"] = null;
+
+                foreach (Tour t in AllTours)
+                {
+                    ViewModelTour tour = new ViewModelTour()
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        ShortDescription = t.ShortDescription,
+                        LongDescription = t.LongDescription,
+                        AdultPrice = t.AdultPrice,
+                        ChildPrice = t.ChildPrice,
+                        CategoryId = t.CategoryId,
+                        AverageRatingId = t.AverageRatingId,
+                        DateTimeCreated = t.DateTimeCreated,
+                        MaxGroupSize = t.MaxGroupSize,
+                        ThumbImage = ThumbImages.FirstOrDefault(ti => ti.TourId == t.Id).Link
+                    };
+
+                    string st = AllTourTimes.FirstOrDefault(tt => tt.TourId == t.Id).StartTime;
+                    string et = AllTourTimes.FirstOrDefault(tt => tt.TourId == t.Id).EndTime;
+
+                    DateTime dt1 = DateTime.ParseExact(st, "HH:mm", new DateTimeFormatInfo());
+                    DateTime dt2 = DateTime.ParseExact(et, "HH:mm", new DateTimeFormatInfo());
+                    TimeSpan ts = dt2.Subtract(dt1);
+
+                    tour.Duration = ts.Hours.ToString() + "hrs";
+                    tour.Duration = ts.Minutes == 0 ? tour.Duration : tour.Duration + " " + ts.Minutes.ToString() + "mins";
+                    ViewAllTours.Add(tour);
+                }
+
+                Session["AllTours"] = ViewAllTours;
+                
+                List<decimal[]> priceList = new List<decimal[]>();
+
+                decimal[] price1 = new decimal[2];
+                decimal[] price2 = new decimal[2];
+                decimal[] price3 = new decimal[2];
+
+                price1[0] = 0;
+                price1[1] = 10;
+                price2[0] = 10;
+                price2[1] = 20;
+                price3[0] = 20;
+                price3[1] = 30;
+
+                priceList.Add(price1);
+                priceList.Add(price2);
+                priceList.Add(price3);
+
+                Session["PriceList"] = priceList;
+
+                #endregion
+
+                IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+
+                if (searchText != null && searchText.Trim() != "")
+                {
+                    string[] words = searchText.Trim().Split(' ');
+                    foreach (string word in words)
+                    {
+                        var categoryIds = AllCategories.Where(t => t.Name.ToLower().Contains(word)).ToList().Select(c => c.Id).ToArray();
+                        var islandIds = AllIslands.Where(i => i.Name.ToLower().Contains(word)).ToList().Select(t => t.Id).ToArray();
+                        var attractionIds = AllAttractionTypes.Where(a => a.Name.ToLower().Contains(word)).ToList().Select(aa => aa.Id).ToArray();
+                        var locAttrIds = AllLocationAttractions.Where(la => attractionIds.Contains(la.AttractionTypeId)).ToList().Select(l => l.LocationId).ToArray();
+                        var townIds = AllTowns.Where(t => islandIds.Contains(t.IslandId) || t.Name.ToLower().Contains(word)).ToList().Select(tt => tt.Id).ToArray();
+                        var locationIds = AllLocations.Where(l => locAttrIds.Contains(l.Id) || townIds.Contains(l.TownId)).ToList().Select(ll => ll.Id).ToArray();
+
+                        var timeiIds = AllTimeTables.Where(t => locationIds.Contains(t.LocationId)).ToList().Select(tt => tt.TourTimeId).ToArray();
+                        var timeTourIds = AllTourTimes.Where(t => timeiIds.Contains(t.TourId)).ToList().Select(tt => tt.TourId).ToArray();
+
+                        var searchTourIds = AllTours.Where(t => t.Name.ToLower().Contains(word) || t.ShortDescription.ToLower().Contains(word) || t.LongDescription.ToLower().Contains(word) || categoryIds.Contains(t.CategoryId) || timeTourIds.Contains(t.Id)).ToList().Select(tt => tt.Id).ToArray();
+
+                        foreach (var id in searchTourIds)
+                        {
+                            if (!searchTextTourIds.Contains(id))
+                                searchTextTourIds.Add(id);
+                        }
+                    }
+                    if (selectedCategories != null)
+                    {
+                        var searchTourByCategIds = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(t => t.Id).ToArray();
+                        var searchResultIds = searchTourByCategIds.Where(t => searchTextTourIds.Contains(t)).ToArray();
+                        Session["SearchTours"] = ViewAllTours.Where(t => searchResultIds.Contains(t.Id)).ToList();
+                    }
+                    else
+                        Session["SearchTours"] = ViewAllTours.Where(t => searchTextTourIds.Contains(t.Id)).ToList();
+                }
+                else
+                    Session["SearchTours"] = ViewAllTours;
+
+                return View();
             }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message.ToString());
+            }
+
             return View();
         }
 
         public PartialViewResult HomeCategDropDown()
         {
             ViewModelCategory model = new ViewModelCategory();
-            model.categories = db.Category.ToList();
+            model.Categories = db.Category.ToList();
             return PartialView(model);
-        }
-
-        [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
-        public ActionResult SearchFilter(string searchtext)
-        {
-            //GetCategAttrTours();
-            GlobalData.selectedcategories = null;
-            GlobalData.searchtext = searchtext.ToLower();
-            //ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, selectedcategory = GlobalData.selectedcategories };
-            //return View("Search", model);
-            return RedirectToAction("Search");
-            //Search();
         }
 
         [HttpPost]
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchCategory(IEnumerable<int> id)
         {
-            GlobalData.selectedcategories = id;
+            Session["SelectedCategories"] = id;
             return RedirectToAction("Search");
-            //return View();
         }
 
         public ActionResult ShoppingCart()
@@ -1153,85 +1277,95 @@ namespace GAPT.Controllers
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterIslands(IEnumerable<int> selectedislands)
         {
-            GlobalData.selectedislands = null;
-            var alltowns = db.Town.ToList();
-            var alllocations = db.Location.ToList();
-            var alltimetables = db.TourTimeTable.ToList();
-            var alldatetimes = db.TourDateTime.ToList();
-            var alltimes = db.TourTime.ToList();
-            var alldates = db.TourDate.ToList();
-            GlobalData.tours = GlobalData.alltours;
-            IEnumerable<int> toursbysearch = null;
+            var allTowns = db.Town.ToList();
+            var allLocations = db.Location.ToList();
+            var allTimeTables = db.TourTimeTable.ToList();
+            var allDateTimes = db.TourDateTime.ToList();
+            var allTimes = db.TourTime.ToList();
+            var allDates = db.TourDate.ToList();
+            List<ViewModelTour> allTours = (List<ViewModelTour>)Session["AllTours"];
+
+            Session["SearchTours"] = allTours;
+            IEnumerable<int> toursBySearch = null;
+            IEnumerable<int> selectedAttractions = (IEnumerable<int>)Session["SelectedAttractions"];
+            IEnumerable<int> selectedMonths = (IEnumerable<int>)Session["SelectedMonths"];
+            IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+            decimal? fromPrice = (decimal?)Session["FromPrice"];
+            decimal? toPrice = (decimal?)Session["ToPrice"];
 
             if (selectedislands == null)
             {
-                GlobalData.selectedislands = null;
+                Session["SelectedIslands"] = null;
             }
             else
             {
-                GlobalData.selectedislands = selectedislands;
-                var townsbyislandids = alltowns.Where(t => GlobalData.selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
-                var locationsbytownids = alllocations.Where(l => townsbyislandids.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
-                var timebyislandids = alltimetables.Where(t => locationsbytownids.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
-                var toursbyislandids = alltimes.Where(t => timebyislandids.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
+                Session["SelectedIslands"] = selectedislands;
+                var townsByIslandIds = allTowns.Where(t => selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
+                var locationsByTownIds = allLocations.Where(l => townsByIslandIds.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
+                var timeByIslandIds = allTimeTables.Where(t => locationsByTownIds.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
+                var toursByIslandIds = allTimes.Where(t => timeByIslandIds.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
 
-                toursbysearch = toursbyislandids;
+                toursBySearch = toursByIslandIds;
             }
-            if (GlobalData.selectedcategories != null)
+            if (selectedCategories != null)
             {
-                var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
+                var toursByCategIds = allTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbycategids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByCategIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbycategids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByCategIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedattr != null)
+            if (selectedAttractions != null)
             {
-                var locationattrs = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList();
-                var locationbyattrsids = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
-                var timebyattrids = alltimetables.Where(t => locationbyattrsids.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
-                var tourbyattrids = alltimes.Where(t => timebyattrids.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+                var locationAttrs = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList();
+                var locationByAttrsIds = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                var timeByAttrIds = allTimeTables.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                var tourByAttrIds = allTimes.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = tourbyattrids;
+                if (toursBySearch == null)
+                    toursBySearch = tourByAttrIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => tourbyattrids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
-                }
-            }
-
-            if (GlobalData.selectedmonths != null)
-            {
-                var toursbymonthids = alldates.Where(d => GlobalData.selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbymonthids;
-                else
-                {
-                    var searchres = toursbysearch.Where(t => toursbymonthids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
-                }
-            }
-            if (GlobalData.fromprice != null && GlobalData.toprice != null)
-            {
-                var toursbypriceids = GlobalData.tours.Where(t => t.AdultPrice <= GlobalData.toprice && t.AdultPrice >= GlobalData.fromprice).ToList().Select(tt => tt.Id).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbypriceids;
-                else
-                {
-                    var searchres = toursbysearch.Where(t => toursbypriceids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => tourByAttrIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
 
-            if (toursbysearch != null)
-                GlobalData.tours = GlobalData.alltours.Where(t => toursbysearch.Contains(t.Id)).ToList();
+            if (selectedMonths != null)
+            {
+                var toursByMonthIds = allDates.Where(d => selectedMonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByMonthIds;
+                else
+                {
+                    var searchResult = toursBySearch.Where(t => toursByMonthIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
+                }
+            }
+            if (fromPrice != null && toPrice != null)
+            {
+                var toursByPriceIds = AllTours.Where(t => t.AdultPrice <= toPrice && t.AdultPrice >= fromPrice).ToList().Select(tt => tt.Id).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByPriceIds;
+                else
+                {
+                    var searchResult = toursBySearch.Where(t => toursByPriceIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
+                }
+            }
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            if (toursBySearch != null)
+                Session["SearchTours"] = allTours.Where(t => toursBySearch.Contains(t.Id)).ToList();
+
+            ViewModelSearch model = new ViewModelSearch
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
 
             return PartialView("SearchTours", model);
         }
@@ -1240,84 +1374,92 @@ namespace GAPT.Controllers
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterCategories(IEnumerable<int> selectedcategories)
         {
-            GlobalData.selectedcategories = null;
-            var alltowns = db.Town.ToList();
-            var alllocations = db.Location.ToList();
-            var alltimetables = db.TourTimeTable.ToList();
-            var alldatetimes = db.TourDateTime.ToList();
-            var alltimes = db.TourTime.ToList();
-            var alldates = db.TourDate.ToList();
-            GlobalData.tours = GlobalData.alltours;
-            IEnumerable<int> toursbysearch = null;
+            var allTowns = db.Town.ToList();
+            var allLocations = db.Location.ToList();
+            var allTimeTables = db.TourTimeTable.ToList();
+            var allDateTimes = db.TourDateTime.ToList();
+            var allTimes = db.TourTime.ToList();
+            var allDates = db.TourDate.ToList();
+            List<ViewModelTour> allTours= (List<ViewModelTour>)Session["AllTours"];
+
+            Session["SearchTours"] = allTours;
+            IEnumerable<int> toursBySearch = null;
+            IEnumerable<int> selectedAttractions = (IEnumerable<int>)Session["SelectedAttractions"];
+            IEnumerable<int> selectedMonths = (IEnumerable<int>)Session["SelectedMonths"];
+            IEnumerable<int> selectedIslands = (IEnumerable<int>)Session["SelectedIslands"];
+            decimal? fromPrice = (decimal?)Session["FromPrice"];
+            decimal? toPrice = (decimal?)Session["ToPrice"];
 
             if (selectedcategories == null)
-            {
-                GlobalData.selectedcategories = null;
-            }
+                Session["SelectedCategories"] = null;
             else
             {
-                GlobalData.selectedcategories = selectedcategories;
-                var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
+                Session["SelectedCategories"] = selectedcategories;
+                var toursByCategIds = allTours.Where(t => selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
 
-                toursbysearch = toursbycategids;
+                toursBySearch = toursByCategIds;
             }
-            if (GlobalData.selectedattr != null)
+            if (selectedAttractions != null)
             {
-                var locationattrs = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList();
-                var locationbyattrsids = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
-                var timebyattrids = alltimetables.Where(t => locationbyattrsids.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
-                var tourbyattrids = alltimes.Where(t => timebyattrids.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+                var locationAttrs = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList();
+                var locationByAttrsIds = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                var timeByAttrIds = allTimeTables.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                var tourByAttrIds = allTimes.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = tourbyattrids;
+                if (toursBySearch == null)
+                    toursBySearch = tourByAttrIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => tourbyattrids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => tourByAttrIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedislands != null)
+            if (selectedIslands != null)
             {
-                var townsbyislandids = alltowns.Where(t => GlobalData.selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
-                var locationsbytownids = alllocations.Where(l => townsbyislandids.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
-                var timebyislandids = alltimetables.Where(t => locationsbytownids.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
-                var toursbyislandids = alltimes.Where(t => timebyislandids.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
+                var townsByIslandIds = allTowns.Where(t => selectedIslands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
+                var locationsByTownIds = allLocations.Where(l => townsByIslandIds.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
+                var timeByIslandIds = allTimeTables.Where(t => locationsByTownIds.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
+                var toursByIslandIds = allTimes.Where(t => timeByIslandIds.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbyislandids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByIslandIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbyislandids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByIslandIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedmonths != null)
+            if (selectedMonths != null)
             {
-                var toursbymonthids = alldates.Where(d => GlobalData.selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbymonthids;
+                var toursByMonthIds = allDates.Where(d => selectedMonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByMonthIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbymonthids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByMonthIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.fromprice != null && GlobalData.toprice != null)
+            if (fromPrice != null && toPrice != null)
             {
-                var toursbypriceids = GlobalData.tours.Where(t => t.AdultPrice <= GlobalData.toprice && t.AdultPrice >= GlobalData.fromprice).ToList().Select(tt => tt.Id).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbypriceids;
+                var toursByPriceIds = allTours.Where(t => t.AdultPrice <= toPrice && t.AdultPrice >= fromPrice).ToList().Select(tt => tt.Id).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByPriceIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbypriceids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByPriceIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
 
-            if (toursbysearch != null)
-                GlobalData.tours = GlobalData.alltours.Where(t => toursbysearch.Contains(t.Id)).ToList();
+            if (toursBySearch != null)
+                Session["SearchTours"] = allTours.Where(t => toursBySearch.Contains(t.Id)).ToList();
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            ViewModelSearch model = new ViewModelSearch 
+            { 
+                Tours = (List<ViewModelTour>)Session["SearchTours"], 
+                Wishlists = (List<WishList>)Session["Wishlists"] 
+            };
 
             return PartialView("SearchTours", model);
         }
@@ -1326,86 +1468,94 @@ namespace GAPT.Controllers
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterAttr(IEnumerable<int> selectedattr)
         {
-            GlobalData.selectedattr = null;
-            var alltowns = db.Town.ToList();
-            var alllocations = db.Location.ToList();
-            var alltimetables = db.TourTimeTable.ToList();
-            var alldatetimes = db.TourDateTime.ToList();
-            var alltimes = db.TourTime.ToList();
-            var alldates = db.TourDate.ToList();
-            GlobalData.tours = GlobalData.alltours;
-            IEnumerable<int> toursbysearch = null;
+            var allTowns = db.Town.ToList();
+            var allLocations = db.Location.ToList();
+            var allTimeTables = db.TourTimeTable.ToList();
+            var allDateTimes = db.TourDateTime.ToList();
+            var allTimes = db.TourTime.ToList();
+            var allDates = db.TourDate.ToList();
+            List<ViewModelTour> allTours = (List<ViewModelTour>)Session["AllTours"];
+
+            Session["SearchTours"] = allTours;
+            IEnumerable<int> toursBySearch = null;
+            IEnumerable<int> selectedIslands = (IEnumerable<int>)Session["SelectedIslands"];
+            IEnumerable<int> selectedMonths = (IEnumerable<int>)Session["SelectedMonths"];
+            IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+            decimal? fromPrice = (decimal?)Session["FromPrice"];
+            decimal? toPrice = (decimal?)Session["ToPrice"];
 
             if (selectedattr == null)
-            {
-                GlobalData.selectedattr = null;
-            }
+                Session["SelectedAttractions"] = null;
             else
             {
-                GlobalData.selectedattr = selectedattr;
+                Session["SelectedAttractions"] = selectedattr;
 
-                var locationattrs = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList();
-                var locationbyattrsids = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
-                var timebyattrids = alltimetables.Where(t => locationbyattrsids.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
-                var tourbyattrids = alltimes.Where(t => timebyattrids.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+                var locationAttrs = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList();
+                var locationByAttrsIds = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                var timeByAttrIds = allTimeTables.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                var tourByAttrIds = allTimes.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
 
-                toursbysearch = tourbyattrids;
+                toursBySearch = tourByAttrIds;
             }
 
-            if (GlobalData.selectedislands != null)
+            if (selectedIslands != null)
             {
-                var townsbyislandids = alltowns.Where(t => GlobalData.selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
-                var locationsbytownids = alllocations.Where(l => townsbyislandids.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
-                var timebyislandids = alltimetables.Where(t => locationsbytownids.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
-                var toursbyislandids = alltimes.Where(t => timebyislandids.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
+                var townsByIslandIds = allTowns.Where(t => selectedIslands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
+                var locationsByTownIds = allLocations.Where(l => townsByIslandIds.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
+                var timeByIslandIds = allTimeTables.Where(t => locationsByTownIds.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
+                var toursByIslandIds = allTimes.Where(t => timeByIslandIds.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbyislandids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByIslandIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbyislandids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByIslandIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedcategories != null)
+            if (selectedCategories != null)
             {
-                var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
+                var toursByCategIds = allTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbycategids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByCategIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbycategids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByCategIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedmonths != null)
+            if (selectedMonths != null)
             {
-                var toursbymonthids = alldates.Where(d => GlobalData.selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbymonthids;
+                var toursByMonthIds = allDates.Where(d => selectedMonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByMonthIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbymonthids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByMonthIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.fromprice != null && GlobalData.toprice != null)
+            if (fromPrice != null && toPrice != null)
             {
-                var toursbypriceids = GlobalData.tours.Where(t => t.AdultPrice <= GlobalData.toprice && t.AdultPrice >= GlobalData.fromprice).ToList().Select(tt => tt.Id).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbypriceids;
+                var toursByPriceIds = allTours.Where(t => t.AdultPrice <= toPrice && t.AdultPrice >= fromPrice).ToList().Select(tt => tt.Id).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByPriceIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbypriceids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByPriceIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
 
-            if (toursbysearch != null)
-                GlobalData.tours = GlobalData.alltours.Where(t => toursbysearch.Contains(t.Id)).ToList();
+            if (toursBySearch != null)
+                Session["SearchTours"] = allTours.Where(t => toursBySearch.Contains(t.Id)).ToList();
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            ViewModelSearch model = new ViewModelSearch
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
 
             return PartialView("SearchTours", model);
         }
@@ -1414,87 +1564,95 @@ namespace GAPT.Controllers
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterMonths(IEnumerable<int> selectedmonths)
         {
-            GlobalData.selectedmonths = null;
-            var alltowns = db.Town.ToList();
-            var alllocations = db.Location.ToList();
-            var alltimetables = db.TourTimeTable.ToList();
-            var alldatetimes = db.TourDateTime.ToList();
-            var alltimes = db.TourTime.ToList();
-            var alldates = db.TourDate.ToList();
-            GlobalData.tours = GlobalData.alltours;
-            IEnumerable<int> toursbysearch = null;
+            var allTowns = db.Town.ToList();
+            var allLocations = db.Location.ToList();
+            var allTimeTables = db.TourTimeTable.ToList();
+            var allDateTimes = db.TourDateTime.ToList();
+            var allTimes = db.TourTime.ToList();
+            var allDates = db.TourDate.ToList();
+            List<ViewModelTour> allTours = (List<ViewModelTour>)Session["AllTours"];
+
+            Session["SearchTours"] = allTours;
+            IEnumerable<int> toursBySearch = null;
+            IEnumerable<int> selectedIslands = (IEnumerable<int>)Session["SelectedIslands"];
+            IEnumerable<int> selectedAttractions = (IEnumerable<int>)Session["SelectedAttractions"];
+            IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+            decimal? fromPrice = (decimal?)Session["FromPrice"];
+            decimal? toPrice = (decimal?)Session["ToPrice"];
 
             if (selectedmonths == null)
-            {
-                GlobalData.selectedmonths = null;
-            }
+                Session["SelectedMonths"] = null;
             else
             {
-                GlobalData.selectedmonths = selectedmonths;
+                Session["SelectedMonths"] = selectedmonths;
 
-                var toursbymonthids = alldates.Where(d => selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
-                toursbysearch = toursbymonthids;
+                var toursByMonthIds = allDates.Where(d => selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
+                toursBySearch = toursByMonthIds;
             }
 
-            if (GlobalData.selectedislands != null)
+            if (selectedIslands != null)
             {
-                var townsbyislandids = alltowns.Where(t => GlobalData.selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
-                var locationsbytownids = alllocations.Where(l => townsbyislandids.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
-                var timebyislandids = alltimetables.Where(t => locationsbytownids.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
-                var toursbyislandids = alltimes.Where(t => timebyislandids.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
+                var townsByIslandIds = allTowns.Where(t => selectedIslands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
+                var locationsByTownIds = allLocations.Where(l => townsByIslandIds.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
+                var timeByIslandIds = allTimeTables.Where(t => locationsByTownIds.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
+                var toursByIslandIds = allTimes.Where(t => timeByIslandIds.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbyislandids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByIslandIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbyislandids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByIslandIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedcategories != null)
+            if (selectedCategories != null)
             {
-                var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
+                var toursByCategIds = allTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbycategids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByCategIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbycategids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByCategIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedattr != null)
+            if (selectedAttractions != null)
             {
-                var locationattrs = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList();
-                var locationbyattrsids = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
-                var timebyattrids = alltimetables.Where(t => locationbyattrsids.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
-                var tourbyattrids = alltimes.Where(t => timebyattrids.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+                var locationAttrs = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList();
+                var locationByAttrsIds = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                var timeByAttrIds = allTimeTables.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                var tourByAttrIds = allTimes.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = tourbyattrids;
+                if (toursBySearch == null)
+                    toursBySearch = tourByAttrIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => tourbyattrids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
-                }
-            }
-
-            if (GlobalData.fromprice != null && GlobalData.toprice != null)
-            {
-                var toursbypriceids = GlobalData.tours.Where(t => t.AdultPrice <= GlobalData.toprice && t.AdultPrice >= GlobalData.fromprice).ToList().Select(tt => tt.Id).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbypriceids;
-                else
-                {
-                    var searchres = toursbysearch.Where(t => toursbypriceids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => tourByAttrIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
 
-            if (toursbysearch != null)
-                GlobalData.tours = GlobalData.alltours.Where(t => toursbysearch.Contains(t.Id)).ToList();
+            if (fromPrice != null && toPrice != null)
+            {
+                var toursByPriceIds = allTours.Where(t => t.AdultPrice <= toPrice && t.AdultPrice >= fromPrice).ToList().Select(tt => tt.Id).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByPriceIds;
+                else
+                {
+                    var searchResult = toursBySearch.Where(t => toursByPriceIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
+                }
+            }
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            if (toursBySearch != null)
+                Session["SearchTours"] = allTours.Where(t => toursBySearch.Contains(t.Id)).ToList();
+
+            ViewModelSearch model = new ViewModelSearch
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
 
             return PartialView("SearchTours", model);
         }
@@ -1503,264 +1661,103 @@ namespace GAPT.Controllers
         [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterPrice(IEnumerable<int> selectedprice)
         {
-            GlobalData.fromprice = null;
-            GlobalData.toprice = null;
-            var alltowns = db.Town.ToList();
-            var alllocations = db.Location.ToList();
-            var alltimetables = db.TourTimeTable.ToList();
-            var alldatetimes = db.TourDateTime.ToList();
-            var alltimes = db.TourTime.ToList();
-            var alldates = db.TourDate.ToList();
-            GlobalData.tours = GlobalData.alltours;
-            IEnumerable<int> toursbysearch = null;
+            var allTowns = db.Town.ToList();
+            var allLocations = db.Location.ToList();
+            var allTimeTables = db.TourTimeTable.ToList();
+            var allDateTimes = db.TourDateTime.ToList();
+            var allTimes = db.TourTime.ToList();
+            var allDates = db.TourDate.ToList();
+            List<ViewModelTour> allTours = (List<ViewModelTour>)Session["AllTours"];
+
+            Session["SearchTours"] = allTours;
+            IEnumerable<int> toursBySearch = null;
+            IEnumerable<int> selectedIslands = (IEnumerable<int>)Session["SelectedIslands"];
+            IEnumerable<int> selectedAttractions = (IEnumerable<int>)Session["SelectedAttractions"];
+            IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+            IEnumerable<int> selectedMonths = (IEnumerable<int>)Session["SelectedMonths"];
 
             if (selectedprice == null || selectedprice.ElementAt(0) == 4)
             {
-                GlobalData.fromprice = null;
-                GlobalData.toprice = null;
+                Session["FromPrice"] = null;
+                Session["ToPrice"] = null;
             }
             else
             {
-                GlobalData.fromprice = GlobalData.priceslist.ElementAt(selectedprice.ElementAt(0))[0];
-                GlobalData.toprice = GlobalData.priceslist.ElementAt(selectedprice.ElementAt(0))[1];
-                //GlobalData.fromprice = selectedprice.ElementAt(0);
-                //GlobalData.toprice = selectedprice.ElementAt(1);
+                List<decimal[]> Price1 = (List<decimal[]>)Session["PriceList"];
+                decimal? fromPrice = Price1.ElementAt(selectedprice.ElementAt(0))[0];
+                List<decimal[]> Price2 = (List<decimal[]>)Session["PriceList"];
+                decimal? toPrice = Price1.ElementAt(selectedprice.ElementAt(0))[1];
 
-                var toursbypriceids = GlobalData.tours.Where(t => t.AdultPrice <= GlobalData.toprice && t.AdultPrice >= GlobalData.fromprice).ToList().Select(tt => tt.Id).ToArray();
-                toursbysearch = toursbypriceids;
+                Session["FromPrice"] = fromPrice;
+                Session["ToPrice"] = toPrice;
+
+                var toursByPriceIds = allTours.Where(t => t.AdultPrice <= toPrice && t.AdultPrice >= fromPrice).ToList().Select(tt => tt.Id).ToArray();
+                toursBySearch = toursByPriceIds;
             }
-            if (GlobalData.selectedmonths != null)
+            if (selectedMonths != null)
             {
-                var toursbymonthids = alldates.Where(d => GlobalData.selectedmonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
-                if (toursbysearch == null)
-                    toursbysearch = toursbymonthids;
+                var toursByMonthIds = allDates.Where(d => selectedMonths.Contains(d.DateOfTour.Date.Month)).ToList().Select(t => t.TourId).ToArray();
+                if (toursBySearch == null)
+                    toursBySearch = toursByMonthIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbymonthids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByMonthIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedislands != null)
+            if (selectedIslands != null)
             {
-                var townsbyislandids = alltowns.Where(t => GlobalData.selectedislands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
-                var locationsbytownids = alllocations.Where(l => townsbyislandids.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
-                var timebyislandids = alltimetables.Where(t => locationsbytownids.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
-                var toursbyislandids = alltimes.Where(t => timebyislandids.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
+                var townsByIslandIds = allTowns.Where(t => selectedIslands.Contains(t.IslandId)).ToList().Select(ti => ti.Id).ToArray();
+                var locationsByTownIds = allLocations.Where(l => townsByIslandIds.Contains(l.TownId)).ToList().Select(loc => loc.Id).ToArray();
+                var timeByIslandIds = allTimeTables.Where(t => locationsByTownIds.Contains(t.LocationId)).ToList().Select(t => t.TourTimeId).ToArray();
+                var toursByIslandIds = allTimes.Where(t => timeByIslandIds.Contains(t.Id)).ToList().Select(td => td.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbyislandids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByIslandIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbyislandids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByIslandIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedcategories != null)
+            if (selectedCategories != null)
             {
-                var toursbycategids = GlobalData.alltours.Where(t => GlobalData.selectedcategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
+                var toursByCategIds = allTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(tt => tt.Id).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = toursbycategids;
+                if (toursBySearch == null)
+                    toursBySearch = toursByCategIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => toursbycategids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => toursByCategIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
-            if (GlobalData.selectedattr != null)
+            if (selectedAttractions != null)
             {
-                var locationattrs = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList();
-                var locationbyattrsids = db.LocationAttraction.Where(l => GlobalData.selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
-                var timebyattrids = alltimetables.Where(t => locationbyattrsids.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
-                var tourbyattrids = alltimes.Where(t => timebyattrids.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+                var locationAttrs = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList();
+                var locationByAttrsIds = db.LocationAttraction.Where(l => selectedAttractions.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                var timeByAttrIds = allTimeTables.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                var tourByAttrIds = allTimes.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
 
-                if (toursbysearch == null)
-                    toursbysearch = tourbyattrids;
+                if (toursBySearch == null)
+                    toursBySearch = tourByAttrIds;
                 else
                 {
-                    var searchres = toursbysearch.Where(t => tourbyattrids.Contains(t)).ToArray();
-                    toursbysearch = searchres;
+                    var searchResult = toursBySearch.Where(t => tourByAttrIds.Contains(t)).ToArray();
+                    toursBySearch = searchResult;
                 }
             }
 
-            if (toursbysearch != null)
-                GlobalData.tours = GlobalData.alltours.Where(t => toursbysearch.Contains(t.Id)).ToList();
+            if (toursBySearch != null)
+                Session["SearchTours"] = allTours.Where(t => toursBySearch.Contains(t.Id)).ToList();
 
-            ViewModelLookUp model = new ViewModelLookUp { categories = GlobalData.categories, attractionTypes = GlobalData.attractionTypes, tours = GlobalData.tours, islands = GlobalData.islands, wishlist = GlobalData.wishlist };
+            ViewModelSearch model = new ViewModelSearch
+            {
+                Tours = (List<ViewModelTour>)Session["SearchTours"],
+                Wishlists = (List<WishList>)Session["Wishlists"]
+            };
 
             return PartialView("SearchTours", model);
-        }
-    }
-
-    public static class GlobalData
-    {
-        // read-write variable
-        public static List<decimal[]> priceslist
-        {
-            get
-            {
-                return HttpContext.Current.Application["priceslist"] as List<decimal[]>;
-            }
-            set
-            {
-                HttpContext.Current.Application["priceslist"] = value;
-            }
-
-        }
-
-        public static List<WishList> wishlist
-        {
-            get
-            {
-                return HttpContext.Current.Application["wishlist"] as List<WishList>;
-            }
-            set
-            {
-                HttpContext.Current.Application["wishlist"] = value;
-            }
-
-        }
-
-        public static List<ViewModelTour> alltours
-        {
-            get
-            {
-                return HttpContext.Current.Application["alltours"] as List<ViewModelTour>;
-            }
-            set
-            {
-                HttpContext.Current.Application["alltours"] = value;
-            }
-        }
-        public static List<ViewModelTour> tours
-        {
-            get
-            {
-                return HttpContext.Current.Application["tours"] as List<ViewModelTour>;
-            }
-            set
-            {
-                HttpContext.Current.Application["tours"] = value;
-            }
-        }
-
-        public static List<Category> categories
-        {
-            get
-            {
-                return HttpContext.Current.Application["categories"] as List<Category>;
-            }
-            set
-            {
-                HttpContext.Current.Application["categories"] = value;
-            }
-        }
-
-        public static List<AttractionType> attractionTypes
-        {
-            get
-            {
-                return HttpContext.Current.Application["attractionTypes"] as List<AttractionType>;
-            }
-            set
-            {
-                HttpContext.Current.Application["attractionTypes"] = value;
-            }
-        }
-
-        public static List<Island> islands
-        {
-            get
-            {
-                return HttpContext.Current.Application["islands"] as List<Island>;
-            }
-            set
-            {
-                HttpContext.Current.Application["islands"] = value;
-            }
-        }
-
-        public static IEnumerable<int> selectedcategories
-        {
-            get
-            {
-                return HttpContext.Current.Application["selectedcategories"] as IEnumerable<int>;
-            }
-            set
-            {
-                HttpContext.Current.Application["selectedcategories"] = value;
-            }
-        }
-
-        public static IEnumerable<int> selectedattr
-        {
-            get
-            {
-                return HttpContext.Current.Application["selectedattr"] as IEnumerable<int>;
-            }
-            set
-            {
-                HttpContext.Current.Application["selectedattr"] = value;
-            }
-        }
-
-        public static IEnumerable<int> selectedislands
-        {
-            get
-            {
-                return HttpContext.Current.Application["selectedislands"] as IEnumerable<int>;
-            }
-            set
-            {
-                HttpContext.Current.Application["selectedislands"] = value;
-            }
-        }
-
-        public static IEnumerable<int> selectedmonths
-        {
-            get
-            {
-                return HttpContext.Current.Application["selectemonths"] as IEnumerable<int>;
-            }
-            set
-            {
-                HttpContext.Current.Application["selectemonths"] = value;
-            }
-        }
-
-        public static decimal? fromprice
-        {
-            get
-            {
-                return HttpContext.Current.Application["fromprice"] as decimal?;
-            }
-            set
-            {
-                HttpContext.Current.Application["fromprice"] = value;
-            }
-        }
-
-        public static decimal? toprice
-        {
-            get
-            {
-                return HttpContext.Current.Application["toprice"] as decimal?;
-            }
-            set
-            {
-                HttpContext.Current.Application["toprice"] = value;
-            }
-        }
-        public static string searchtext
-        {
-            get
-            {
-                return HttpContext.Current.Application["searchtext"] as string;
-            }
-            set
-            {
-                HttpContext.Current.Application["searchtext"] = value;
-            }
         }
     }
 }

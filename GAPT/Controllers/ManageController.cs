@@ -231,7 +231,7 @@ namespace GAPT.Controllers
         public PartialViewResult HomeCategDropDown()
         {
             ViewModelCategory model = new ViewModelCategory();
-            model.categories = db.Category.ToList();
+            model.Categories = db.Category.ToList();
             return PartialView(model);
         }
 

@@ -1,5 +1,5 @@
 ﻿@using GAPT.Models
-@model ViewModelLookUp
+@model ViewModelSearch
 
 
 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
@@ -64,12 +64,12 @@
     }
 </script>
 
-@if (Model.tours.Count == 0)
+@if (Model.Tours.Count == 0)
 {
     <h5 class="test-muted">Sorry, no matches were found. Please try different search options.</h5>
 }
 <div id="searchtours">
-    @foreach (var tour in Model.tours)
+    @foreach (var tour in Model.Tours)
     {
         using (Html.BeginForm("Tourpage", "Home", new { id = tour.Id }, FormMethod.Post))
         {
@@ -87,8 +87,6 @@
                         </div>
                         <div class="col-md-9 col-xs-9">
                             <h2><a href="#" onclick="$(this).closest('form').submit()" style="font-size:75%">@tour.Name</a></h2>
-                            @*<h2><a href="Url.Action("Tourpage", "Home", new { id = tour.Id })" style="font-size:75%">@tour.Name</a></h2>*@
-                            @*<h2>@Html.ActionLink(tour.Name, "Tourpage", new { id = tour.Id }, null)</h2>*@
                             <div class="clearfix">
                                 @{Html.RenderAction("SearchToursAverageRating", "Home", new { tourId = tour.Id });}
                             </div>
@@ -103,9 +101,9 @@
                                 <button type="submit" value="Tourpage" id="Tourpage" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></button>
                                 <!--<a href="Url.Action("Tourpage","Home")" id="seemore" onclick="test(tour.Id);" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></a>-->
                                 @*<a href="@Url.Action("Tourpage","Home")" class="btn btn-template-main" style="float:right;border-radius:5px;margin-right:6%;">See More <i class="fa fa-arrow-right"></i></a>*@
-                                @if (Model.wishlist != null && Model.wishlist.Count != 0)
+                                @if (Model.Wishlists != null && Model.Wishlists.Count != 0)
                                 {
-                                    var currtourwishlist = Model.wishlist.Where(w => w.TourId == tour.Id).ToList();
+                                    var currtourwishlist = Model.Wishlists.Where(w => w.TourId == tour.Id).ToList();
                                     if (currtourwishlist != null && currtourwishlist.Count > 0)
                                     {
                                         <button type="button" class="btn btn-template-main hidden-md hidden-sm hidden-xs" value="added" style="float:left;border-radius:5px;margin-left:0%" onclick="addToWishlistFun(@tour.Id)" id="wishlist@{@tour.Id}">Added to wishlist<i class="fa fa-heart"></i></button>
@@ -126,17 +124,6 @@
                     </div>
                 </section>
 
-                @*<script>
-                function changetext(id, value) {
-                    if (value == "notadded") {
-                        document.getElementById(id).innerHTML = "Added to wishlist" + "<i class=\"fa fa-heart\"></i>";
-                        document.getElementById(id).value = "added";
-                    } else if (value == "added") {
-                        document.getElementById(id).innerHTML = "Add to Wishlist" + "<i class=\"fa fa-heart-o\"></i>";
-                        document.getElementById(id).value = "notadded";
-                    }
-                }
-                </script>*@
                 <!--testing end-->
             </div>
         }

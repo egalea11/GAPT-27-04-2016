@@ -7,7 +7,21 @@ namespace GAPT.Models
 {
     public class ViewModelCategory
     {
-        public List<Category> categories { get; set; }
+        public List<Category> Categories { get; set; }
+        public IEnumerable<int> selectedcategory { get; set; }
+    }
+    public class ViewModelAttractionType
+    {
+        public List<AttractionType> AttractionTypes { get; set; }
+    }
+    public class ViewModelIsland
+    {
+        public List<Island> Islands { get; set; }
+    }
+    public class ViewModelSearch
+    {
+        public List<ViewModelTour> Tours { get; set; }
+        public List<WishList> Wishlists { get; set; }
     }
     public class AttractionType
     {

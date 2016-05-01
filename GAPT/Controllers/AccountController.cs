@@ -345,7 +345,7 @@ namespace GAPT.Controllers
         public PartialViewResult HomeCategDropDown()
         {
             ViewModelCategory model = new ViewModelCategory();
-            model.categories = tourdb.Category.ToList();
+            model.Categories = tourdb.Category.ToList();
             return PartialView(model);
         }
 

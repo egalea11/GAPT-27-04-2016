@@ -1,5 +1,5 @@
 ﻿@using GAPT.Models
-@model ViewModelLookUp
+@model ViewModelIsland
 
 <script>
     $(document).ready(function () {
@@ -11,7 +11,7 @@
     });
 </script>
 
-@foreach (var island in Model.islands)
+@foreach (var island in Model.Islands)
 {
     <div class="checkbox" id="@{@island.Id}">
         <label>
