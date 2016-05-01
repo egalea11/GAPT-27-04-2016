@@ -1,26 +1,25 @@
 ﻿@using GAPT.Models
 @model OrderHistoryModel
 
-@foreach (var order in Model.Orders)
-{
-    <div class="box" style="padding-bottom:0px;">
-
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Date ordered</th>
-                        <th colspan="1">Tour</th>
-                        <th>Adults</th>
-                        <th>Unit price</th>
-                        <th>Children</th>
-                        <th>Unit price</th>
-                        <th colspan="2">Total</th>
-                    </tr>
-                </thead>
+<div class="box" style="padding-bottom:0px;">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date ordered</th>
+                    <th colspan="1">Tour</th>
+                    <th>Adults</th>
+                    <th>Unit price</th>
+                    <th>Children</th>
+                    <th>Unit price</th>
+                    <th colspan="2">Total</th>
+                </tr>
+            </thead>
 
 
-                <tbody>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
 
                     <!--begin loop to show each tour bought-->
                     <tr>
@@ -43,18 +42,15 @@
                         <td>€@order.TotalChildPrice</td>  <!--child unit price-->
                         <td>€@order.TotalPrice</td> <!--total of adult and child combined-->
                         @*<td>
-                            <a href="Url.Action("ViewCustomerInfo", "Manage")" class="btn btn-template-main btn-sm">View customer details</a>
-                        </td>*@
+                                <a href="Url.Action("ViewCustomerInfo", "Manage")" class="btn btn-template-main btn-sm">View customer details</a>
+                            </td>*@
                     </tr>
                     <!--end loop to show each tour bought-->
 
-                </tbody>
-            </table>
-
-        </div>
-        <!-- /.table-responsive -->
-
+                }
+            </tbody>
+        </table>
 
     </div>
-
-}
+    <!-- /.table-responsive -->
+</div>
