@@ -444,6 +444,45 @@ namespace GAPT.Controllers
             return this.Json(dates, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult GetJsonLocations()
+        {
+            int? tourId = (int?)Session["TourId"];
+
+            if (tourId == null || tourId == 0)
+            {
+                // Argument not passed
+                // Reponse 400 Bad Request
+                return null;
+                //Response.StatusCode = 400;
+                //Response.End();
+            }
+
+            var tourTimes = db.TourTime.Where(t => t.TourId == tourId).ToList();
+            var tourTimeIds = tourTimes.Select(t => t.Id).ToArray();
+            var tourDates = db.TourDate.Where(t => t.TourId == tourId && t.DateOfTour > DateTime.Now).ToList();
+            var tourDateIds = tourDates.Select(t => t.Id).ToArray();
+            var tourDateTimes = db.TourDateTime.Where(t => tourDateIds.Contains(t.Id)).ToList();
+            var tourTimeTables = db.TourTimeTable.Where(t => tourTimeIds.Contains(t.TourTimeId)).ToList();
+            var tourLocationIds = tourTimeTables.Select(t => t.LocationId).ToArray();
+            var tourLocations = db.Location.Where(l => tourLocationIds.Contains(l.Id)).ToList();
+
+            var jsonString = new StringBuilder();
+
+            //List<string> dates = new List<string>();
+
+            //for (int i = 0; i < tourDates.Count(); i++)
+            //{
+            //    var tempDate = tourDates[i];
+            //    DateTime temp = new DateTime(tempDate.Year, tempDate.Month, tempDate.Day);
+            //    string str = temp.ToString("yyyy-MM-dd");
+            //    dates.Add(str);
+            //}
+            //var jsonS = Json(tourLocations).ToString();
+            //Trace.TraceInformation(Json(tourLocations).ToString());
+            return this.Json(tourLocations, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public ActionResult CustomerInfo()
         {
@@ -960,7 +999,10 @@ namespace GAPT.Controllers
         {
             TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
             if (sessionModel != null)
+            {
+                Session["TourId"] = sessionModel.Tour.Id;
                 return View(sessionModel);
+            }
             return RedirectToAction("Error","Home");
         }
 
@@ -969,6 +1011,8 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Tourpage(int id)
         {
+            Session["TourId"] = id;
+
             TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
             if (sessionModel != null)
                 return View(sessionModel);
@@ -1009,8 +1053,6 @@ namespace GAPT.Controllers
                 var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
                 model.Wishlists = currUserWishlist;
             }
-
-            //ViewBag.Message = model.Tour.Id;
 
             return View("Tourpage", model);
         }
