@@ -1,24 +1,29 @@
-﻿@model GAPT.Models.ChangePersonalDetailsViewModel
+﻿@using GAPT.Models
+@model ChangePersonalDetailsViewModel
 @{
     Layout = null;
 }
+<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
-        var numpref = $(".flag-container").find(".selected-flag").attr("title");
-        $("#prefix").val(numpref);
-        if (@Model != null)
-        {
-            $("#Name").val(@Model.Name);
-            $("#Surname").val(@Model.Surname);
-            $("#UserName").val(@Model.UserName);
-            $("#Email").val(@Model.Email);
-            $("#country").val("@{@Model.Country}");
-            $("#day").val("@{@Model.BirthDay}");
-            $("#month").val("@{@Model.BirthMonth}");
-            $("#year").val("@{@Model.BirthYear}");
-            $("#phone").val("@{@Model.PhoneNumber}");
+        $("#Name").val("@Model.Name");
+        $("#Surname").val("@Model.Surname");
+        $("#UserName").val("@Model.UserName");
+        $("#country").val("@Model.Country");
+        $("#day").val("@Model.BirthDay");
+        $("#month").val("@Model.BirthMonth");
+        $("#year").val("@Model.BirthYear");
+        $("#phone").val("@{@Model.PhoneNumber}");
+        //$("#Email").val(@Model.Email);
+
+        //var numpref = $(".flag-container").find(".selected-flag").attr("title");
+        //$("#prefix").val(numpref);
+
+
             //$(".flag-container").find(".selected-flag").attr("title").countrySelect = "";
-        }
+
+            //$("#phone").text("@{@Model.PhoneNumber}");
     });
 </script>
 
@@ -87,11 +92,19 @@
         </div>
     </div>
 
+    <script>
+        function setMonth(month) {
+            $("#month").val(month);
+        }
+        function setDay(day) {
+            $("#month").val(day);
+        }
+    </script>
 
     <div class="col-sm-6">
         <div class="form-group">
             <label for="dob" style="display:block;">Date of Birth</label>
-            <select name="DOBDay" id="day" class="form-control" style="display:inline-table;width:91px;height:34px;font-size:14px;text-align:center" required>
+            <select name="DOBDay" id="day" class="form-control" style="display:inline-table;width:91px;height:34px;font-size:14px;text-align:center" onload="setDay(@Model.BirthDay)" required>
                 <option value=""> - Day - </option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -125,10 +138,10 @@
                 <option value="30">30</option>
                 <option value="31">31</option>
             </select>
-            <select name="DOBMonth" id="month" class="form-control" style="display:inline-table;width:91px;height:34px;font-size:14px;text-align:center" required>
+            <select name="DOBMonth" id="month" class="form-control" style="display:inline-table;width:91px;height:34px;font-size:14px;text-align:center" onload="setMonth(@Model.BirthMonth)" required>
                 <option value=""> - Month - </option>
                 <option value="January">January</option>
-                <option value="Febuary">Febuary</option>
+                <option value="Febuary">February</option>
                 <option value="March">March</option>
                 <option value="April">April</option>
                 <option value="May">May</option>
