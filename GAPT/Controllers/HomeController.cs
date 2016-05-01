@@ -1202,35 +1202,41 @@ namespace GAPT.Controllers
 
                 if (searchText != null && searchText.Trim() != "")
                 {
-                    string[] words = searchText.Trim().Split(' ');
-                    foreach (string word in words)
+                    var tourByFullName = db.Tour.Where(t => t.Name.ToLower() == searchText.ToLower()).FirstOrDefault();
+                    if (tourByFullName != null)
+                        Session["SearchTours"] = ViewAllTours.Where(t => t.Id == tourByFullName.Id).ToList();
+                    else 
                     {
-                        var categoryIds = AllCategories.Where(t => t.Name.ToLower().Contains(word)).ToList().Select(c => c.Id).ToArray();
-                        var islandIds = AllIslands.Where(i => i.Name.ToLower().Contains(word)).ToList().Select(t => t.Id).ToArray();
-                        var attractionIds = AllAttractionTypes.Where(a => a.Name.ToLower().Contains(word)).ToList().Select(aa => aa.Id).ToArray();
-                        var locAttrIds = AllLocationAttractions.Where(la => attractionIds.Contains(la.AttractionTypeId)).ToList().Select(l => l.LocationId).ToArray();
-                        var townIds = AllTowns.Where(t => islandIds.Contains(t.IslandId) || t.Name.ToLower().Contains(word)).ToList().Select(tt => tt.Id).ToArray();
-                        var locationIds = AllLocations.Where(l => locAttrIds.Contains(l.Id) || townIds.Contains(l.TownId)).ToList().Select(ll => ll.Id).ToArray();
-
-                        var timeiIds = AllTimeTables.Where(t => locationIds.Contains(t.LocationId)).ToList().Select(tt => tt.TourTimeId).ToArray();
-                        var timeTourIds = AllTourTimes.Where(t => timeiIds.Contains(t.TourId)).ToList().Select(tt => tt.TourId).ToArray();
-
-                        var searchTourIds = AllTours.Where(t => t.Name.ToLower().Contains(word) || t.ShortDescription.ToLower().Contains(word) || t.LongDescription.ToLower().Contains(word) || categoryIds.Contains(t.CategoryId) || timeTourIds.Contains(t.Id)).ToList().Select(tt => tt.Id).ToArray();
-
-                        foreach (var id in searchTourIds)
+                        string[] words = searchText.ToLower().Trim().Split(' ');
+                        foreach (string word in words)
                         {
-                            if (!searchTextTourIds.Contains(id))
-                                searchTextTourIds.Add(id);
+                            var categoryIds = AllCategories.Where(t => t.Name.ToLower().Contains(word)).ToList().Select(c => c.Id).ToArray();
+                            var islandIds = AllIslands.Where(i => i.Name.ToLower().Contains(word)).ToList().Select(t => t.Id).ToArray();
+                            var attractionIds = AllAttractionTypes.Where(a => a.Name.ToLower().Contains(word)).ToList().Select(aa => aa.Id).ToArray();
+                            var locAttrIds = AllLocationAttractions.Where(la => attractionIds.Contains(la.AttractionTypeId)).ToList().Select(l => l.LocationId).ToArray();
+                            var townIds = AllTowns.Where(t => islandIds.Contains(t.IslandId) || t.Name.ToLower().Contains(word)).ToList().Select(tt => tt.Id).ToArray();
+                            var locationIds = AllLocations.Where(l => locAttrIds.Contains(l.Id) || townIds.Contains(l.TownId)).ToList().Select(ll => ll.Id).ToArray();
+
+                            var timeiIds = AllTimeTables.Where(t => locationIds.Contains(t.LocationId)).ToList().Select(tt => tt.TourTimeId).ToArray();
+                            var timeTourIds = AllTourTimes.Where(t => timeiIds.Contains(t.TourId)).ToList().Select(tt => tt.TourId).ToArray();
+
+                            var searchTourIds = AllTours.Where(t => t.Name.ToLower().Contains(word) || t.ShortDescription.ToLower().Contains(word) || t.LongDescription.ToLower().Contains(word) || categoryIds.Contains(t.CategoryId) || timeTourIds.Contains(t.Id)).ToList().Select(tt => tt.Id).ToArray();
+
+                            foreach (var id in searchTourIds)
+                            {
+                                if (!searchTextTourIds.Contains(id))
+                                    searchTextTourIds.Add(id);
+                            }
                         }
+                        if (selectedCategories != null)
+                        {
+                            var searchTourByCategIds = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(t => t.Id).ToArray();
+                            var searchResultIds = searchTourByCategIds.Where(t => searchTextTourIds.Contains(t)).ToArray();
+                            Session["SearchTours"] = ViewAllTours.Where(t => searchResultIds.Contains(t.Id)).ToList();
+                        }
+                        else
+                            Session["SearchTours"] = ViewAllTours.Where(t => searchTextTourIds.Contains(t.Id)).ToList();
                     }
-                    if (selectedCategories != null)
-                    {
-                        var searchTourByCategIds = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList().Select(t => t.Id).ToArray();
-                        var searchResultIds = searchTourByCategIds.Where(t => searchTextTourIds.Contains(t)).ToArray();
-                        Session["SearchTours"] = ViewAllTours.Where(t => searchResultIds.Contains(t.Id)).ToList();
-                    }
-                    else
-                        Session["SearchTours"] = ViewAllTours.Where(t => searchTextTourIds.Contains(t.Id)).ToList();
                 }
                 else
                     Session["SearchTours"] = ViewAllTours;
