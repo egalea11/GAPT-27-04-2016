@@ -1248,24 +1248,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-
-.navbar {
-  position: relative;
-  z-index: 1000;
-  min-height: 50px;
-  background: white;
-}
-
-.navbar-affixed-top.affix {
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-    -webkit-transition: all 0.5s ease-out;
-    -moz-transition: all 0.5s ease-out;
-    transition: all 0.5s ease-out;
-}
-
 .slim-page{
         background: white;
         padding: 10px 30px;
@@ -1547,6 +1529,13 @@ td, th{
     margin-top: 20px;
 }
 
+.navbar {
+  position: relative;
+  z-index: 1000;
+  min-height: 50px;
+  background: white;
+}
+
 .navbar-fixed-top {
     position: fixed;
     right: 0;
@@ -1555,6 +1544,24 @@ td, th{
 }
 
 /* navigation buttons */
+
+
+.navbar-affixed-top.affix {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+}
+
+.navbar ul.nav > li > a {
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    border-radius: 50px;
+}
 
 .navbar ul.nav > li > a:hover {
     border-top: solid 3px #da4d4d;
