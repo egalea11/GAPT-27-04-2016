@@ -105,6 +105,13 @@ namespace GAPT.Controllers
 
         public ActionResult Index()
         {
+            Session["SelectedIslands"] = null;
+            Session["SelectedAttractions"] = null;
+            Session["SelectedCategories"] = null;
+            Session["FromPrice"] = null;
+            Session["ToPrice"] = null;
+            Session["SelectedMonths"] = null;
+
             return View();
         }
 
@@ -868,6 +875,13 @@ namespace GAPT.Controllers
         [HttpGet]
         public ActionResult Tourpage()
         {
+            Session["SelectedIslands"] = null;
+            Session["SelectedAttractions"] = null;
+            Session["SelectedCategories"] = null;
+            Session["FromPrice"] = null;
+            Session["ToPrice"] = null;
+            Session["SelectedMonths"] = null;
+
             TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
             if (sessionModel != null)
             {
@@ -881,6 +895,13 @@ namespace GAPT.Controllers
         [HttpPost]
         public ActionResult Tourpage(int id)
         {
+            Session["SelectedIslands"] = null;
+            Session["SelectedAttractions"] = null;
+            Session["SelectedCategories"] = null;
+            Session["FromPrice"] = null;
+            Session["ToPrice"] = null;
+            Session["SelectedMonths"] = null;
+
             Session["TourId"] = id;
 
             TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
