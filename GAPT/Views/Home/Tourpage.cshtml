@@ -215,6 +215,18 @@
                 e.preventDefault()
             }
         });
+
+        var mod = @Model.AdultAmount;
+        if(mod != null && mod != '' && mod != 0)
+        {
+            $("#adult-amount").val(@Model.AdultAmount);
+            $("children-amount").val(@Model.ChildAmount);
+            //var date = Model.TourDate.ToShortDateString();
+            //$("#datepicker").val(date).trigger('change');
+            //var tourTime = Model.TourTime;
+            //$("select#dropdown option:selected").val(tourTime);
+        }
+
     });
 </script>
 

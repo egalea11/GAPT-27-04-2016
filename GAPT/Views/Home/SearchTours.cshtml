@@ -91,26 +91,6 @@
                             @*<h2>@Html.ActionLink(tour.Name, "Tourpage", new { id = tour.Id }, null)</h2>*@
                             <div class="clearfix">
                                 @{Html.RenderAction("SearchToursAverageRating", "Home", new { tourId = tour.Id });}
-                                @*@if (tour.AverageRatingId == 6)
-                                {
-                                    <p class="author-category">
-                                        <h5>This tour is not rated yet.</h5>
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p class="author-category">
-                                        @for (int i = 0; i < tour.AverageRatingId; i++)
-                                        {
-                                            <i class="fa fa-star"></i>
-                                        }
-                                        @for (int k = 0; k < 5 - tour.AverageRatingId; k++)
-                                        {
-                                            <i class="fa fa-star-o"></i>
-                                        }
-                                    </p>
-                                }*@
-
                             </div>
                             <p class="intro">
                                 @tour.ShortDescription

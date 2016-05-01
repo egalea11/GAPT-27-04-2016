@@ -8,6 +8,7 @@
 <script>
     $(document).ready(function () {
         var tourId = @Model.Tour.Id;
+        $("#BackToTour").val("false");
         $("#TourId").val(tourId);
         $(".adultTitle").text("Mr");
         $(".childTitle").text("Master");
@@ -77,6 +78,15 @@
                 alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
                 e.preventDefault()
             }
+        });
+
+        $("#back-to-tour").click(function() {
+            $(".form-control").removeAttr("required");
+            $(".adultTitle").removeAttr("required");
+            $(".childTitle").removeAttr("required");
+            $("#terms-and-conditions").removeAttr("required");
+            $("#BackToTour").val("true");
+            $("#back-to-tour").submit();
         });
     });
 </script>
@@ -177,27 +187,18 @@
             <div class="col-md-9 clearfix" id="checkout">
                 @using (Html.BeginForm("Payment", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
                 {
-
                     @Html.AntiForgeryToken()
-                    @*@Html.HiddenFor(m => m.TourDate)*@
-                    @*@Html.HiddenFor(m => m.TourDateTime)*@
-                    @*@Html.HiddenFor(m => m.TourTime)*@
                     @Html.HiddenFor(m => m.TourDateId)
                     @Html.HiddenFor(m => m.TourDateTimeId)
                     @Html.HiddenFor(m => m.TourTimeId)
                     @Html.HiddenFor(m => m.TourId)
                     @Html.HiddenFor(m => m.TourStartingLocation)
-                    @*@Html.HiddenFor(m => m.Tour)*@
                     @Html.HiddenFor(m => m.AdultAmount)
                     @Html.HiddenFor(m => m.ChildAmount)
                     @Html.HiddenFor(m => m.AdultTotalPrice)
                     @Html.HiddenFor(m => m.ChildTotalPrice)
                     @Html.HiddenFor(m => m.TotalPrice)
-                    @*@Html.TextBoxFor(m => m.Tour.Id, new { id = "TourId", style = "display: none;" })
-                @Html.TextBoxFor(m => m.DateTimeTourDate, new { id = "DateTimeTourDate", style = "display: none;" })
-                @Html.TextBoxFor(m => m.StringTourTime, new { id = "StringTourTime", style = "display: none;" })*@
-
-
+                    @Html.TextBoxFor(m => m.BackToTour, new { id = "BackToTour", style="display:none;"})
 
                     <div class="box">
                         <ul class="nav nav-pills nav-justified">
@@ -232,14 +233,14 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="firstname">First Name</label>
-                                            @Html.TextBoxFor(m => m.AdultDetails[i].FirstName, new { id = "adult-firstname" + i, required = "required", @class = "form-control" })
+                                            @Html.TextBoxFor(m => m.AdultDetails[i].FirstName, new { id = "adult-firstname" + i, required = "required", @class = "form-control", value = Model.AdultDetails[i].FirstName })
 
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="lastname">Last Name</label>
-                                            @Html.TextBoxFor(m => m.AdultDetails[i].LastName, new { id = "adult-lastname" + i, required = "required", @class = "form-control" })
+                                            @Html.TextBoxFor(m => m.AdultDetails[i].LastName, new { id = "adult-lastname" + i, required = "required", @class = "form-control", value = Model.AdultDetails[i].LastName })
                                         </div>
                                     </div>
                                 </div>
@@ -266,14 +267,14 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="firstname">First Name</label>
-                                            @Html.TextBoxFor(m => m.ChildDetails[k].FirstName, new { id = "child-firstname" + k, required = "required", @class = "form-control" })
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].FirstName, new { id = "child-firstname" + k, required = "required", @class = "form-control", value = Model.ChildDetails[k].FirstName })
 
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="lastname">Last Name</label>
-                                            @Html.TextBoxFor(m => m.ChildDetails[k].LastName, new { id = "child-lastname" + k, required = "required", @class = "form-control" })
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].LastName, new { id = "child-lastname" + k, required = "required", @class = "form-control", value = Model.ChildDetails[k].LastName })
 
                                         </div>
                                     </div>
@@ -281,7 +282,7 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="dob" style="margin-bottom:0px;">Date of Birth</label>
-                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthDay, new { id = "child-birthday" + k, style = "display: none;" })
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthDay, new { id = "child-birthday" + k, style = "display: none;", value = Model.ChildDetails[k].BirthDay })
                                             <select class="form-control" id="birthday@{@k}" name="DOBDay" onload="birthdayLoad(@k);" onclick="birthdayChange(@k);" onkeypress="birthdayChange(@k);" onkeydown="birthdayChange(@k);" onkeyup="birthdayChange(@k);" required>
                                                 <option value=""> - Day - </option>
                                                 <option value="1">1</option>
@@ -321,7 +322,7 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="dob"></label>
-                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthMonth, new { id = "child-birthmonth" + k, style = "display: none;" })
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthMonth, new { id = "child-birthmonth" + k, style = "display: none;" , value = Model.ChildDetails[k].BirthMonth})
                                             <select class="form-control" id="birthmonth@{@k}" name="DOBMonth" onload="birthmonthLoad(@k);" onclick="birthmonthChange(@k);" onkeypress="birthmonthChange(@k);" onkeydown="birthmonthChange(@k);" onkeyup="birthmonthChange(@k);" required>
                                                 <option value=""> - Month - </option>
                                                 <option value="January">January</option>
@@ -342,7 +343,7 @@
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="dob"></label>
-                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthYear, new { id = "child-birthyear" + k, style = "display: none;" })
+                                            @Html.TextBoxFor(m => m.ChildDetails[k].BirthYear, new { id = "child-birthyear" + k, style = "display: none;", value = Model.ChildDetails[k].BirthYear })
                                             <select name="DOBYear" id="birthyear@{@k}" class="form-control" onload="birthyearLoad(@k);" onclick="birthyearChange(@k);" onkeypress="birthyearChange(@k);" onkeydown="birthyearChange(@k);" onkeyup="birthyearChange(@k);" required>
                                                 <option value=""> - Year - </option>
                                                 <option value="2006">2006</option>
@@ -369,23 +370,14 @@
 
                         <div class="checkbox">
                             <label style="float:right">
-                                <input type="checkbox" required>I agree to the <a href="#">Terms and Conditions</a>
+                                <input type="checkbox" required id="terms-and-conditions">I agree to the <a href="#">Terms and Conditions</a>
                             </label>
                         </div>
 
                         <div class="box-footer">
                             <div class="pull-left">
-                                @*@using (Html.BeginForm("Tourpage", "Home", new { id = Model.TourId }, FormMethod.Post))
-                                {
-                                    @Html.AntiForgeryToken()*@
-                                    <button type="button" class="btn btn-template-main"><i class="fa fa-chevron-left"></i>Back to Tourpage</button>
-                                    @*<a href="@Url.Action("Tourpage","Home" , new { tourid=Model.TourId })" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Tourpage</a>*@
-                                @*}*@
-                                @*<form id="back-to-tourpage" method="post" action="@Url.Action("Tourpage","Home")>
-                                    <input type="text" hidden id="tourId" value="@Model.TourId"/>
-                                    <a href="#" onclick="back-to-tourpage.submit()" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Tourpage</a>
-                                </form>*@
-                                @*<a href="~/Home/Tourpage/@Model.TourId" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Tourpage</a>*@
+                                <button id="back-to-tour" type="submit" class="btn btn-template-main"><i class="fa fa-chevron-left"></i>Back to Tourpage</button>
+                                @*@{Html.RenderAction("BackToTourpage", "Home", new { id = Model.TourId });}*@
                             </div>
                             <div class="pull-right">
                                 @using Microsoft.AspNet.Identity
@@ -416,7 +408,9 @@
                         <h3>Order summary</h3>
                     </div>
                     <div style="padding-left: 3%;padding-right: 2%;">
-                        <a href="#" style="display:block">@Model.Tour.Name</a>
+                        <form method="get" action="@Url.Action("Tourpage","Home")">
+                            <a href="#" onclick="$(this).closest('form').submit()" style="display:block">@Model.Tour.Name</a>
+                        </form>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Date and Time:</p><p id="DateAndTime" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block">@Model.TourDate.DateOfTour.ToShortDateString() @Model.TourTime.StartTime-@Model.TourTime.EndTime</p>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px;">Location: <span id="location">@Model.TourStartingLocation</span></p>
                         <p style="margin-top:0px;margin-bottom:0px; font-size:11px; display:inline-block">Adult Amount: </p><p id="adult-amount" style="margin-top:0px;font-size:11px;margin-bottom:0px; display:inline-block"> @Model.AdultAmount</p>

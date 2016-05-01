@@ -71,6 +71,7 @@ namespace GAPT.Models
         public int TourDateId { get; set; }
         public int TourDateTimeId { get; set; }
         public int TourId { get; set; }
+        public bool BackToTour { get; set; }
     }
 
     public class AdultDetails
@@ -134,6 +135,7 @@ namespace GAPT.Models
         public string StringTourTime { get; set; }
         public DateTime DateTimeTourDate { get; set; }
         public string StartingLocation { get; set; }
+        public int TourId { get; set; }
     }
 
     public class OrderHistoryModel

@@ -244,59 +244,77 @@ namespace GAPT.Controllers
 
         public ActionResult RemoveFromWishlist(IEnumerable<int> id)
         {
-            if (User.Identity.IsAuthenticated && id != null)
+            if (!User.Identity.IsAuthenticated)
             {
-                var wishlists = db.WishList.ToList();
-                var currentusername = User.Identity.Name;
-                var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
-                var curruserwishlist = wishlists.Where(w => w.UserId == userid && w.TourId == id.First() && w.Expired == false).ToList();
-
-                if (curruserwishlist.Count != 0)
-                {
-                    db.WishList.Remove(curruserwishlist.FirstOrDefault());
-                    db.SaveChangesAsync();
-                    GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
-                    return Json(true);
-                }
-                return Json(false);
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
             }
-            else
+
+            if (id == null)
                 return Json(false);
+
+
+            var wishlists = db.WishList.ToList();
+            var currentusername = User.Identity.Name;
+            var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
+            var curruserwishlist = wishlists.Where(w => w.UserId == userid && w.TourId == id.First() && w.Expired == false).ToList();
+
+            if (curruserwishlist.Count != 0)
+            {
+                db.WishList.Remove(curruserwishlist.FirstOrDefault());
+                db.SaveChangesAsync();
+                GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
+                return Json(true);
+            }
+            return Json(false);
         }
         public ActionResult AddToWishlist(IEnumerable<int> id)
         {
-            if (User.Identity.IsAuthenticated && id != null)
+            if (!User.Identity.IsAuthenticated)
             {
-                var wishlists = db.WishList.Where(w => w.Expired != true).ToList();
-                var currentusername = User.Identity.Name;
-                var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
-                var curruserwishlist = wishlists.Where(w => w.UserId == userid && w.TourId == id.First()).ToList();
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
+            }
 
-                if (curruserwishlist.Count == 0)
+            if(id == null)
+                return Json(false);
+
+            var wishlists = db.WishList.Where(w => w.Expired != true).ToList();
+            var currentusername = User.Identity.Name;
+            var userid = appdb.Users.Where(u => u.UserName == currentusername).FirstOrDefault().Id;
+            var curruserwishlist = wishlists.Where(w => w.UserId == userid && w.TourId == id.First()).ToList();
+
+            if (curruserwishlist.Count == 0)
+            {
+                GAPT.Models.WishList wishlist = new WishList
                 {
-                    GAPT.Models.WishList wishlist = new WishList
-                    {
-                        TourId = id.First(),
-                        DateTimeCreated = DateTime.Now,
-                        UserId = userid,
-                        Expired = false
-                    };
-                    //string query = "INSERT INTO [WishList] (TourId, DateTimeCreated, UserId) VALUES (\"" 
-                    //                + wishlist.TourId + "\",\"" + wishlist.DateTimeCreated + "\",\"" + wishlist.UserId + "\");";
-                    db.WishList.Add(wishlist);
-                    db.SaveChangesAsync();
+                    TourId = id.First(),
+                    DateTimeCreated = DateTime.Now,
+                    UserId = userid,
+                    Expired = false
+                };
+                //string query = "INSERT INTO [WishList] (TourId, DateTimeCreated, UserId) VALUES (\"" 
+                //                + wishlist.TourId + "\",\"" + wishlist.DateTimeCreated + "\",\"" + wishlist.UserId + "\");";
+                db.WishList.Add(wishlist);
+                db.SaveChangesAsync();
 
-                    GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
-                    return Json(true);
-                }
+                GlobalData.wishlist = wishlists.Where(w => w.UserId == userid).ToList();
                 return Json(true);
             }
-            else
-                return Json(false);
+            return Json(false);         
         }
 
         public ActionResult OrderConfirmation(CustomerInfoModel model)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
+            }
+
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
             var currUserName = User.Identity.Name;
             var userId = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault().Id;
@@ -360,6 +378,16 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Payment(CustomerInfoModel model)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
+            }
+
+            if (model.BackToTour == true)
+                return RedirectToAction("Tourpage");
+
             CustomerInfoModel paymentModel = new CustomerInfoModel()
             {
                 Tour = db.Tour.Where(t => t.Id == model.TourId).FirstOrDefault(),
@@ -416,6 +444,23 @@ namespace GAPT.Controllers
             return this.Json(dates, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult CustomerInfo()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
+            }
+
+            CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+            if (orderModel != null)
+                return View(orderModel);
+
+            return RedirectToAction("Error", "Home");
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -423,7 +468,9 @@ namespace GAPT.Controllers
         {
             if (!User.Identity.IsAuthenticated)
             {
-                // check is already done on client side but could be added here as well
+                // check is already done on client side but should be added here as well
+                Response.StatusCode = 401;
+                Response.End();
             }
 
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
@@ -435,10 +482,6 @@ namespace GAPT.Controllers
             decimal totalChildPrice = model.ChildAmount * tourDetails.ChildPrice;
             decimal totalPrice = totalAdultPrice + totalChildPrice;
 
-            //string[] date = model.StringTourDate.Split('/');
-            //DateTime temp = Convert.ToDateTime(model.TourDate);
-            //DateTime temp = Convert.ToDateTime(model.StringTourDate);
-            //string Temp = temp.Date.ToShortDateString();
             string fromFormat = "MM/dd/yyyy";
             DateTime DateOfTour = DateTime.ParseExact(model.StringTourDate, fromFormat, CultureInfo.InvariantCulture);
 
@@ -690,7 +733,7 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        //[HttpPost]
+        [HttpPost]
         public PartialViewResult Reviews(int id)
         {
             var reviews = db.Review.Where(r => r.TourId == id);
@@ -717,6 +760,37 @@ namespace GAPT.Controllers
             return PartialView(model);
         }
 
+        [HttpGet]
+        public ActionResult Reviews()
+        {
+            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            if (sessionModel == null)
+                return RedirectToAction("Error", "Home");
+
+            var reviews = db.Review.Where(r => r.TourId == sessionModel.Tour.Id);
+            var userIds = reviews.Select(r => r.UserId).ToArray();
+            var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
+            ReviewViewModel model = new ReviewViewModel();
+            model.Reviews = new List<ReviewModel>();
+
+            foreach (var r in reviews)
+            {
+                ReviewModel reviewModel = new ReviewModel()
+                {
+                    Id = r.Id,
+                    RatingId = r.RatingId,
+                    Comment = r.Comment,
+                    DateTimeCreated = r.DateTimeCreated,
+                    TourId = r.TourId,
+                    Username = reviewUsers.Where(u => u.Id == r.UserId).FirstOrDefault().UserName
+                };
+
+                model.Reviews.Add(reviewModel);
+            }
+
+            return PartialView(model);
+        }
+        
         [AllowAnonymous]
         [HttpPost]
         public ActionResult ReviewTour(int id)
@@ -728,6 +802,22 @@ namespace GAPT.Controllers
 
             return PartialView("ReviewTour", model);
         }
+
+        [HttpGet]
+        public ActionResult ReviewTour()
+        {
+            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            if (sessionModel == null)
+                return RedirectToAction("Error", "Home");
+
+            Review model = new Review()
+            {
+                TourId = sessionModel.Tour.Id
+            };
+
+            return PartialView("ReviewTour", model);
+        }
+        
         [AllowAnonymous]
         [HttpPost]
         public ActionResult RecalculateAverageRating(IEnumerable<int> tourId) 
@@ -836,6 +926,23 @@ namespace GAPT.Controllers
             return PartialView(model);
         }
 
+        [HttpGet]
+        public ActionResult TourpageAverageRating()
+        {
+            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            if (sessionModel == null)
+                return RedirectToAction("Error", "Home");
+
+            var ratingId = db.Tour.Where(t => t.Id == sessionModel.Tour.Id).FirstOrDefault().AverageRatingId;
+
+            AverageRatingModel model = new AverageRatingModel()
+            {
+                AverageRating = ratingId
+            };
+            return PartialView(model);
+            
+        }
+
         [AllowAnonymous]
         public ActionResult SearchToursAverageRating(int tourId)
         {
@@ -847,7 +954,16 @@ namespace GAPT.Controllers
             };
             return PartialView(model);
         }
-                    
+
+        [HttpGet]
+        public ActionResult Tourpage()
+        {
+            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            if (sessionModel != null)
+                return View(sessionModel);
+            return RedirectToAction("Error","Home");
+        }
+
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -859,6 +975,10 @@ namespace GAPT.Controllers
 
             //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
+
+            if (tour == null)
+                return RedirectToAction("Error", "Home");
+
             var category = db.Category.Where(c => c.Id == tour.CategoryId).FirstOrDefault().Name;
             var tourTimes = db.TourTime.Where(t => t.TourId == id).ToList();
             var tourTimeIds = tourTimes.Select(t => t.Id).ToArray();

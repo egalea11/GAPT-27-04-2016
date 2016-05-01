@@ -466,6 +466,7 @@ namespace GAPT.Controllers
                     StringTourTime = tourTime.StartTime + "-" + tourTime.EndTime,
                     DateTimeTourDate = tourDate.DateOfTour,
                     TourName = tour.Name,
+                    TourId = tour.Id,
                     TotalChildPrice = o.ChildQuantity * tour.ChildPrice,
                     TotalAdultPrice = o.AdultQuantity * tour.AdultPrice,
                 };
