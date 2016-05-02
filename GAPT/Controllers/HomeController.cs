@@ -195,7 +195,7 @@ namespace GAPT.Controllers
 
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
             var currUserName = User.Identity.Name;
-            var userId = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault().Id;
+            var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
             
             Order order = new Order() 
             { 
@@ -203,7 +203,7 @@ namespace GAPT.Controllers
                 ChildQuantity = orderModel.ChildAmount,
                 DateTimeCreated = DateTime.Now,
                 TotalPrice = orderModel.TotalPrice,
-                UserId = userId,
+                UserId = user.Id,
                 TourDateTimeId = orderModel.TourDateTimeId
             };
 
@@ -244,6 +244,25 @@ namespace GAPT.Controllers
 
                 db.TourAttendees.Add(attendeeChild);
                 db.SaveChanges();
+
+                var tourDateTime = db.TourDateTime.Where(t => t.Id == order.TourDateTimeId).FirstOrDefault();
+                var tourDate = db.TourDate.Where(d => d.Id == tourDateTime.TourDateId).FirstOrDefault().DateOfTour.ToShortDateString();
+                var tourTime = db.TourTime.Where(t => t.Id == tourDateTime.TourTimeId).FirstOrDefault();
+                var stringTourTime = tourTime.StartTime + "-" + tourTime.EndTime;
+                var tour = db.Tour.Where(t => t.Id == tourTime.TourId).FirstOrDefault();
+                var startingLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
+                var startingLocation = db.Location.Where(l => l.Id == startingLocationId).FirstOrDefault();
+
+                // user.Email
+                // user.Name
+                // user.Surname
+                // order.AdultQuantity
+                // order.ChildQuantity
+                // order.TotalPrice
+                // tourDate    ----> date of tour as string
+                // stringTourTime    ----> time of tour as string
+                // tour.Name
+                // startingLocation.Name    ----> just in case trid tikteb starting location
             }
 
             Session["PaymentModel"] = null;
