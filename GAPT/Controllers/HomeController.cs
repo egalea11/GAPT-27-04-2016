@@ -390,9 +390,11 @@ namespace GAPT.Controllers
                 Response.End();
             }
 
-            CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
-            if (orderModel != null)
-                return View(orderModel);
+            Session["PaymentModel"] = null;
+
+            //CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+            //if (orderModel != null)
+            //    return View(orderModel);
 
             var tourDetails = db.Tour.Where(t => t.Id == model.Tour.Id).FirstOrDefault();
             decimal totalAdultPrice = model.AdultAmount * tourDetails.AdultPrice;

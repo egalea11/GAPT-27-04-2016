@@ -228,6 +228,14 @@
                                                 <option value="Mrs">Mrs</option>
                                                 <option value="Ms">Ms</option>
                                             </select>
+                                            <script>
+                                                var title = "@Model.AdultDetails[i].Title";
+
+                                                if(title != "")
+                                                {
+                                                    $("select#adult-title@{@i}").val("@Model.AdultDetails[i].Title");
+                                                }
+                                            </script>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -262,20 +270,27 @@
                                                 <option value="Master" selected="selected">Master</option>
                                                 <option value="Miss">Miss</option>
                                             </select>
+                                            <script>
+                                                var title = "@Model.ChildDetails[k].Title";
+                                                if(title != "")
+                                                {
+                                                    $("select#child-title@{@k}").val("@Model.ChildDetails[k].Title");
+                                                }
+
+                                            </script>
+
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="firstname">First Name</label>
                                             @Html.TextBoxFor(m => m.ChildDetails[k].FirstName, new { id = "child-firstname" + k, required = "required", @class = "form-control", value = Model.ChildDetails[k].FirstName })
-
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="lastname">Last Name</label>
                                             @Html.TextBoxFor(m => m.ChildDetails[k].LastName, new { id = "child-lastname" + k, required = "required", @class = "form-control", value = Model.ChildDetails[k].LastName })
-
                                         </div>
                                     </div>
 
@@ -317,6 +332,13 @@
                                                 <option value="30">30</option>
                                                 <option value="31">31</option>
                                             </select>
+                                            <script>
+                                                var day = "@Model.ChildDetails[k].BirthDay";
+                                                if(day != "0")
+                                                {
+                                                    $("select#birthday@{@k}").val("@Model.ChildDetails[k].BirthDay");
+                                                }
+                                            </script>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -338,6 +360,13 @@
                                                 <option value="November">November</option>
                                                 <option value="December">December</option>
                                             </select>
+                                            <script>
+                                                var month = "@Model.ChildDetails[k].BirthMonth";
+                                                if(month != "")
+                                                {
+                                                    $("select#birthmonth@{@k}").val("@Model.ChildDetails[k].BirthMonth");
+                                                }
+                                            </script>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -358,6 +387,14 @@
                                                 <option value="2015">2015</option>
                                                 <option value="2016">2016</option>
                                             </select>
+                                            <script>
+                                                var year = "@Model.ChildDetails[k].BirthYear";
+                                                if(year != "0")
+                                                {
+                                                    $("select#birthyear@{@k}").val("@Model.ChildDetails[k].BirthYear");
+                                                }
+                                            </script>
+
                                         </div>
                                     </div>
 
