@@ -9,14 +9,11 @@
 
 <script>
     $(document).ready(function () {
-        document.getElementById("prefix").innerHTML = "test";
         var numpref = $(".flag-container").find(".selected-flag").attr("title");
         $("#prefix").val(numpref);
         $(".intl-tel-input").click(function () {
             var numpref = $(".flag-container").find(".selected-flag").attr("title");
-            //document.getElementById("prefix").innerHTML = test;
             $("#prefix").val(numpref);
-            //$("#prefix").text(numpref);
         });
     });
 </script>
@@ -62,28 +59,19 @@
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group" style="width:280px">
-                            @*<label for="name-login">Surname <p style="color:red; display:inline"> *</p></label>
-                                <input type="text" class="form-control" id="name-login" required>*@
                             @Html.LabelFor(m => m.Name)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.TextBoxFor(m => m.Name, new { @class = "form-control" , required = "required" })
                             </div>
                         </div>
                         <div class="form-group" style="width:280px">
-                            @*<label for="surname-login">Surname <p style="color:red; display:inline"> *</p></label>
-                                <input type="text" class="form-control" id="surname-register" required>*@
                             @Html.LabelFor(m => m.Surname)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.TextBoxFor(m => m.Surname, new { @class = "form-control" , required = "required" })
                             </div>
                         </div>
                         <div class="form-group">
-                            @*<label for="email-login">Email <p style="color:red; display:inline"> *</p></label>
-                                <input type="email" class="form-control" id="email-login" required>*@
                             @Html.LabelFor(m => m.Email)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control" , required = "required",@type = "email" })
                                 @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
@@ -91,7 +79,7 @@
                         </div>
                         <div class="form-group">
                             <label for="dob-login" style="display:block;">Date of Birth <p style="color:red; display:inline"> *</p></label>
-                            <select name="BirthDay" class="form-control" id="BirthDay" onchange="runDay()" style="width:91px;height:34px;font-size:14px; text-align:center;display:inline-block" required>
+                            <select name="BirthDay" class="form-control" id="BirthDay" style="width:91px;height:34px;font-size:14px; text-align:center;display:inline-block" required>
                                 <option value=""> - Day - </option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -125,10 +113,10 @@
                                 <option value="30">30</option>
                                 <option value="31">31</option>
                             </select>
-                            <select name="BirthMonth" class="form-control" id="BirthMonth" onchange="runMonth()" style="width:91px;height:34px;font-size:14px;text-align:center;display:inline-block" required>
+                            <select name="BirthMonth" class="form-control" id="BirthMonth" style="width:91px;height:34px;font-size:14px;text-align:center;display:inline-block" required>
                                 <option value=""> - Month - </option>
                                 <option value="January">January</option>
-                                <option value="Febuary">Febuary</option>
+                                <option value="Febuary">February</option>
                                 <option value="March">March</option>
                                 <option value="April">April</option>
                                 <option value="May">May</option>
@@ -140,7 +128,7 @@
                                 <option value="November">November</option>
                                 <option value="December">December</option>
                             </select>
-                            <select name="BirthYear" id="BirthYear" class="form-control" onchange="runYear()" style="width:91px; height:34px;font-size:14px; text-align:center;display:inline-block" required>
+                            <select name="BirthYear" id="BirthYear" class="form-control" style="width:91px; height:34px;font-size:14px; text-align:center;display:inline-block" required>
                                 <option value=""> - Year - </option>
                                 <option value="2000">2000</option>
                                 <option value="1999">1999</option>
@@ -197,34 +185,10 @@
                                 <option value="1948">1948</option>
                                 <option value="1947">1947</option>
                             </select>
-
-                            <script>
-                                function runDay() {
-                                    var day = document.getElementById("Day").value;
-                                    document.getElementById("BirthDay").value = day;
-                                }
-                            </script>
-
-                            <script>
-                                function runMonth() {
-                                    var month = document.getElementById("BirthMonth").value;
-                                    document.getElementById("BirthMonth").value = month;
-                                }
-                            </script>
-
-                            <script>
-                                function runYear() {
-                                    var year = document.getElementById("Year").value;
-                                    document.getElementById("BirthYear").value = year;
-                                }
-                            </script>
                         </div>
 
                         <div class="form-group">
-                            <!--<label for="select-country" style="display:block;">Country <p style="color:red; display:inline"> *</p></label>
-                            <input type="text" id="country" class="form-control" style="padding-right:25%;text-align:center;padding-left:25%;">-->
                             @Html.LabelFor(m => m.Country)
-                            @*@class = "col-md-2 control-label",*@ 
                             <div>
                                 @Html.TextBoxFor(m => m.Country, new { @class = "form-control" , @id = "country" , @style = "width:150%" , required = "required" })
                                 <script>
@@ -243,20 +207,14 @@
                         </div>
 
                         <div class="form-group">
-                            @*<label for="username-login">Username<p style="color:red; display:inline"> *</p></label>
-                                <input type="text" pattern='^(?=.{6,20}$)(?!.*[._-]{2})[a-z][a-z0-9._-]*[a-z0-9]$' title="Username needs to be between 6 to 20 characters and can only contain alphanumeric characters, _ . or - which cannot be used near each other" class="form-control"  id="username-login" required>*@
                             @Html.LabelFor(m => m.UserName)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" , required = "required", pattern= "^(?=.{6,20}$)(?!.*[._-]{2})[a-z][a-z0-9._-]*[a-z0-9]$", title="Username needs to be between 6 to 20 characters and can only contain alphanumeric characters, _ . or - which cannot be used near each other" })
                                 @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div class="form-group">
-                            @*<label for="mobile-login" style="text-wrap:normal">Mobile Number - So we can send you important information and reminders about your tours <p style="color:red; display:inline"> *</p></label>
-                                <input type="tel" class="form-control" id="phone" style="padding-right: 26.7%;" required>*@
                             @Html.LabelFor(m => m.PhoneNumber)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", id = "phone", @style = "width:150%", required = "required" })
                                 @Html.TextBoxFor(m => m.NumberPrefix, new { style = "display: none;", id = "prefix"})
@@ -281,20 +239,14 @@
                             </script>
                         </div>
                         <div class="form-group">
-                            @*<label for="password-login">Password <p style="color:red; display:inline"> *</p></label>
-                                <input type="password"  pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!#"$%()^&*_=+-]).{8,16}$' title='Password needs to be between 8 to 20 characters and must include alphanumeric characters. Special characters accepted _ - . which must not be near each other.' class="form-control" id="password-login" required>*@
                             @Html.LabelFor(m => m.Password)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.PasswordFor(m => m.Password, new { @class = "form-control", required = "required", pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!#$%()^&*_=+-]).{8,16}$", title = "Password needs to be between 8 to 20 characters and must uppercase, lower case, numbers and special characters. Special characters accepted _ - . which must not be near each other.", id = "password-login" })
                                 @Html.ValidationMessageFor(m => m.Password)
                             </div>
                         </div>
                         <div class="form-group">
-                            @*<label for="confirm-password-login">Confirm Password <p style="color:red; display:inline"> *</p></label>
-                                <input type="password" class="form-control" id="confirm-password-login" required>*@
                             @Html.LabelFor(m => m.ConfirmPassword)
-                            @*, new { @class = "col-md-2 control-label" }*@
                             <div>
                                 @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", required = "required", id = "confirm-password-login" })
                                 @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
@@ -324,26 +276,8 @@
                     <p class="lead">Already our customer?</p>
 
                     <hr>
-                    @*@{@Html.AntiForgeryToken()
-                        Html.RenderPartial("login");}*@
                     @{@Html.AntiForgeryToken()
                         Html.RenderPartial("LoginRegister");}
-
-                    @*<form action="@Url.Action("Login","Account")" method="post">
-                        <div class="form-group">
-                            <label for="text">Username or Email<p style="color:red; display:inline"> *</p></label>
-                            <input type="text" class="form-control" id="email" required >
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password <p style="color:red; display:inline"> *</p></label>
-                            <input type="password" class="form-control" id="password" required>
-                            <br>
-                            <a href="@Url.Action("PasswordReminder","Home")"<label style="text-decoration:underline">Forgot your Password?</label></a>
-                        </div>
-                        <div class="text-center" style="padding-top: 7px;">
-                            <button type="submit" class="btn btn-template-main"><i class="fa fa-sign-in"></i> Log in</button>
-                        </div>
-                    </form>*@
                 </div>
             </div>
         </div>

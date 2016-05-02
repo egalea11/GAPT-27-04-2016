@@ -502,15 +502,20 @@ namespace GAPT.Controllers
             //var user = UserManager.C
             var user = UserManager.Users.Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             string[] phone1 = user.PhoneNumber.Split(' ');
-            string numberprefix = phone1[0] + ": " + phone1[1];
+            var lastIndex = phone1.Count() - 1;
+            var phoneNumber = phone1[lastIndex];
+            string numberprefix = "";
+
+            for(int i = 0; i < phone1.Count() - 1; i++)
+                numberprefix += " " + phone1[i];
 
             ChangePersonalDetailsViewModel model = new ChangePersonalDetailsViewModel() 
             {
                 Name = user.Name,
                 Surname = user.Surname,
                 Email = user.Email,
-                PhoneNumber = phone1[2],
-                NumberPrefix = numberprefix,
+                PhoneNumber = phoneNumber,
+                NumberPrefix = numberprefix.Trim(),
                 UserName = user.UserName,
                 Country = user.Country,
                 BirthDay = user.BirthDate.Day,
@@ -518,6 +523,43 @@ namespace GAPT.Controllers
                 BirthYear = user.BirthDate.Year
             };
             return PartialView(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePersonalDetails(ChangePersonalDetailsViewModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                Response.StatusCode = 401;
+                Response.End();
+            }
+            if (model == null)
+                return RedirectToAction("MyAccount");
+
+            var userName = User.Identity.Name;
+            var updatedUser = appdb.Users.Where(u => u.UserName == userName).FirstOrDefault();
+
+            int month = DateTime.ParseExact(model.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
+            DateTime birthDate = new DateTime(model.BirthYear, month, model.BirthDay);
+            var phoneNumber = model.NumberPrefix + " " + model.PhoneNumber;
+
+            try
+            {
+                appdb.Database.ExecuteSqlCommand("update [AspNetUsers] set [Name] = @p1, [Surname] = @p2, [Country] = @p3, [PhoneNumber] = @p4, [BirthDate] = @p5 where [Id] = @p6",
+                new System.Data.SqlClient.SqlParameter("p1", model.Name),
+                new System.Data.SqlClient.SqlParameter("p2", model.Surname),
+                new System.Data.SqlClient.SqlParameter("p3", model.Country),
+                new System.Data.SqlClient.SqlParameter("p4", phoneNumber),
+                new System.Data.SqlClient.SqlParameter("p5", birthDate),
+                new System.Data.SqlClient.SqlParameter("p6", updatedUser.Id));
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message);
+            }
+
+            return RedirectToAction("MyAccount");
         }
 
         public async Task<ActionResult> RemoveWishlist(IEnumerable<int> id)
