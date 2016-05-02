@@ -599,6 +599,67 @@ namespace GAPT.Controllers
             //return Json(true);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeactivateAccount()
+        {
+            var currentUserName = User.Identity.Name;
+            var user = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault();
+            
+            try
+            {
+                var tourReviewsByUserIds = db.Review.Where(r => r.UserId == user.Id).ToList().Select(r => r.TourId).ToArray();
+
+                db.Database.ExecuteSqlCommand("delete from [Review] where [UserId] = @p1",
+                new System.Data.SqlClient.SqlParameter("p1", user.Id));
+                db.Database.ExecuteSqlCommand("delete from [WishList] where [UserId] = @p1",
+                new System.Data.SqlClient.SqlParameter("p1", user.Id));
+
+                //var userOrders = db.Order.Where(o => o.UserId == user.Id).ToList().Select(o => o.Id).ToArray();
+                db.Database.ExecuteSqlCommand("DELETE a FROM [TourAttendees] a INNER JOIN [Order] o ON a.OrderId = o.Id WHERE o.Id IN (SELECT o.Id FROM [Order] o WHERE o.UserId = @p1);",
+                new System.Data.SqlClient.SqlParameter("p1", user.Id));
+                db.Database.ExecuteSqlCommand("DELETE FROM [Order] WHERE UserId = @p1;",
+                new System.Data.SqlClient.SqlParameter("p1", user.Id));
+
+                #region recalculate tour ratings
+
+                foreach (int tourId in tourReviewsByUserIds)
+                {
+                    var ratings = db.Review.Where(r => r.TourId == tourId && r.RatingId != 6).ToList().Select(r => r.RatingId).ToArray();
+                    int sumRating = 0;
+
+                    foreach (var r in ratings)
+                        sumRating += Convert.ToInt32(r);
+
+                    float averageRating;
+                    if (ratings.Count() == 0)
+                    {
+                        averageRating = ratings.Count();
+                    }
+                    averageRating = sumRating / ratings.Count();
+
+                    int tourRating = (int)averageRating;
+
+                    db.Database.ExecuteSqlCommand("update [Tour] set [AverageRatingId] = @p1 where [Id] = @p2",
+                    new System.Data.SqlClient.SqlParameter("p1", tourRating),
+                    new System.Data.SqlClient.SqlParameter("p2", tourId));
+
+                }
+                #endregion
+
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                appdb.Users.Remove(user);
+                appdb.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message);
+            }
+
+
+            return RedirectToAction("Index", "Home");
+        }
+
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";

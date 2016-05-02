@@ -314,7 +314,8 @@
                         <h4 class="modal-title" id="Login">Delete Account</h4>
                     </div>
                     <div class="modal-body">
-                        <form action="@Url.Action("Index","Home")" method="post">
+                        <form action="@Url.Action("DeactivateAccount","Manage")" method="post">
+                            @Html.AntiForgeryToken()
                             <label for="confirm">Are you sure you want to delete your account?</label>
                             <p class="text-center">
                                 <button class="btn btn-template-main"><i class="fa fa-user-times"></i>Delete Account</button>
