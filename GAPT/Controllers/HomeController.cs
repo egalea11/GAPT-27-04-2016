@@ -184,7 +184,7 @@ namespace GAPT.Controllers
             return Json(false);         
         }
 
-        public ActionResult OrderConfirmation(CustomerInfoModel model)
+        public async Task<ActionResult> OrderConfirmation(CustomerInfoModel model)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -196,9 +196,9 @@ namespace GAPT.Controllers
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
             var currUserName = User.Identity.Name;
             var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
-            
-            Order order = new Order() 
-            { 
+
+            Order order = new Order()
+            {
                 AdultQuantity = orderModel.AdultAmount,
                 ChildQuantity = orderModel.ChildAmount,
                 DateTimeCreated = DateTime.Now,
@@ -214,8 +214,8 @@ namespace GAPT.Controllers
 
             foreach (var att in orderModel.AdultDetails)
             {
-                TourAttendees attendeeAdult = new TourAttendees() 
-                { 
+                TourAttendees attendeeAdult = new TourAttendees()
+                {
                     Name = att.FirstName,
                     Surname = att.LastName,
                     Title = att.Title,
@@ -227,42 +227,74 @@ namespace GAPT.Controllers
                 db.TourAttendees.Add(attendeeAdult);
                 db.SaveChanges();
             }
-            foreach (var att in orderModel.ChildDetails)
+            if (orderModel.ChildAmount != 0)
             {
-                int month = DateTime.ParseExact(att.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
-
-                TourAttendees attendeeChild = new TourAttendees()
+                foreach (var att in orderModel.ChildDetails)
                 {
-                    Name = att.FirstName,
-                    Surname = att.LastName,
-                    Title = att.Title,
-                    OrderId = (int)orderId,
-                    DateTimeCreated = DateTime.Now,
-                    IsAdult = false,
-                    DateOfBirth = (DateTime)new DateTime(att.BirthYear, month, att.BirthDay)
+                    int month = DateTime.ParseExact(att.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
+
+                    TourAttendees attendeeChild = new TourAttendees()
+                    {
+                        Name = att.FirstName,
+                        Surname = att.LastName,
+                        Title = att.Title,
+                        OrderId = (int)orderId,
+                        DateTimeCreated = DateTime.Now,
+                        IsAdult = false,
+                        DateOfBirth = (DateTime)new DateTime(att.BirthYear, month, att.BirthDay)
+                    };
+
+                    db.TourAttendees.Add(attendeeChild);
+                    db.SaveChanges();
+                }
+            }
+
+            var tourDateTime = db.TourDateTime.Where(t => t.Id == order.TourDateTimeId).FirstOrDefault();
+            var tourDate = db.TourDate.Where(d => d.Id == tourDateTime.TourDateId).FirstOrDefault().DateOfTour.ToShortDateString();
+            var tourTime = db.TourTime.Where(t => t.Id == tourDateTime.TourTimeId).FirstOrDefault();
+            var stringTourTime = tourTime.StartTime + "-" + tourTime.EndTime;
+            var tour = db.Tour.Where(t => t.Id == tourTime.TourId).FirstOrDefault();
+            var startingLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
+            var startingLocation = db.Location.Where(l => l.Id == startingLocationId).FirstOrDefault();
+
+            // user.Email
+            // user.Name
+            // user.Surname
+            // order.AdultQuantity
+            // order.ChildQuantity
+            // order.TotalPrice
+            // tourDate    ----> date of tour as string
+            // stringTourTime    ----> time of tour as string
+            // tour.Name
+            // startingLocation.Name    ----> just in case trid tikteb starting location
+
+
+            // --------- Send Email confirmation ----------
+            string body;
+            using (var sr = new StreamReader(Server.MapPath("\\App_Data\\") + "emailTemplate.txt"))
+            {
+                body = sr.ReadToEnd();
+            }
+
+            var message = new MailMessage();
+            message.To.Add(new MailAddress(user.Email));
+            message.From = new MailAddress("toursmaltin@gmail.com");
+            message.Subject = "Order Receipt";
+            message.Body = string.Format(body, tour.Name, tourDate, stringTourTime, user.Name, user.Surname, order.AdultQuantity, order.ChildQuantity, order.TotalPrice, order.Id, startingLocation.Name);
+            message.IsBodyHtml = true;
+
+            using (var smtp = new SmtpClient())
+            {
+                var credential = new NetworkCredential
+                {
+                    UserName = "toursmaltin@gmail.com",  // replace with valid value
+                    Password = "cis2104.groupAPT"  // replace with valid value
                 };
-
-                db.TourAttendees.Add(attendeeChild);
-                db.SaveChanges();
-
-                var tourDateTime = db.TourDateTime.Where(t => t.Id == order.TourDateTimeId).FirstOrDefault();
-                var tourDate = db.TourDate.Where(d => d.Id == tourDateTime.TourDateId).FirstOrDefault().DateOfTour.ToShortDateString();
-                var tourTime = db.TourTime.Where(t => t.Id == tourDateTime.TourTimeId).FirstOrDefault();
-                var stringTourTime = tourTime.StartTime + "-" + tourTime.EndTime;
-                var tour = db.Tour.Where(t => t.Id == tourTime.TourId).FirstOrDefault();
-                var startingLocationId = db.TourTimeTable.Where(t => t.TourTimeId == tourTime.Id && t.StartTime == tourTime.StartTime).FirstOrDefault().LocationId;
-                var startingLocation = db.Location.Where(l => l.Id == startingLocationId).FirstOrDefault();
-
-                // user.Email
-                // user.Name
-                // user.Surname
-                // order.AdultQuantity
-                // order.ChildQuantity
-                // order.TotalPrice
-                // tourDate    ----> date of tour as string
-                // stringTourTime    ----> time of tour as string
-                // tour.Name
-                // startingLocation.Name    ----> just in case trid tikteb starting location
+                smtp.Credentials = credential;
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+                await smtp.SendMailAsync(message);
             }
 
             Session["PaymentModel"] = null;

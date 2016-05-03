@@ -1,0 +1,32 @@
+﻿<html>
+	<body style="font-size:15px;">
+	  <font face="Helvetica, Arial, sans-serif">
+		<h1>{0}</h1>
+
+		<p>Dear {3},</p><p>
+
+		</p><p>The following are details concerning your ordered tour. Please do not forget to print a copy of this email and bring it with you on the day of your tour.</p>
+		<br>
+	  <div style="margin-left:20px;padding:10px;border-color: #D8D8D8;border-width:20px;border-style: solid;width:400px;border-radius: 10px;">
+			<div style="margin-left:20px;">
+				<p>
+		       <u>Under name</u>: {3} {4}
+			     <br><br><u>Date</u>: {1}
+				   <br><br><u>Time</u>: {2}
+				   <br><br><u>Starting from:</u>: {9}
+				   <br><br><u>For</u>: <b>{5}</b> adults, and <b>{6}</b> children
+				   <br><br><u>Price</u>: <b>€{7}</b>
+		       <br><br><i> <u>Order ID</u>: {8}</i>
+				 </p>
+			 </div>
+	  </div>
+	  <br>
+
+		<p>We hope that you have a great tour! </p>
+
+		<p> Thank you </p>
+
+
+	</font>
+</body>
+</html>

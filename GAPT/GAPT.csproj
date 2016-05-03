@@ -293,6 +293,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\emailTemplate.txt" />
     <Content Include="Content\animate.css" />
     <Content Include="Content\Autocomplete\jquery-ui.css" />
     <Content Include="Content\Autocomplete\jquery-ui.js" />
@@ -546,7 +547,6 @@
     <Content Include="Views\Manage\MyOrders.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Content\Autocomplete\images\" />
   </ItemGroup>
   <ItemGroup>
