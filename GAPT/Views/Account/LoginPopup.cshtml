@@ -1,7 +1,7 @@
 ﻿
 @model GAPT.Models.LoginViewModel
 
-@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = this.Request.RawUrl }, FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     @*<h4>Use a local account to log in.</h4>*@
