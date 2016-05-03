@@ -787,13 +787,13 @@ namespace GAPT.Controllers
             foreach (var r in ratings)
                 sumRating += Convert.ToInt32(r);
 
+            // if there is rating, calculates average
             float averageRating;
-            if (ratings.Count() == 0)
-            {
-               averageRating = ratings.Count();
-            }
-            averageRating = sumRating / ratings.Count();
-
+            if (sumRating > 0)
+                averageRating = sumRating / ratings.Count();
+            else
+                averageRating = ratings.Count();
+                
             int tourRating = (int)averageRating;
 
             try 
