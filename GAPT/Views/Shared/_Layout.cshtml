@@ -209,7 +209,7 @@
                                         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                                     </ul>*@
 
-                                    <div id="left-nav" class="log-in-checkout hidden-sm hidden-xs text-uppercase pull-left userAccountStyle" align="left">
+                                    <div id="left-nav" class="log-in-checkout hidden-sm hidden-xs text-uppercase pull-left userAccountStyle" align="left" style="padding-left:150px;">
                                        @Html.ActionLink("Hi " + User.Identity.GetUserName() + "!", "MyAccount", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
                                         <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
 
