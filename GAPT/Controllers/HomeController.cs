@@ -398,17 +398,6 @@ namespace GAPT.Controllers
 
             var jsonString = new StringBuilder();
 
-            //List<string> dates = new List<string>();
-
-            //for (int i = 0; i < tourDates.Count(); i++)
-            //{
-            //    var tempDate = tourDates[i];
-            //    DateTime temp = new DateTime(tempDate.Year, tempDate.Month, tempDate.Day);
-            //    string str = temp.ToString("yyyy-MM-dd");
-            //    dates.Add(str);
-            //}
-            //var jsonS = Json(tourLocations).ToString();
-            //Trace.TraceInformation(Json(tourLocations).ToString());
             return this.Json(tourLocations, JsonRequestBehavior.AllowGet);
         }
 

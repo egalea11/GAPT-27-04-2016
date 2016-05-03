@@ -228,20 +228,26 @@ namespace GAPT.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [MultiButton(MatchFormKey = "action", MatchFormValue = "ForgotPassword")] 
+        //[MultiButton(MatchFormKey = "action", MatchFormValue = "ForgotPassword")] 
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            var user = UserManager.FindByEmail(model.Email);
+            //var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "*Email address does not exist. Please make sure to enter the correct email address");
+                //return RedirectToAction("ForgotPassword");
+                return View();
+            }
+
+            if (!(await UserManager.IsEmailConfirmedAsync(user.Id)))
+            //if (user == null || !(UserManager.IsEmailConfirmed(user.Id)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return RedirectToAction("ForgotPasswordConfirmation");
+            }
             if (ModelState.IsValid)
             {
-                var user = UserManager.FindByEmail(model.Email);
-                //var user = await UserManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-                //if (user == null || !(UserManager.IsEmailConfirmed(user.Id)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToAction("ForgotPasswordConfirmation");
-                }
-
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
@@ -252,17 +258,18 @@ namespace GAPT.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return RedirectToAction("ForgotPassword");
+            //return View(model);
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        [MultiButton(MatchFormKey = "action", MatchFormValue = "CancelForgotPassword")]
-        public ActionResult CancelForgotPassword(ForgotPasswordViewModel model)
-        {
-            return RedirectToAction("Index", "Home");
-        }
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        ////[MultiButton(MatchFormKey = "action", MatchFormValue = "CancelForgotPassword")]
+        //public ActionResult CancelForgotPassword(ForgotPasswordViewModel model)
+        //{
+        //    return RedirectToAction("Index", "Home");
+        //}
 
         //
         // GET: /Account/ForgotPasswordConfirmation
@@ -341,8 +348,7 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        //[HttpPost]
-        public PartialViewResult HomeCategDropDown()
+        public ActionResult HomeCategDropDown()
         {
             ViewModelCategory model = new ViewModelCategory();
             model.Categories = tourdb.Category.ToList();
