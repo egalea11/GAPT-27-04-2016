@@ -52,9 +52,11 @@ namespace GAPT
                     Body = "REMINDER: Dear " + getUserName[i] +", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin"
                 };
                 sms.SendAsync(message);
-                ac.SendEmail(getUserEmail[i], "FULL INFO", finalNum + " REMINDER: Dear " + getUserName[i] + ", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin");
+                
+               ac.SendEmail(getUserEmail[i], "FULL INFO", finalNum + " REMINDER: Dear " + getUserName[i] + ", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin");
                 i++;
-                 */
+                */
+
 
 
 
