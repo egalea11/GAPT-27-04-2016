@@ -154,7 +154,15 @@
 
                             <ul class="nav navbar-nav navbar-right" style="margin-left:7%;">
                                 <li class="visible-sm visible-xs visible-md">
-                                    <a href="#" class="dropdown-toggle" data-toggle="modal" data-target="#login-modal">Sign-in<b></b></a>
+                                    @using Microsoft.AspNet.Identity
+                                    @if (Request.IsAuthenticated)
+                                    {
+                                        <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-toggle" data-toggle="modal" data-target="">Log Out<b></b></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" class="dropdown-toggle" data-toggle="modal" data-target="#login-modal">Sign-in<b></b></a>
+                                    }
                                 </li>
                                 <li class="visible-sm visible-xs visible-md">
                                     <a href="#" class="dropdown-toggle" data-toggle="modal" data-target="">My Wishlist<b></b></a>
@@ -187,12 +195,16 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="visible-sm visible-xs visible-md">
-                                    <a href="#" class="dropdown-toggle" data-toggle="modal" data-target="">My Portal<b></b></a>
-                                </li>
-                                <li class="visible-sm visible-xs visible-md">
-                                    <a href="#" class="dropdown-toggle" data-toggle="modal" data-target="">Log Out<b></b></a>
-                                </li>
+                                @using Microsoft.AspNet.Identity
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <li class="visible-sm visible-xs visible-md">
+                                        <a href="@Url.Action("MyAccount", "Manage", routeValues: null)" class="dropdown-toggle" data-toggle="modal" data-target="">My Portal<b></b></a>
+                                    </li>
+                                }
+                                @*<li class="visible-sm visible-xs visible-md">
+                                    <a href="javascript:document.getElementById('logoutForm').submit()" class="dropdown-toggle" data-toggle="modal" data-target="">Log Out<b></b></a>
+                                </li>*@
                             </ul>
 
                             @using Microsoft.AspNet.Identity
