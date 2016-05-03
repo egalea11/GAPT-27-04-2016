@@ -392,7 +392,7 @@
                                     @Html.TextBoxFor(m => m.Tour.Id, new { id = "TourId", style = "display: none;" })
                                     <section class="order-details">
                                         @* Data picker - jquery UI plugin *@
-                                        <div class="col-md-4 datepicker centre-block">
+                                        <div class="col-md-4 datepicker centre-block" style="display: block;">
                                             <div class="space10"></div>
                                             <p>
                                                 Choose a date:
@@ -417,7 +417,7 @@
 
                                         @* quantity for order - table *@
                                         <div class="col-md-4 order" style="margin-left:0px;padding-left:0px;">
-                                            <table>
+                                            <table style="margin:0 auto;">
                                                 <tr>
                                                     <td> </td>
                                                     <td> <b>Price</b></td>
