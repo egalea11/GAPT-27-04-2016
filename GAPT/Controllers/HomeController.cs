@@ -152,8 +152,9 @@ namespace GAPT.Controllers
             if (!User.Identity.IsAuthenticated)
             {
                 // check is already done on client side but should be added here as well
-                Response.StatusCode = 401;
-                Response.End();
+                //Response.StatusCode = 401;
+                //Response.End();
+                return Json(false);
             }
 
             if(id == null)
