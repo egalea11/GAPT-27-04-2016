@@ -111,6 +111,7 @@ namespace GAPT.Controllers
             Session["FromPrice"] = null;
             Session["ToPrice"] = null;
             Session["SelectedMonths"] = null;
+            Session["SearchText"] = null;
 
             return View();
         }
@@ -992,11 +993,10 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet]
         public ActionResult SearchTours()
         {
-            ViewModelSearch model = new ViewModelSearch() 
-            {
+            ViewModelSearch model = new ViewModelSearch()
+            { 
                 Tours = (List<ViewModelTour>)Session["SearchTours"],
                 Wishlists = (List<WishList>)Session["Wishlists"]
             };
@@ -1007,9 +1007,11 @@ namespace GAPT.Controllers
         [AllowAnonymous]
         public ActionResult SearchIslands()
         {
+            var AllIslands = db.Island.ToList();
             ViewModelIsland model = new ViewModelIsland();
-            model.Islands = new List<Island>();
-            model.Islands = (List<Island>)Session["AllIslands"];
+            model.Islands = AllIslands;
+            //model.Islands = new List<Island>();
+            //model.Islands = (List<Island>)Session["AllIslands"];
             return PartialView(model);
         }
 
@@ -1018,16 +1020,22 @@ namespace GAPT.Controllers
         {
             ViewModelAttractionType model = new ViewModelAttractionType();
             model.AttractionTypes = new List<AttractionType>();
-            model.AttractionTypes = (List<AttractionType>)Session["AllAttractionTypes"];
+            //model.AttractionTypes = (List<AttractionType>)Session["AllAttractionTypes"];
+            model.AttractionTypes = db.AttractionType.ToList();
             return PartialView(model);
         }
 
         [AllowAnonymous]
         public ActionResult SearchCategories()
         {
-            ViewModelCategory model = new ViewModelCategory() 
+            //ViewModelCategory model = new ViewModelCategory() 
+            //{
+            //    Categories = (List<Category>)Session["AllCategories"],
+            //    selectedcategory = (IEnumerable<int>)Session["SelectedCategories"]
+            //};
+            ViewModelCategory model = new ViewModelCategory()
             {
-                Categories = (List<Category>)Session["AllCategories"],
+                Categories = db.Category.ToList(),
                 selectedcategory = (IEnumerable<int>)Session["SelectedCategories"]
             };
             //model.Categories = new List<Category>();
@@ -1045,25 +1053,13 @@ namespace GAPT.Controllers
                 #region Load all tours
 
                 var AllTours = db.Tour.ToList();
-                var AllCategories = db.Category.ToList();
-                var AllAttractionTypes = db.AttractionType.ToList();
                 var AllTourTimes = db.TourTime.ToList();
                 var ThumbImages = db.Image.Where(m => m.Link.Contains("rsz")).ToList();
-                var AllIslands = db.Island.ToList();
-                var AllLocations = db.Location.ToList();
-                var AllLocationAttractions = db.LocationAttraction.ToList();
-                var AllTowns = db.Town.ToList();
                 var AllTimeTables = db.TourTimeTable.ToList();
                 var AllTourDateTimes = db.TourDateTime.ToList();
 
-                Session["AllCategories"] = AllCategories;
-                Session["AllAttractionTypes"] = AllAttractionTypes;
                 Session["AllTourTimes"] = AllTourTimes;
                 Session["ThumbImages"] = ThumbImages;
-                Session["AllIslands"] = AllIslands;
-                Session["AllLocations"] = AllLocations;
-                Session["AllLocationAttractions"] = AllLocationAttractions;
-                Session["AllTowns"] = AllTowns;
                 Session["AllTimeTables"] = AllTimeTables;
                 Session["AllTourDateTimes"] = AllTourDateTimes;
 
@@ -1130,19 +1126,18 @@ namespace GAPT.Controllers
                 #endregion
 
                 IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
-                
+
                 if (selectedCategories != null)
                     Session["SearchTours"] = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList();
-                //else
-                    //Session["SearchTours"] = ViewAllTours;
+                else
+                    Session["SearchTours"] = ViewAllTours;
 
                 return View();
             }
             catch (Exception e)
             {
                 Trace.TraceError(e.Message.ToString());
-            }
-
+            } 
             return View();
         }
 
@@ -1166,17 +1161,6 @@ namespace GAPT.Controllers
                 var AllTowns = db.Town.ToList();
                 var AllTimeTables = db.TourTimeTable.ToList();
                 var AllTourDateTimes = db.TourDateTime.ToList();
-
-                Session["AllCategories"] = AllCategories;
-                Session["AllAttractionTypes"] = AllAttractionTypes;
-                Session["AllTourTimes"] = AllTourTimes;
-                Session["ThumbImages"] = ThumbImages;
-                Session["AllIslands"] = AllIslands;
-                Session["AllLocations"] = AllLocations;
-                Session["AllLocationAttractions"] = AllLocationAttractions;
-                Session["AllTowns"] = AllTowns;
-                Session["AllTimeTables"] = AllTimeTables;
-                Session["AllTourDateTimes"] = AllTourDateTimes;
 
                 List<int> searchTextTourIds = new List<int>();
 
@@ -1220,7 +1204,7 @@ namespace GAPT.Controllers
                 }
 
                 Session["AllTours"] = ViewAllTours;
-                
+
                 List<decimal[]> priceList = new List<decimal[]>();
 
                 decimal[] price1 = new decimal[2];
@@ -1249,7 +1233,7 @@ namespace GAPT.Controllers
                     var tourByFullName = db.Tour.Where(t => t.Name.ToLower() == searchText.ToLower()).FirstOrDefault();
                     if (tourByFullName != null)
                         Session["SearchTours"] = ViewAllTours.Where(t => t.Id == tourByFullName.Id).ToList();
-                    else 
+                    else
                     {
                         string[] words = searchText.ToLower().Trim().Split(' ');
                         foreach (string word in words)
@@ -1307,7 +1291,7 @@ namespace GAPT.Controllers
         public ActionResult SearchCategory(IEnumerable<int> id)
         {
             Session["SelectedCategories"] = id;
-            return RedirectToAction("Search");
+            return RedirectToAction("SearchTours");
         }
 
         public ActionResult ShoppingCart()
@@ -1365,9 +1349,7 @@ namespace GAPT.Controllers
             decimal? toPrice = (decimal?)Session["ToPrice"];
 
             if (selectedislands == null)
-            {
                 Session["SelectedIslands"] = null;
-            }
             else
             {
                 Session["SelectedIslands"] = selectedislands;
