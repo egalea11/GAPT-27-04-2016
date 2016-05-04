@@ -1292,7 +1292,7 @@ namespace GAPT.Controllers
         public ActionResult SearchCategory(IEnumerable<int> id)
         {
             Session["SelectedCategories"] = id;
-            return RedirectToAction("SearchTours");
+            return RedirectToAction("Search");
         }
 
         public ActionResult ShoppingCart()
