@@ -295,11 +295,8 @@
   <ItemGroup>
     <Content Include="App_Data\emailTemplate.txt" />
     <Content Include="Content\animate.css" />
-    <Content Include="Content\Autocomplete\jquery-ui.css" />
-    <Content Include="Content\Autocomplete\jquery-ui.js" />
-    <Content Include="Content\Autocomplete\jquery.js" />
     <Content Include="Content\awesomplete.css" />
-    <Content Include="Content\bernineCSS.css" />
+    <Content Include="Content\indexCarousel.css" />
     <Content Include="Content\bootstrap-formhelpers.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -364,6 +361,7 @@
     <Content Include="Images\rsz_tour2_1.jpg" />
     <Content Include="Images\rsz_tour2_2.jpg" />
     <Content Include="Images\rsz_tour2_3.jpg" />
+    <Content Include="Images\rsz_weddings-in-gozo-e1346689228722.jpg" />
     <Content Include="Images\segway no bright.jpg" />
     <Content Include="Images\segway.jpg" />
     <Content Include="Images\stars.png" />
@@ -427,8 +425,8 @@
     <Content Include="ApplicationInsights.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\countrySelect.min.js" />
+    <Content Include="Scripts\indexCarousel.js" />
     <Content Include="Scripts\intlTelInput.js" />
-    <Content Include="Scripts\jquery-ui-1.10.4.custom.min.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\rating.js" />
     <Content Include="Scripts\json2.min.js" />
@@ -437,10 +435,8 @@
     <Content Include="Scripts\g-map.js" />
     <Content Include="Scripts\gmaps.init.js" />
     <Content Include="Scripts\gmaps.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.11.0.min.js" />
     <Content Include="Scripts\jquery.autocomplete.min.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.counterup.min.js" />
@@ -455,7 +451,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\responsiveslides.min.js" />
-    <Content Include="Scripts\simpleCart.min.js" />
     <Content Include="Scripts\utils.js" />
     <Content Include="Scripts\waypoints.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -546,16 +541,13 @@
     <Content Include="Views\Home\SearchToursAverageRating.cshtml" />
     <Content Include="Views\Manage\MyOrders.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\Autocomplete\images\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
