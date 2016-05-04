@@ -1209,6 +1209,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 991px) {
   #content .info-bar .products-sort-by {
     margin: 10px 0 0;
+    margin-left:10%;
   }
   #content .info-bar .products-sort-by select {
     margin: 0;
