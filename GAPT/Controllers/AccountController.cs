@@ -189,8 +189,8 @@ namespace GAPT.Controllers
                     var users = db.Users.ToList();
                     var adminUsers = db.Users.Where(u => u.IsAdmin == true).ToList();
 
-                    //return RedirectToAction("Index", "Home");
-                    return RedirectToAction("ConfirmEmail", "Account");
+                    return RedirectToAction("Index", "Home");
+                    //return View("ConfirmEmail", "Account");
                 }
                 AddErrors(result);
             }
