@@ -7,8 +7,7 @@
     
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-       <meta charset="utf-8">
-    <meta name="robots" content="all,follow">
+    <meta charset="utf-8">
     <meta name="googlebot" content="index,follow,snippet,archive">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="keywords" content="">
@@ -26,10 +25,6 @@
 
     <!--Auto-complete css-->
     <link rel="stylesheet" href="~/Content/awesomplete.css" />
-
-    <!-- Custom Theme files -->
-    <link href="~/Content/style.css" rel='stylesheet' type='text/css' />
-    <link href="~/Content/bootstrapindex.css" rel='stylesheet' type='text/css' />
     
     <!-- Custom stylesheet - for your changes -->
     <link href="~/content/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" />
@@ -38,21 +33,8 @@
     <!-- Custom.css -->
     <link href="~/Content/custom.css" rel="stylesheet" />
 
-
     @RenderSection("scripts", required: false)
 
-    <script type="text/javascript">
-     $(function () {
-          $("#myInput").autocomplete({
-                  source: '@Url.Action("GetTours")',
-                  minLength: 1
-           });
-      });
-    </script>
-
-    <!--cookies-->
-    <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
-  
 </head>
 
 <body>
@@ -61,7 +43,7 @@
             <!-- NAVBAR -->
             <nav  id="navbar" class="navbar navbar-default navbar-fixed-top" role="navigation">
 
-                <!--  google translate *-->
+                <!--  google translate -->
                 <div id="google_translate_element" style="text-align:right; margin-right:1.5%; margin-top:1%"></div>
                 <script type="text/javascript">
                     function googleTranslateElementInit() {
@@ -85,12 +67,6 @@
                                     <i class="fa fa-align-justify"></i>
                                 </button>
                             </div>  
-                            <!--<div class="navbar-buttons">
-                                <a href="~/Home/ShoppingCart" class="navbar-toggle btn-template-main" role="button" type="button" data-target="#navigation" style="margin-top: 10px;border-radius:5px;">
-                                    <span class="sr-only">Shopping Cart</span>
-                                    <i class="fa fa-shopping-cart"></i>
-                                </a>
-                            </div>-->
                             <div class="navbar-buttons">
                                 <a href="#" class="navbar-toggle btn-template-main" role="button" data-toggle="collapse" type="button" data-target="#search" style="margin-top: 10px; border-radius:5px;">
                                     <span class="sr-only">Search</span>
@@ -99,7 +75,6 @@
                             </div>
                            
                         </div>
-                        <!--/.navbar-header -->
                         <div class="navbar-collapse collapse" id="navigation">
 
                             <ul class="nav navbar-nav navbar-right" style="margin-left:7%;">
@@ -176,7 +151,6 @@
                                     <div id="left-nav" class="log-in-checkout hidden-sm hidden-xs text-uppercase pull-left userAccountStyle" align="left">
                                        @Html.ActionLink("Hi " + User.Identity.GetUserName() + "!", "MyAccount", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
                                         <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
-
                                         <a class="btn btn-" data-toggle="collapse" style="margin-top:-2px;padding-left: 20px;" data-target="#search"><i class="fa fa-search fa-lg"></i></a>
                                     </div>
                                 }
@@ -191,8 +165,6 @@
                                     <a class="login-panel" href="#" data-toggle="modal" data-target="#login-modal">Sign-in</a> or <a href="@Url.Action("Register","Account")">Register</a>
                                     @*@Html.Partial("_LoginPartial")*@
                                     <a class="btn btn-" data-toggle="collapse" style="margin-top:-2px;padding-left: 20px;" data-target="#search"><i class="fa fa-search fa-lg"></i></a>
-                                    <!--<a class="btn btn-shopping-cart" style="margin-top:-2px;padding-right:-10px" href="~/Home/ShoppingCart">&nbsp &nbsp<i class="fa fa-shopping-cart fa-2x"></i></a>-->
-
                                 </div>
                             }
 
@@ -201,8 +173,6 @@
                                 @*@Html.Partial("_LoginPartial")*@
                                 @*<a class="btn btn-
                                    " data-toggle="collapse" style="margin-top:-2px;padding-left: 20px;" data-target="#search"><i class="fa fa-search fa-lg"></i></a>*@
-                                <!--<a class="btn btn-shopping-cart" style="margin-top:-2px;padding-right:-10px" href="~/Home/ShoppingCart">&nbsp &nbsp<i class="fa fa-shopping-cart fa-2x"></i></a>-->
-
                             @*</div>*@
                         </div>
                         <!--/.nav-collapse -->
@@ -228,22 +198,7 @@
                             return true;
                         }
                     </script>
-                   <!-- <div class="collapse clearfix" id="search">
-
-                        <form  role="search">
-                            <div class="input-group" style="padding-top:10px;padding-bottom:10px">
-                                <input type="text" class="form-control-login" placeholder="Search">
-                                <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
-                                </span>
-                            </div>
-                        </form>
-
-                    </div>-->
-                    <!--/.nav-collapse -->
             </nav>
-            <!-- /#navbar -->
-            <!-- *** NAVBAR END *** -->
         </header>
         <div>
     </div>
@@ -293,14 +248,12 @@
 
        @RenderBody()
         
-        <!-- *** FOOTER ***
-        _________________________________________________________ -->
+        <!-- *** FOOTER *** -->
 
         <footer id="footer" style="padding-bottom:15px;padding-top:15px;">
             <div class="container">
                 <div class="col-md-3 col-sm-6">
                     <h4>About us</h4>
-
                     <p align="justify">
                         Tours-Maltin is the first sight-seeing tour of its kind providing the user the possibility to interact with the company through a live chat and supports sending tour reminders to the user's mobile.</>
                         <hr class="hidden-md hidden-lg hidden-sm">
@@ -310,7 +263,6 @@
                 <div class="col-md-3 col-sm-6">
 
                     <h4>Contact</h4>
-
                     <p>
                         <strong>Tours-Maltin</strong>
                         <br>123 New House
@@ -332,9 +284,6 @@
                             <img src="~/Images/mastercard.png" style="width:20%">
                             <img src="~/Images/maestro.png" style="width:20%"/>
                         </div>
-
-                        <!-- /.col-md-3 -->
-                        <!-- /.col-md-3 -->
                     </div>
                 </div>
                 <hr class="hidden-md hidden-lg hidden-sm">
@@ -346,29 +295,15 @@
                             <a href="https://twitter.com/" class="external twitter" data-animate-hover="pulse"><i class="fa fa-twitter"></i></a>
                         </div>
                         <hr class="hidden-md hidden-lg hidden-sm">
-
-                        <!-- /.col-md-3 -->
-                        <!-- /.col-md-3 -->
                     </div>
                 </div>
                 <div class="col-md-12">
-
                     <p style="bottom: auto; width:100%; text-align: left" class="pull-left">&copy; 2016. Tours Maltin</p>
                 </div>
             </div>
-
-            <!-- /.container -->
         </footer>
-        <!-- /#footer -->
-        <!-- *** FOOTER END *** -->
-        <!-- *** COPYRIGHT ***
-        _________________________________________________________ -->
-        <!-- /#copyright -->
-        <!-- *** COPYRIGHT END *** -->
-
-
     </div>
-    <!-- /#all -->
+
     <!-- #### JAVASCRIPT FILES ### -->
 
     <script src="~/Scripts/countrySelect.min.js"></script>
@@ -394,7 +329,15 @@
     </script>
     <!--Livechat end-->
 
-    <!--End of Tawk.to Script-->
+    <script type="text/javascript">
+     $(function () {
+          $("#myInput").autocomplete({
+                  source: '@Url.Action("GetTours")',
+                  minLength: 1
+           });
+      });
+    </script>
+
     <!--Start Cookie Script-->
     <script type="text/javascript" charset="UTF-8" src="http://cookie-script.com/s/9bec2be9bdd953f75ce2c60c890c1e33.js"></script> <!--End Cookie Script-->
 </body>

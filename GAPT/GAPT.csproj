@@ -349,11 +349,6 @@
     <Content Include="Images\toursmaltin_logo_03_laptop.png" />
     <Content Include="Images\toursmaltin_logo_03_mobile.png" />
     <Content Include="Images\tour_page_background_images\background_collage.jpg" />
-    <Content Include="Images\tour_page_background_images\pic_1.jpg" />
-    <Content Include="Images\tour_page_background_images\pic_2.jpg" />
-    <Content Include="Images\tour_page_background_images\pic_3.jpg" />
-    <Content Include="Images\tour_page_background_images\pic_4.jpg" />
-    <Content Include="Images\tour_page_background_images\pic_5.jpg" />
     <Content Include="Images\visa.png" />
     <Content Include="Models\autoCompleteTestModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -398,6 +393,7 @@
     </Content>
     <Content Include="ApplicationInsights.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\carouselSlider.js" />
     <Content Include="Scripts\countrySelect.min.js" />
     <Content Include="Scripts\indexCarousel.js" />
     <Content Include="Scripts\intlTelInput.js" />
