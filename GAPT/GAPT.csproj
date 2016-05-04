@@ -510,6 +510,7 @@
     <Content Include="Views\Home\TourpageAverageRating.cshtml" />
     <Content Include="Views\Home\SearchToursAverageRating.cshtml" />
     <Content Include="Views\Manage\MyOrders.cshtml" />
+    <Content Include="Views\Account\RegisterAccountConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

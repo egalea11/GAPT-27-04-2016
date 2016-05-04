@@ -189,14 +189,19 @@ namespace GAPT.Controllers
                     var users = db.Users.ToList();
                     var adminUsers = db.Users.Where(u => u.IsAdmin == true).ToList();
 
-                    return RedirectToAction("Index", "Home");
-                    //return View("ConfirmEmail", "Account");
+                    //return RedirectToAction("Index", "Home");
+                    return RedirectToAction("RegisterAccountConfirmation", "Account");
                 }
                 AddErrors(result);
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        public ActionResult RegisterAccountConfirmation()
+        {
+            return View();
         }
 
         [AllowAnonymous]
