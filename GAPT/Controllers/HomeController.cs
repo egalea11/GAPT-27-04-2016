@@ -992,6 +992,7 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet]
         public ActionResult SearchTours()
         {
             ViewModelSearch model = new ViewModelSearch() 
@@ -1104,7 +1105,7 @@ namespace GAPT.Controllers
                     tour.Duration = ts.Minutes == 0 ? tour.Duration : tour.Duration + " " + ts.Minutes.ToString() + "mins";
                     ViewAllTours.Add(tour);
                 }
-
+                Session["SearchTours"] = ViewAllTours;
                 Session["AllTours"] = ViewAllTours;
 
                 List<decimal[]> priceList = new List<decimal[]>();
@@ -1129,11 +1130,11 @@ namespace GAPT.Controllers
                 #endregion
 
                 IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
-
+                
                 if (selectedCategories != null)
                     Session["SearchTours"] = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList();
-                else
-                    Session["SearchTours"] = ViewAllTours;
+                //else
+                    //Session["SearchTours"] = ViewAllTours;
 
                 return View();
             }
