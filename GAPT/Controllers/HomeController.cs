@@ -112,6 +112,7 @@ namespace GAPT.Controllers
             Session["ToPrice"] = null;
             Session["SelectedMonths"] = null;
             Session["SearchText"] = null;
+            Session["TourId"] = null;
 
             return View();
         }
@@ -1045,7 +1046,7 @@ namespace GAPT.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search()
         {
             try
@@ -1143,7 +1144,7 @@ namespace GAPT.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search(string searchText)
         {
             try
@@ -1287,7 +1288,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchCategory(IEnumerable<int> id)
         {
             Session["SelectedCategories"] = id;
@@ -1329,7 +1330,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterIslands(IEnumerable<int> selectedislands)
         {
             var allTowns = db.Town.ToList();
@@ -1424,7 +1425,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterCategories(IEnumerable<int> selectedcategories)
         {
             var allTowns = db.Town.ToList();
@@ -1518,7 +1519,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterAttr(IEnumerable<int> selectedattr)
         {
             var allTowns = db.Town.ToList();
@@ -1614,7 +1615,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterMonths(IEnumerable<int> selectedmonths)
         {
             var allTowns = db.Town.ToList();
@@ -1711,7 +1712,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterPrice(IEnumerable<int> selectedprice)
         {
             var allTowns = db.Town.ToList();
