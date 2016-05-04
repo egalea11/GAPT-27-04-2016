@@ -223,6 +223,8 @@ namespace GAPT.Controllers
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
             return View();
         }
 
@@ -237,6 +239,8 @@ namespace GAPT.Controllers
 
         public ActionResult MyAccount()
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
             GetCategAttrTours();
             var error = TempData["ErrorMessage"] as string;
             if (error != null)
@@ -264,7 +268,6 @@ namespace GAPT.Controllers
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
                 return RedirectToAction("MyAccount", new { Message = ManageMessageId.ChangePasswordSuccess });
-                //return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
             TempData["ErrorMessage"] = "The Old Password entered is incorrect";
             return RedirectToAction("MyAccount", new { Message = ManageMessageId.Error });
@@ -417,7 +420,6 @@ namespace GAPT.Controllers
             {
                 Trace.TraceError(e.Message.ToString());
             }
-            //return null;
         }
 
         public ActionResult MyWishlist()
@@ -478,6 +480,8 @@ namespace GAPT.Controllers
 
         public ActionResult UserPortal()
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
             return View();
         }
 
@@ -493,6 +497,8 @@ namespace GAPT.Controllers
 
         public ActionResult Wishlist()
         {
+            if (!User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
             GetCategAttrTours();
             return View();
         }
