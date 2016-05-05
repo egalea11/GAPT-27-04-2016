@@ -196,6 +196,15 @@ namespace GAPT.Controllers
                 Response.End();
             }
 
+            int? tempOrderId = (int?)Session["TempOrderId"];
+
+            if (tempOrderId != null && tempOrderId != 0)
+            {
+                db.Database.ExecuteSqlCommand("update [TempOrder] set [Expired] = @p1 where [Id] = @p2",
+                    new System.Data.SqlClient.SqlParameter("p1", 1),
+                    new System.Data.SqlClient.SqlParameter("p2", tempOrderId));
+            }
+
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
             var currUserName = User.Identity.Name;
             var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
@@ -306,7 +315,60 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        public void PayPalPayment(CustomerInfoModel model)
+        {
+            int? tempOrderId = (int?)Session["TempOrderId"];
+
+            if (tempOrderId != null && tempOrderId != 0)
+            {
+                db.Database.ExecuteSqlCommand("update [TempOrder] set [Expired] = @p1 where [Id] = @p2",
+                    new System.Data.SqlClient.SqlParameter("p1", 1),
+                    new System.Data.SqlClient.SqlParameter("p2", tempOrderId));
+            }
+
+            Session["TempOrderId"] = null;
+
+            CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+            var currUserName = User.Identity.Name;
+            var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
+
+            TempOrder tempOrder = new TempOrder()
+            {
+                AdultQuantity = orderModel.AdultAmount,
+                ChildQuantity = orderModel.ChildAmount,
+                DateTimeCreated = DateTime.Now,
+                TotalPrice = orderModel.TotalPrice,
+                UserId = user.Id,
+                TourDateTimeId = orderModel.TourDateTimeId
+            };
+
+            db.TempOrder.Add(tempOrder);
+            db.SaveChanges();
+            //var tempOrderId = tempOrder.Id;
+            Session["TempOrderId"] = tempOrder.Id;
+        }
+
+        [HttpGet]
+        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        public ActionResult Payment()
+        {
+            CustomerInfoModel paymentModel = (CustomerInfoModel)Session["PaymentModel"];
+
+            int? tempOrderId = (int?)Session["TempOrderId"];
+
+            if (tempOrderId != null && tempOrderId != 0)
+            {
+                db.Database.ExecuteSqlCommand("update [TempOrder] set [Expired] = @p1 where [Id] = @p2",
+                    new System.Data.SqlClient.SqlParameter("p1", 1),
+                    new System.Data.SqlClient.SqlParameter("p2", tempOrderId));
+            }
+
+            Session["TempOrderId"] = null;
+
+            return View(paymentModel);
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Payment(CustomerInfoModel model)
         {
@@ -344,7 +406,18 @@ namespace GAPT.Controllers
 
             Session["PaymentModel"] = paymentModel;
 
-            return View(paymentModel);
+            int? tempOrderId = (int?)Session["TempOrderId"];
+
+            if (tempOrderId != null && tempOrderId != 0)
+            {
+                db.Database.ExecuteSqlCommand("update [TempOrder] set [Expired] = @p1 where [Id] = @p2",
+                    new System.Data.SqlClient.SqlParameter("p1", 1),
+                    new System.Data.SqlClient.SqlParameter("p2", tempOrderId));
+            }
+
+            Session["TempOrderId"] = null;
+            return RedirectToAction("Payment");
+            //return View(paymentModel);
         }
 
         [HttpPost]
@@ -627,6 +700,7 @@ namespace GAPT.Controllers
             var tourTimeIds = db.TourTime.Where(t => t.TourId == tourId && t.StartTime == startTime && t.EndTime == endTime).ToList().Select(t => t.Id).ToArray();
             var tourDateTimeIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId && tourTimeIds.Contains(dt.TourTimeId)).ToList().Select(t => t.Id).ToArray();
             var orders = db.Order.Where(o => tourDateTimeIds.Contains(o.TourDateTimeId)).ToList();
+            var tempOrders = db.TempOrder.Where(to => tourDateTimeIds.Contains(to.TourDateTimeId) && to.Expired == false).ToList();
 
             int totalAdultAmount = 0;
             int totalChildAmount = 0;
@@ -636,7 +710,15 @@ namespace GAPT.Controllers
                 totalChildAmount = totalChildAmount + order.ChildQuantity;
             }
 
-            int totalGroupSize = totalAdultAmount + totalChildAmount;
+            int totalTempAdultAmount = 0;
+            int totalTempChildAmount = 0;
+            foreach (var tempOrder in tempOrders)
+            {
+                totalTempAdultAmount = totalTempAdultAmount + tempOrder.AdultQuantity;
+                totalTempChildAmount = totalTempChildAmount + tempOrder.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount + totalTempAdultAmount + totalTempChildAmount;
             int placesLeft = maxTourGroupSize - totalGroupSize;
 
             return placesLeft;
@@ -670,6 +752,7 @@ namespace GAPT.Controllers
             var tourTimeIds = db.TourTime.Where(t => t.TourId == tourId && t.StartTime == startTime && t.EndTime == endTime).ToList().Select(t => t.Id).ToArray();
             var tourDateTimeIds = db.TourDateTime.Where(dt => dt.TourDateId == tourDateId && tourTimeIds.Contains(dt.TourTimeId)).ToList().Select(t => t.Id).ToArray();
             var orders = db.Order.Where(o => tourDateTimeIds.Contains(o.TourDateTimeId)).ToList();
+            var tempOrders = db.TempOrder.Where(to => tourDateTimeIds.Contains(to.TourDateTimeId) && to.Expired == false).ToList();
 
             int totalAdultAmount = 0;
             int totalChildAmount = 0;
@@ -679,7 +762,16 @@ namespace GAPT.Controllers
                 totalChildAmount = totalChildAmount + order.ChildQuantity;
             }
 
-            int totalGroupSize = totalAdultAmount + totalChildAmount;
+            int totalTempAdultAmount = 0;
+            int totalTempChildAmount = 0;
+            foreach (var tempOrder in tempOrders)
+            {
+                totalTempAdultAmount = totalTempAdultAmount + tempOrder.AdultQuantity;
+                totalTempChildAmount = totalTempChildAmount + tempOrder.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount + totalTempAdultAmount + totalTempChildAmount;
+            //int totalGroupSize = totalAdultAmount + totalChildAmount;
             int placesLeft = maxTourGroupSize - totalGroupSize;
 
             return placesLeft;

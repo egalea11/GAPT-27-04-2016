@@ -97,6 +97,7 @@ namespace GAPT.Models
         public DbSet<TourTimeTable> TourTimeTable { get; set; }
         public DbSet<Town> Town { get; set; }
         public DbSet<Order> Order { get; set; }
+        public DbSet<TempOrder> TempOrder { get; set; }
         public DbSet<Review> Review { get; set; }
         public DbSet<WishList> WishList { get; set; }
         public DbSet<Location> Location { get; set; }

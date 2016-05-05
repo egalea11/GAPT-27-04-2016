@@ -69,7 +69,7 @@
                     //alert("places available " + places);
                 },
                 error: function () {
-                    alert("error");
+                    //alert("error");
                 }
             });
         }, 1 * 1000);
@@ -82,7 +82,11 @@
 
             //var totalAmount =
             if (totalAmount <= placesLeft) {
-                $("#paypalForm").submit();
+                $.post('@Url.Action("PayPalPayment", "Home")', $('#paypalForm').serialize(), function (tourDate) {
+                    //alert(tourDate);
+                });
+                return true;
+                //$("#paypalForm").submit();
             } else {
                 alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
                 e.preventDefault()
