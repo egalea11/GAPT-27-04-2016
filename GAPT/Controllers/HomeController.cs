@@ -113,6 +113,7 @@ namespace GAPT.Controllers
             Session["SelectedMonths"] = null;
             Session["SearchText"] = null;
             Session["TourId"] = null;
+            Session["TempOrderId"] = null;
 
             return View();
         }

@@ -151,10 +151,10 @@
 
                         <!--The following are test products-->
                         <!--Product 1-->
-                        <input type="hidden" name="item_name_1" value="Product 1" />
+                        @*<input type="hidden" name="item_name_1" value="Product 1" />
                         <input type="hidden" name="item_number_1" value="p1" />
                         <input type="hidden" name="amount_1" value="2" />
-                        <input type="hidden" name="quantity_1" value="3" />
+                        <input type="hidden" name="quantity_1" value="3" />*@
 
                         <!--Product 2-->
                         @*<input type="hidden" name="item_name_2" value="Product 2" />
@@ -173,10 +173,13 @@
                         <input type="hidden" name="amount_1" value="@Model.Tour.AdultPrice"/>
                         <input type="hidden" name="quantity_1" value="@Model.AdultAmount" />
 
-                        <input type="hidden" name="item_name_2" value="@Model.Tour.Name" />
-                        <input type="hidden" name="item_number_2" value="Child" />
-                        <input type="hidden" name="amount_2" value="@Model.Tour.ChildPrice" />
-                        <input type="hidden" name="quantity_2" value="@Model.ChildAmount" />
+                        @if (Model.ChildAmount != 0)
+                        {
+                            <input type="hidden" name="item_name_2" value="@Model.Tour.Name" />
+                            <input type="hidden" name="item_number_2" value="Child" />
+                            <input type="hidden" name="amount_2" value="@Model.Tour.ChildPrice" />
+                            <input type="hidden" name="quantity_2" value="@Model.ChildAmount" />
+                        }
 
                         <!--When paying for a Tour we can do the following
 
