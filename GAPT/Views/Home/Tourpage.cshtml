@@ -220,16 +220,72 @@
         {
             $("#adult-amount").val(@Model.AdultAmount);
             $("children-amount").val(@Model.ChildAmount);
-            //var date = Model.TourDate.ToShortDateString();
-            //$("#datepicker").val(date).trigger('change');
-            //var tourTime = Model.TourTime;
-            //$("select#dropdown option:selected").val(tourTime);
         }
 
     });
 </script>
 
 <script>
+    function changeDate() {
+        var tourId = $("#TourId").val();
+        //var tourDate = $("#datepicker").val();
+        var tourDate = $('#datepicker').val(); //datepicker.({ dateFormat: 'dd-mm-yyyy' })
+
+        var data = tourDate + ":" + tourId;
+        var dateOfTour = { tourDate: tourDate + ":" + tourId };
+        var state = true;
+
+        $.ajax({
+            url: "/Home/GetTourTime",
+            type: "POST",
+            dataType: "html",
+            data: dateOfTour,
+            async: false,
+            success: function (tourTime) {
+                $("#dropdown").empty();
+                if (tourTime == "false")
+                {
+                    alert("This tour is not scheduled on that date. Please choose another date");
+                    state = false;
+                    return false;
+                }
+                $("#TourDate").val(tourDate);
+                $("#TourDate").text(tourDate)
+                $("#StringTourDate").val(tourDate);
+                $("#StringTourDate").text(tourDate)
+                $("#dropdown").html(tourTime);
+                var tourTimeSelected = $("select#dropdown option:selected").val();
+                $("#TourTime").val(tourTimeSelected)//.trigger('change');
+                //alert("test");
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        //return false;
+        if (!state)
+        {
+            $("#TourTime").val("");
+            return false;
+        }
+        var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
+
+        $.ajax({
+            url: "/Home/GetPlacesAvailable",
+            type: "POST",
+            //dataType: "html",
+            data: dateAndTimeOfTour,
+            //async: false,
+            success: function (places) {
+                $("#places-available").val(places);
+                $("#places-available").text(places);
+                //alert("places available " + places);
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
     function addToWishlistFun(tourid) {
         if (document.getElementById("wishlist" + tourid).value == "added") {
             $.post('@Url.Action("RemoveFromWishlist", "Home")', { id: tourid }, function (data) {
@@ -394,7 +450,7 @@ window.twttr = (function(d, s, id) {
                                             <p>
                                                 Choose a date:
                                                 <div class="space10"></div>
-                                                <input id="datepicker" placeholder="dd-mm-yyyy" style="text-align: center;" readonly="readonly"/>
+                                                <input onchange="changeDate()" id="datepicker" placeholder="dd-mm-yyyy" style="text-align: center;" readonly="readonly" />
                                             </p>
                                             <div class="space30"></div>
                                             <div style="margin-top:6%">
@@ -414,7 +470,7 @@ window.twttr = (function(d, s, id) {
 
                                         @* quantity for order - table *@
                                         <div class="col-md-4 order" style="margin-left:0px;padding-left:0px;">
-                                            <table style="margin:0 auto;">
+                                            <table>
                                                 <tr>
                                                     <td> </td>
                                                     <td> <b>Price</b></td>
