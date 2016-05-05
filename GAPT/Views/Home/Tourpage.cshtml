@@ -85,7 +85,7 @@
         $("#TourTime").change(function () {
             var tourId = $("#TourId").val();
             //var tourDate = $("#datepicker").val();
-            var tourDate = $('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
+            var tourDate = $('#datepicker').val(); //datepicker({ dateFormat: 'dd-mm-yyyy' })
 
             var data = tourDate + ":" + tourId;
             var dateOfTour = { tourDate: tourDate + ":" + tourId };
