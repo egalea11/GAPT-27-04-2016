@@ -208,43 +208,8 @@
                                 <!-- /.col-md-9 -->
                                 <div class="space30"></div>
                                 @*  Comment form *@
-                                @*<div class="order-details" style="width: 100%;text-align: center;">
-                                    <h4 class="text-uppercase" style="text-align: center;">Leave a comment</h4>*@
+
                                     @{Html.RenderAction("ReviewTour", new { id = @Model.Tour.Id });}
-                                    @*<form>
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="form-group">
-                                                    <label id="post-content" for="comment">
-                                                        Comment <span class="required">*</span>
-                                                    </label>
-                                                    <textarea class="form-control" id="comment" rows="4" style="max-width:500px; margin: 0 auto;"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        star ratings 
-                                        <div class="text-center">
-                                            <fieldset class="rating">
-                                                <input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5"></label>
-                                                <input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4"></label>
-                                                <input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3"></label>
-                                                <input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2"></label>
-                                                <input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1"></label>
-                                            </fieldset>
-                                        </div>
-
-                                        <div class="col-md-12 text-center">
-                                            <button class="btn btn-template-main"><i class="fa fa-comment-o" style="display: block;margin: 0 auto;"></i> Post comment</button>
-                                        </div>
-
-
-                                    </form>*@
-                                    @*<div class="space10"></div>
-                                </div>
-                                <div class="space30"></div>
-                                <br />*@
 
                                 @* END of comment form *@
 
