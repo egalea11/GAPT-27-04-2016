@@ -17,6 +17,42 @@
     <link href="~/Content/starRatings.css" rel='stylesheet' type='text/css' />
     <link href="~/Content/custom.css" rel='stylesheet' type='text/css' />
 
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+        appId    : '1591077294538911',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<script>
+window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
+
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
+
+  return t;
+}(document, "script", "twitter-wjs"));</script>
 
     <div id="all" class="tour-background-gradient">
         <div class="tour-background-img">
@@ -199,8 +235,8 @@
                                 <div class="social" id="product-social">
                                     <h4 class="text-uppercase">share it with others</h4>
                                     <p>
-                                        <a href="#" class="external facebook" data-animate-hover="pulse"><i class="fa fa-facebook"></i></a>
-                                        <a href="#" class="external twitter" data-animate-hover="pulse"><i class="fa fa-twitter"></i></a>
+                                        <div class="fb-share-button" data-layout="button" data-mobile-iframe="true" style="vertical-align:top;"></div>
+                                        <a href="https://twitter.com/intent/tweet?text=What%20do%20you%20think%20of%20this%20tour%3F%20%23Malta%20%23ToursMaltin" class="twitter-share-button external twitter" data-animate-hover="pulse"></a>
                                     </p>
                                 </div>
 
