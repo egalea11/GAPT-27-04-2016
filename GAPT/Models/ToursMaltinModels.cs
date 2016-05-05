@@ -16,6 +16,17 @@ namespace GAPT.Models
         public decimal TotalPrice { get; set; }
         public DateTime DateTimeCreated { get; set; }
     }
+    public class TempOrder
+    {
+        public int? Id { get; set; }
+        public int UserId { get; set; }
+        public int TourDateTimeId { get; set; }
+        public int AdultQuantity { get; set; }
+        public int ChildQuantity { get; set; }
+        public decimal TotalPrice { get; set; }
+        public DateTime DateTimeCreated { get; set; }
+        public bool Expired {get; set;}
+    }
 
     public class Review
     {

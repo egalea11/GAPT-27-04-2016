@@ -69,10 +69,30 @@
                     //alert("places available " + places);
                 },
                 error: function () {
-                    alert("error");
+                    //alert("error");
                 }
             });
-        }, 60 * 1000);
+        }, 1 * 1000);
+
+        $('#paypalForm').submit(function(e) {
+            var totalAdultAmount = parseInt($("#adult-amount").text());
+            var totalChildAmount = parseInt($("#child-amount").text());
+            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
+            var placesLeft = parseInt($("#places-available").val());
+
+            //var totalAmount =
+            if (totalAmount <= placesLeft) {
+                $.post('@Url.Action("PayPalPayment", "Home")', $('#paypalForm').serialize(), function (tourDate) {
+                    //alert(tourDate);
+                });
+                return true;
+                //$("#paypalForm").submit();
+            } else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
+            }
+            //return true; // return false to cancel form action
+        });
 
         $("#confirm-order").click(function(e){
             var totalAdultAmount = parseInt($("#adult-amount").text());
@@ -121,7 +141,7 @@
                     <p>OR</p>
                        
                     <!--PayPal Section-->
-                    <form method="post" action="@ConfigurationManager.AppSettings["PayPalSubmitUrl"]">
+                    <form id="paypalForm" method="post" action="@ConfigurationManager.AppSettings["PayPalSubmitUrl"]">
                         <input type="image" value="PayPal" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" />
 
                         <input type="hidden" name="upload" value="1" />
