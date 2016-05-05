@@ -8,6 +8,259 @@
 @* load Google maps API *@
 <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var tourId = $("#TourId").val();
+        $.post('@Url.Action("GetDateOfTour", "Home")', { tourId: tourId }, function (tourDate) {
+            $("#TourDate").val(tourDate);
+            $("#TourDate").text(tourDate)
+            $("#StringTourDate").val(tourDate);
+            $("#StringTourDate").text(tourDate)
+            $("#datepicker").val(tourDate).trigger('change');
+            $("#datepicker").text(tourDate)
+            //alert(tourDate);
+        });
+
+        $("#children-amount").val("1");
+        $("#adult-amount").val("1");
+        var currAdultPrice = $("#tour-adult-value").text();
+        $("#total-adult").text(currAdultPrice);
+        var currChildPrice = $("#tour-children-value").text();
+        $("#total-child").text(currChildPrice);
+        var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
+        $("#tour-price").text("€" + currTotalPrice);
+
+        $("#adult-amount").click(function () {
+            var adultPrice = $("#tour-adult-value").text().split('€');
+            var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
+            $("#total-adult").text("€" + totalAdultPrice);
+            var AdultPriceChangedTotal = +$("#total-child").text().split('€')[1] + totalAdultPrice;
+            $("#tour-price").text("€" + AdultPriceChangedTotal);
+        });
+
+        $("#adult-amount").keyup(function () {
+            var adultAmount = $("#adult-amount").val();
+            if (adultAmount == "" || adultAmount == "0")
+            {
+                $("#adult-amount").val("1");
+            }
+            var adultPrice = $("#tour-adult-value").text().split('€');
+            var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
+            $("#total-adult").text("€" + totalAdultPrice);
+            var AdultPriceChangedTotal = +$("#total-child").text().split('€')[1] + totalAdultPrice;
+            $("#tour-price").text("€" + AdultPriceChangedTotal);
+        });
+
+        $("#children-amount").click(function () {
+            var childPrice = $("#tour-children-value").text().split('€');
+            var totalChildPrice = childPrice[1] * $("#children-amount").val();
+            $("#total-child").text("€" + totalChildPrice);
+            var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
+            $("#tour-price").text("€" + ChildPriceChangedTotal);
+        });
+
+        $("#children-amount").keyup(function () {
+            var adultAmount = $("#children-amount").val();
+            if (adultAmount == "")
+            {
+                $("#children-amount").val("1");
+            }
+            var childPrice = $("#tour-children-value").text().split('€');
+            var totalChildPrice = childPrice[1] * $("#children-amount").val();
+            $("#total-child").text("€" + totalChildPrice);
+            var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
+            $("#tour-price").text("€" + ChildPriceChangedTotal);
+        });
+
+        $("#dropdown").change(function () {
+            var selectedTime = $("select#dropdown option:selected").val()
+            if (selectedTime == null || selectedTime == "")
+            {
+                $("#TourTime").val("");
+                return false;
+            }
+            $("#TourTime").val(selectedTime).trigger('change');
+        });
+
+        $("#TourTime").change(function () {
+            var tourId = $("#TourId").val();
+            //var tourDate = $("#datepicker").val();
+            var tourDate = $('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
+
+            var data = tourDate + ":" + tourId;
+            var dateOfTour = { tourDate: tourDate + ":" + tourId };
+
+            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+        $("#datepicker").change(function () {
+            var tourId = $("#TourId").val();
+            //var tourDate = $("#datepicker").val();
+            var tourDate = $('#datepicker').val(); //datepicker.({ dateFormat: 'dd-mm-yyyy' })
+
+            var data = tourDate + ":" + tourId;
+            var dateOfTour = { tourDate: tourDate + ":" + tourId };
+            var state = true;
+
+            $.ajax({
+                url: "/Home/GetTourTime",
+                type: "POST",
+                dataType: "html",
+                data: dateOfTour,
+                async: false,
+                success: function (tourTime) {
+                    $("#dropdown").empty();
+                    if (tourTime == "false")
+                    {
+                        alert("This tour is not scheduled on that date. Please choose another date");
+                        state = false;
+                        return false;
+                    }
+                    $("#TourDate").val(tourDate);
+                    $("#TourDate").text(tourDate)
+                    $("#StringTourDate").val(tourDate);
+                    $("#StringTourDate").text(tourDate)
+                    $("#dropdown").html(tourTime);
+                    var tourTimeSelected = $("select#dropdown option:selected").val();
+                    $("#TourTime").val(tourTimeSelected)//.trigger('change');
+                    //alert("test");
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+            //return false;
+            if (!state)
+            {
+                $("#TourTime").val("");
+                return false;
+            }
+            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        });
+
+        $("#login-to-buy").click(function () {
+            alert("Please login in order to proceed to check out");
+        });
+
+        var maxGroupSize = @Html.Raw(Model.Tour.MaxGroupSize);
+
+        setInterval(function () {
+            if ($("#TourTime").val() == null || $("#TourTime").val() == "")
+            {
+                return false;
+            }
+            var dateAndTimeOfTour = { tourDateTime: $("#TourDate").val() + ";" + $("#TourTime").val() + ";" + $("#TourId").val() };
+
+            $.ajax({
+                url: "/Home/GetPlacesAvailable",
+                type: "POST",
+                //dataType: "html",
+                data: dateAndTimeOfTour,
+                //async: false,
+                success: function (places) {
+                    $("#places-available").val(places);
+                    $("#places-available").text(places);
+                    //alert("places available " + places);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }, 60 * 1000);
+
+        $("#proceed-to-checkout").click(function(e){
+            var totalAdultAmount = parseInt($("#adult-amount").val());
+            var totalChildAmount = parseInt($("#children-amount").val());
+            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
+            var placesLeft = parseInt($("#places-available").val());
+
+            //var totalAmount =
+            if (totalAmount <= placesLeft) {
+                $("#proceed-to-checkout").submit();
+            } else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
+            }
+        });
+
+        var mod = @Model.AdultAmount;
+        if(mod != null && mod != '' && mod != 0)
+        {
+            $("#adult-amount").val(@Model.AdultAmount);
+            $("children-amount").val(@Model.ChildAmount);
+            //var date = Model.TourDate.ToShortDateString();
+            //$("#datepicker").val(date).trigger('change');
+            //var tourTime = Model.TourTime;
+            //$("select#dropdown option:selected").val(tourTime);
+        }
+
+    });
+</script>
+
+<script>
+    function addToWishlistFun(tourid) {
+        if (document.getElementById("wishlist" + tourid).value == "added") {
+            $.post('@Url.Action("RemoveFromWishlist", "Home")', { id: tourid }, function (data) {
+                if (data) {
+                    var elementid = "wishlist" + tourid;
+                    document.getElementById(elementid).innerHTML = "Add to wishlist" + "<i class=\"fa fa-heart-o\"></i>";
+                    document.getElementById(elementid).value = "notadded";
+                }
+                else {
+                    //$('#must-be-logged-in').modal('show');
+                    alert("Tour could not be removed from wishlist. Please make sure that you are logged in.");
+                }
+            });
+        }
+        else {
+            $.post('@Url.Action("AddToWishlist", "Home")', { id: tourid }, function (data) {
+                if (data) {
+                    var elementid = "wishlist" + tourid;
+                    document.getElementById(elementid).innerHTML = "Added to wishlist" + "<i class=\"fa fa-heart\"></i>";
+                    document.getElementById(elementid).value = "added";
+                }
+                else {
+
+                    //$('#must-be-logged-in').modal('show');
+                    alert("Tour could not be added to wishlist. Please make sure that you are logged in.");
+                }
+            });
+        }
+    }
+</script>
+
 
     <!-- Custom stylesheet - for your changes -->
     <link href="~/Content/jquery-ui.min.css" rel='stylesheet' type='text/css' />
@@ -18,6 +271,7 @@
     <link href="~/Content/custom.css" rel='stylesheet' type='text/css' />
 
 <div id="fb-root"></div>
+
 <script>
   window.fbAsyncInit = function() {
     FB.init({
@@ -329,256 +583,6 @@ window.twttr = (function(d, s, id) {
 
 		$('#datepicker').datepicker({ beforeShowDay: unavailable });
     </script>
-
-
-<script>
-    $(document).ready(function () {
-        var tourId = $("#TourId").val();
-        $.post('@Url.Action("GetDateOfTour", "Home")', { tourId: tourId }, function (tourDate) {
-            $("#TourDate").val(tourDate);
-            $("#TourDate").text(tourDate)
-            $("#StringTourDate").val(tourDate);
-            $("#StringTourDate").text(tourDate)
-            $("#datepicker").val(tourDate).trigger('change');
-            $("#datepicker").text(tourDate)
-            //alert(tourDate);
-        });
-
-        $("#children-amount").val("1");
-        $("#adult-amount").val("1");
-        var currAdultPrice = $("#tour-adult-value").text();
-        $("#total-adult").text(currAdultPrice);
-        var currChildPrice = $("#tour-children-value").text();
-        $("#total-child").text(currChildPrice);
-        var currTotalPrice = +currAdultPrice.split('€')[1] + +currChildPrice.split('€')[1];
-        $("#tour-price").text("€" + currTotalPrice);
-
-        $("#adult-amount").click(function () {
-            var adultPrice = $("#tour-adult-value").text().split('€');
-            var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
-            $("#total-adult").text("€" + totalAdultPrice);
-            var AdultPriceChangedTotal = +$("#total-child").text().split('€')[1] + totalAdultPrice;
-            $("#tour-price").text("€" + AdultPriceChangedTotal);
-        });
-
-        $("#adult-amount").keyup(function () {
-            var adultAmount = $("#adult-amount").val();
-            if (adultAmount == "" || adultAmount == "0")
-            {
-                $("#adult-amount").val("1");
-            }
-            var adultPrice = $("#tour-adult-value").text().split('€');
-            var totalAdultPrice = adultPrice[1] * $("#adult-amount").val();
-            $("#total-adult").text("€" + totalAdultPrice);
-            var AdultPriceChangedTotal = +$("#total-child").text().split('€')[1] + totalAdultPrice;
-            $("#tour-price").text("€" + AdultPriceChangedTotal);
-        });
-
-        $("#children-amount").click(function () {
-            var childPrice = $("#tour-children-value").text().split('€');
-            var totalChildPrice = childPrice[1] * $("#children-amount").val();
-            $("#total-child").text("€" + totalChildPrice);
-            var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
-            $("#tour-price").text("€" + ChildPriceChangedTotal);
-        });
-
-        $("#children-amount").keyup(function () {
-            var adultAmount = $("#children-amount").val();
-            if (adultAmount == "")
-            {
-                $("#children-amount").val("1");
-            }
-            var childPrice = $("#tour-children-value").text().split('€');
-            var totalChildPrice = childPrice[1] * $("#children-amount").val();
-            $("#total-child").text("€" + totalChildPrice);
-            var ChildPriceChangedTotal = +$("#total-adult").text().split('€')[1] + totalChildPrice;
-            $("#tour-price").text("€" + ChildPriceChangedTotal);
-        });
-
-        $("#dropdown").change(function () {
-            var selectedTime = $("select#dropdown option:selected").val()
-            if (selectedTime == null || selectedTime == "")
-            {
-                $("#TourTime").val("");
-                return false;
-            }
-            $("#TourTime").val(selectedTime).trigger('change');
-        });
-
-        $("#TourTime").change(function () {
-            var tourId = $("#TourId").val();
-            //var tourDate = $("#datepicker").val();
-            var tourDate = $('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
-
-            var data = tourDate + ":" + tourId;
-            var dateOfTour = { tourDate: tourDate + ":" + tourId };
-
-            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
-
-            $.ajax({
-                url: "/Home/GetPlacesAvailable",
-                type: "POST",
-                //dataType: "html",
-                data: dateAndTimeOfTour,
-                //async: false,
-                success: function (places) {
-                    $("#places-available").val(places);
-                    $("#places-available").text(places);
-                    //alert("places available " + places);
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-        });
-
-        $("#datepicker").change(function () {
-            var tourId = $("#TourId").val();
-            //var tourDate = $("#datepicker").val();
-            var tourDate = $('#datepicker').val(); //datepicker.({ dateFormat: 'dd-mm-yyyy' })
-
-            var data = tourDate + ":" + tourId;
-            var dateOfTour = { tourDate: tourDate + ":" + tourId };
-            var state = true;
-
-            $.ajax({
-                url: "/Home/GetTourTime",
-                type: "POST",
-                dataType: "html",
-                data: dateOfTour,
-                async: false,
-                success: function (tourTime) {
-                    $("#dropdown").empty();
-                    if (tourTime == "false")
-                    {
-                        alert("This tour is not scheduled on that date. Please choose another date");
-                        state = false;
-                        return false;
-                    }
-                    $("#TourDate").val(tourDate);
-                    $("#TourDate").text(tourDate)
-                    $("#StringTourDate").val(tourDate);
-                    $("#StringTourDate").text(tourDate)
-                    $("#dropdown").html(tourTime);
-                    var tourTimeSelected = $("select#dropdown option:selected").val();
-                    $("#TourTime").val(tourTimeSelected)//.trigger('change');
-                    //alert("test");
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-            //return false;
-            if (!state)
-            {
-                $("#TourTime").val("");
-                return false;
-            }
-            var dateAndTimeOfTour = { tourDateTime: tourDate + ";" + $("#TourTime").val() + ";" + tourId };
-
-            $.ajax({
-                url: "/Home/GetPlacesAvailable",
-                type: "POST",
-                //dataType: "html",
-                data: dateAndTimeOfTour,
-                //async: false,
-                success: function (places) {
-                    $("#places-available").val(places);
-                    $("#places-available").text(places);
-                    //alert("places available " + places);
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-        });
-
-        $("#login-to-buy").click(function () {
-            alert("Please login in order to proceed to check out");
-        });
-
-        var maxGroupSize = @Html.Raw(Model.Tour.MaxGroupSize);
-
-        setInterval(function () {
-            if ($("#TourTime").val() == null || $("#TourTime").val() == "")
-            {
-                return false;
-            }
-            var dateAndTimeOfTour = { tourDateTime: $("#TourDate").val() + ";" + $("#TourTime").val() + ";" + $("#TourId").val() };
-
-            $.ajax({
-                url: "/Home/GetPlacesAvailable",
-                type: "POST",
-                //dataType: "html",
-                data: dateAndTimeOfTour,
-                //async: false,
-                success: function (places) {
-                    $("#places-available").val(places);
-                    $("#places-available").text(places);
-                    //alert("places available " + places);
-                },
-                error: function () {
-                    alert("error");
-                }
-            });
-        }, 60 * 1000);
-
-        $("#proceed-to-checkout").click(function(e){
-            var totalAdultAmount = parseInt($("#adult-amount").val());
-            var totalChildAmount = parseInt($("#children-amount").val());
-            var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
-            var placesLeft = parseInt($("#places-available").val());
-
-            //var totalAmount =
-            if (totalAmount <= placesLeft) {
-                $("#proceed-to-checkout").submit();
-            } else {
-                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
-                e.preventDefault()
-            }
-        });
-
-        var mod = @Model.AdultAmount;
-        if(mod != null && mod != '' && mod != 0)
-        {
-            $("#adult-amount").val(@Model.AdultAmount);
-            $("children-amount").val(@Model.ChildAmount);
-        }
-
-    });
-</script>
-
-<script>
-    function addToWishlistFun(tourid) {
-        if (document.getElementById("wishlist" + tourid).value == "added") {
-            $.post('@Url.Action("RemoveFromWishlist", "Home")', { id: tourid }, function (data) {
-                if (data) {
-                    var elementid = "wishlist" + tourid;
-                    document.getElementById(elementid).innerHTML = "Add to wishlist" + "<i class=\"fa fa-heart-o\"></i>";
-                    document.getElementById(elementid).value = "notadded";
-                }
-                else {
-                    //$('#must-be-logged-in').modal('show');
-                    alert("Tour could not be removed from wishlist. Please make sure that you are logged in.");
-                }
-            });
-        }
-        else {
-            $.post('@Url.Action("AddToWishlist", "Home")', { id: tourid }, function (data) {
-                if (data) {
-                    var elementid = "wishlist" + tourid;
-                    document.getElementById(elementid).innerHTML = "Added to wishlist" + "<i class=\"fa fa-heart\"></i>";
-                    document.getElementById(elementid).value = "added";
-                }
-                else {
-
-                    //$('#must-be-logged-in').modal('show');
-                    alert("Tour could not be added to wishlist. Please make sure that you are logged in.");
-                }
-            });
-        }
-    }
-</script>
 
     @*@Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
