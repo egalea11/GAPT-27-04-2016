@@ -22,7 +22,6 @@
 <script>
     $(document).ready(function () {
         var tourId = @Model.Tour.Id;
-        //$("#TourId").val(tourId);
 
         var DateAndTime = $("#DateAndTime").text().split(' ');
         var TourDate = DateAndTime[0];
@@ -39,7 +38,6 @@
             success: function (places) {
                 $("#places-available").val(places);
                 $("#places-available").text(places);
-                //alert("places available " + places);
             },
             error: function () {
                 alert("error");
@@ -66,13 +64,12 @@
                 success: function (places) {
                     $("#places-available").val(places);
                     $("#places-available").text(places);
-                    //alert("places available " + places);
                 },
                 error: function () {
                     //alert("error");
                 }
             });
-        }, 1 * 1000);
+        }, 0.5 * 1000);
 
         $('#paypalForm').submit(function(e) {
             var totalAdultAmount = parseInt($("#adult-amount").text());
@@ -80,13 +77,15 @@
             var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
             var placesLeft = parseInt($("#places-available").val());
 
-            //var totalAmount =
             if (totalAmount <= placesLeft) {
-                $.post('@Url.Action("PayPalPayment", "Home")', $('#paypalForm').serialize(), function (tourDate) {
-                    //alert(tourDate);
+                $.post('@Url.Action("PayPalPayment", "Home")', $('#paypalForm').serialize(), function (data) {
+                    if(data == "true")
+                    {
+                        return true;
+                    }
                 });
-                return true;
-                //$("#paypalForm").submit();
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault()
             } else {
                 alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
                 e.preventDefault()
@@ -100,7 +99,6 @@
             var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
             var placesLeft = parseInt($("#places-available").val());
 
-            //var totalAmount =
             if (totalAmount <= placesLeft) {
                 $("#confirm-order").submit();
             } else {

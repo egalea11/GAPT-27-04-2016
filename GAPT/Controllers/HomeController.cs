@@ -188,6 +188,37 @@ namespace GAPT.Controllers
             return Json(false);         
         }
 
+        public int PlacesLeft(int tourDateTimeId, int tourId)
+        {
+            int maxTourGroupSize = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().MaxGroupSize;
+
+            var orders = db.Order.Where(o => o.TourDateTimeId == tourDateTimeId).ToList();
+            List<TempOrder> tempOrders = new List<TempOrder>();
+
+            tempOrders = db.TempOrder.Where(to => to.TourDateTimeId == tourDateTimeId && to.Expired == false).ToList();
+
+            int totalAdultAmount = 0;
+            int totalChildAmount = 0;
+            foreach (var order in orders)
+            {
+                totalAdultAmount = totalAdultAmount + order.AdultQuantity;
+                totalChildAmount = totalChildAmount + order.ChildQuantity;
+            }
+
+            int totalTempAdultAmount = 0;
+            int totalTempChildAmount = 0;
+            foreach (TempOrder tempOrder in tempOrders)
+            {
+                totalTempAdultAmount = totalTempAdultAmount + tempOrder.AdultQuantity;
+                totalTempChildAmount = totalTempChildAmount + tempOrder.ChildQuantity;
+            }
+
+            int totalGroupSize = totalAdultAmount + totalChildAmount + totalTempAdultAmount + totalTempChildAmount;
+            int placesLeft = maxTourGroupSize - totalGroupSize;
+
+            return placesLeft;
+        }
+
         public async Task<ActionResult> OrderConfirmation(CustomerInfoModel model)
         {
             if (!User.Identity.IsAuthenticated)
@@ -316,7 +347,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public void PayPalPayment(CustomerInfoModel model)
+        public bool PayPalPayment(CustomerInfoModel model)
         {
             int? tempOrderId = (int?)Session["TempOrderId"];
 
@@ -330,6 +361,13 @@ namespace GAPT.Controllers
             Session["TempOrderId"] = null;
 
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
+
+            int placesLeft = PlacesLeft(orderModel.TourDateTimeId, orderModel.TourId);
+            int totalCurrentOrderAmount = orderModel.AdultAmount + orderModel.ChildAmount;
+
+            if (totalCurrentOrderAmount > placesLeft)
+                return false;
+
             var currUserName = User.Identity.Name;
             var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
 
@@ -345,8 +383,9 @@ namespace GAPT.Controllers
 
             db.TempOrder.Add(tempOrder);
             db.SaveChanges();
-            //var tempOrderId = tempOrder.Id;
+
             Session["TempOrderId"] = tempOrder.Id;
+            return true;
         }
 
         [HttpGet]
@@ -974,8 +1013,8 @@ namespace GAPT.Controllers
         {
             var ratingId = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().AverageRatingId;
 
-            AverageRatingModel model = new AverageRatingModel() 
-            { 
+            AverageRatingModel model = new AverageRatingModel()
+            {
                 AverageRating = ratingId
             };
             return PartialView(model);
@@ -1020,13 +1059,49 @@ namespace GAPT.Controllers
             Session["ToPrice"] = null;
             Session["SelectedMonths"] = null;
 
+            int id = (int)Session["TourId"];
+
             TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
             if (sessionModel != null)
-            {
-                Session["TourId"] = sessionModel.Tour.Id;
                 return View(sessionModel);
+
+            var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
+
+            if (tour == null)
+                return RedirectToAction("Error", "Home");
+
+            var category = db.Category.Where(c => c.Id == tour.CategoryId).FirstOrDefault().Name;
+            var tourTimes = db.TourTime.Where(t => t.TourId == id).ToList();
+            var tourTimeIds = tourTimes.Select(t => t.Id).ToArray();
+            var tourDates = db.TourDate.Where(t => t.TourId == id && t.DateOfTour > DateTime.Now).ToList();
+            var tourDateIds = tourDates.Select(t => t.Id).ToArray();
+            var tourDateTimes = db.TourDateTime.Where(t => tourDateIds.Contains(t.Id)).ToList();
+            var tourTimeTables = db.TourTimeTable.Where(t => tourTimeIds.Contains(t.TourTimeId)).ToList();
+            var tourLocationIds = tourTimeTables.Select(t => t.LocationId).ToArray();
+            var tourLocations = db.Location.Where(l => tourLocationIds.Contains(l.Id)).ToList();
+            var tourImages = db.Image.Where(i => i.TourId == id && !i.Link.Contains("rsz")).ToList();
+
+            TourpageModel model = new TourpageModel
+            {
+                Tour = tour,
+                TourCategory = category,
+                TourTimes = tourTimes,
+                TourDates = tourDates,
+                TourDateTimes = tourDateTimes,
+                TourTimeTables = tourTimeTables,
+                TourLocations = tourLocations,
+                Images = tourImages,
+            };
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var currentUserName = User.Identity.Name;
+                var userId = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault().Id;
+                var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
+                model.Wishlists = currUserWishlist;
             }
-            return RedirectToAction("Error","Home");
+            //return RedirectToAction("Tourpage");
+            return View("Tourpage", model);
         }
 
         [AllowAnonymous]
@@ -1082,7 +1157,7 @@ namespace GAPT.Controllers
                 var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
                 model.Wishlists = currUserWishlist;
             }
-
+            //return RedirectToAction("Tourpage");
             return View("Tourpage", model);
         }
 
