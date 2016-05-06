@@ -827,41 +827,9 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
         public PartialViewResult Reviews(int id)
         {
-            var reviews = db.Review.Where(r => r.TourId == id);
-            var userIds = reviews.Select(r => r.UserId).ToArray();
-            var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
-            ReviewViewModel model = new ReviewViewModel();
-            model.Reviews = new List<ReviewModel>();
-
-            foreach (var r in reviews)
-            {
-                ReviewModel reviewModel = new ReviewModel()
-                {
-                    Id = r.Id,
-                    RatingId = r.RatingId,
-                    Comment = r.Comment,
-                    DateTimeCreated = r.DateTimeCreated,
-                    TourId = r.TourId,
-                    Username = reviewUsers.Where(u => u.Id == r.UserId).FirstOrDefault().UserName
-                };
-
-                model.Reviews.Add(reviewModel);
-            }
-
-            return PartialView(model);
-        }
-
-        [HttpGet]
-        public ActionResult Reviews()
-        {
-            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            if (sessionModel == null)
-                return RedirectToAction("Error", "Home");
-
-            var reviews = db.Review.Where(r => r.TourId == sessionModel.Tour.Id);
+            var reviews = db.Review.Where(r => r.TourId == id).OrderBy(r => r.DateTimeCreated).ToList();
             var userIds = reviews.Select(r => r.UserId).ToArray();
             var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
             ReviewViewModel model = new ReviewViewModel();
@@ -886,27 +854,11 @@ namespace GAPT.Controllers
         }
         
         [AllowAnonymous]
-        [HttpPost]
         public ActionResult ReviewTour(int id)
         {
             Review model = new Review() 
             {
                 TourId = id
-            };
-
-            return PartialView("ReviewTour", model);
-        }
-
-        [HttpGet]
-        public ActionResult ReviewTour()
-        {
-            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            if (sessionModel == null)
-                return RedirectToAction("Error", "Home");
-
-            Review model = new Review()
-            {
-                TourId = sessionModel.Tour.Id
             };
 
             return PartialView("ReviewTour", model);
@@ -1007,8 +959,6 @@ namespace GAPT.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult TourpageAverageRating(int tourId)
         {
             var ratingId = db.Tour.Where(t => t.Id == tourId).FirstOrDefault().AverageRatingId;
@@ -1018,23 +968,6 @@ namespace GAPT.Controllers
                 AverageRating = ratingId
             };
             return PartialView(model);
-        }
-
-        [HttpGet]
-        public ActionResult TourpageAverageRating()
-        {
-            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            if (sessionModel == null)
-                return RedirectToAction("Error", "Home");
-
-            var ratingId = db.Tour.Where(t => t.Id == sessionModel.Tour.Id).FirstOrDefault().AverageRatingId;
-
-            AverageRatingModel model = new AverageRatingModel()
-            {
-                AverageRating = ratingId
-            };
-            return PartialView(model);
-            
         }
 
         [AllowAnonymous]
@@ -1050,62 +983,6 @@ namespace GAPT.Controllers
         }
 
         [HttpGet]
-        public ActionResult Tourpage()
-        {
-            Session["SelectedIslands"] = null;
-            Session["SelectedAttractions"] = null;
-            Session["SelectedCategories"] = null;
-            Session["FromPrice"] = null;
-            Session["ToPrice"] = null;
-            Session["SelectedMonths"] = null;
-
-            int id = (int)Session["TourId"];
-
-            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            if (sessionModel != null)
-                return View(sessionModel);
-
-            var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
-
-            if (tour == null)
-                return RedirectToAction("Error", "Home");
-
-            var category = db.Category.Where(c => c.Id == tour.CategoryId).FirstOrDefault().Name;
-            var tourTimes = db.TourTime.Where(t => t.TourId == id).ToList();
-            var tourTimeIds = tourTimes.Select(t => t.Id).ToArray();
-            var tourDates = db.TourDate.Where(t => t.TourId == id && t.DateOfTour > DateTime.Now).ToList();
-            var tourDateIds = tourDates.Select(t => t.Id).ToArray();
-            var tourDateTimes = db.TourDateTime.Where(t => tourDateIds.Contains(t.Id)).ToList();
-            var tourTimeTables = db.TourTimeTable.Where(t => tourTimeIds.Contains(t.TourTimeId)).ToList();
-            var tourLocationIds = tourTimeTables.Select(t => t.LocationId).ToArray();
-            var tourLocations = db.Location.Where(l => tourLocationIds.Contains(l.Id)).ToList();
-            var tourImages = db.Image.Where(i => i.TourId == id && !i.Link.Contains("rsz")).ToList();
-
-            TourpageModel model = new TourpageModel
-            {
-                Tour = tour,
-                TourCategory = category,
-                TourTimes = tourTimes,
-                TourDates = tourDates,
-                TourDateTimes = tourDateTimes,
-                TourTimeTables = tourTimeTables,
-                TourLocations = tourLocations,
-                Images = tourImages,
-            };
-
-            if (User.Identity.IsAuthenticated)
-            {
-                var currentUserName = User.Identity.Name;
-                var userId = appdb.Users.Where(u => u.UserName == currentUserName).FirstOrDefault().Id;
-                var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
-                model.Wishlists = currUserWishlist;
-            }
-            //return RedirectToAction("Tourpage");
-            return View("Tourpage", model);
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
         public ActionResult Tourpage(int id)
         {
             Session["SelectedIslands"] = null;
@@ -1157,7 +1034,7 @@ namespace GAPT.Controllers
                 var currUserWishlist = db.WishList.Where(w => w.UserId == userId && w.Expired == false).ToList();
                 model.Wishlists = currUserWishlist;
             }
-            //return RedirectToAction("Tourpage");
+
             return View("Tourpage", model);
         }
 

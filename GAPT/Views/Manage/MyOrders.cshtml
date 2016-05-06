@@ -28,9 +28,8 @@
                             @*04/04/2014*@ <!--date ordered-->
                         </td>
                         <td>
-                            @using (Html.BeginForm("Tourpage", "Home", new { id = order.TourId }, FormMethod.Post))
+                            @using (Html.BeginForm("Tourpage", "Home", new { id = order.TourId }, FormMethod.Get))
                             {
-                                @Html.AntiForgeryToken()
                                 <a href="#" onclick="$(this).closest('form').submit()" style="display:block">@order.TourName</a>
                             }
                             @*<a href="#" style="display:block">order.TourName</a>*@

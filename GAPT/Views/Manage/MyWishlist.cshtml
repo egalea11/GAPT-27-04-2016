@@ -25,9 +25,8 @@
         <div id="wishlisttours">
             @foreach (var tour in Model.wishlisttours)
             {
-                using (Html.BeginForm("Tourpage", "Home", new { id = tour.Id }, FormMethod.Post))
+                using (Html.BeginForm("Tourpage", "Home", new { id = tour.Id }, FormMethod.Get))
                 {
-                    @Html.AntiForgeryToken()
                     <div class="row products col-md-12" style="margin:0 auto;">
                         <!--testing start-->
                         <section class="post" style="border: solid 1px #ccc;margin-bottom:20px;margin-top:0.5%;">
