@@ -79,18 +79,13 @@
 
             if (totalAmount <= placesLeft) {
                 $.post('@Url.Action("PayPalPayment", "Home")', $('#paypalForm').serialize(), function (data) {
-                    if(data == "true")
-                    {
-                        return true;
-                    }
                 });
-                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
-                e.preventDefault()
-            } else {
-                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
-                e.preventDefault()
+                return true;
             }
-            //return true; // return false to cancel form action
+            else {
+                alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
+                e.preventDefault();
+            }
         });
 
         $("#confirm-order").click(function(e){

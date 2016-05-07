@@ -347,7 +347,7 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        public bool PayPalPayment(CustomerInfoModel model)
+        public void PayPalPayment(CustomerInfoModel model)
         {
             int? tempOrderId = (int?)Session["TempOrderId"];
 
@@ -362,11 +362,11 @@ namespace GAPT.Controllers
 
             CustomerInfoModel orderModel = (CustomerInfoModel)Session["PaymentModel"];
 
-            int placesLeft = PlacesLeft(orderModel.TourDateTimeId, orderModel.TourId);
-            int totalCurrentOrderAmount = orderModel.AdultAmount + orderModel.ChildAmount;
+            //int placesLeft = PlacesLeft(orderModel.TourDateTimeId, orderModel.TourId);
+            //int totalCurrentOrderAmount = orderModel.AdultAmount + orderModel.ChildAmount;
 
-            if (totalCurrentOrderAmount > placesLeft)
-                return false;
+            //if (totalCurrentOrderAmount > placesLeft)
+            //    return "false";
 
             var currUserName = User.Identity.Name;
             var user = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault();
@@ -385,7 +385,7 @@ namespace GAPT.Controllers
             db.SaveChanges();
 
             Session["TempOrderId"] = tempOrder.Id;
-            return true;
+            //return "true";
         }
 
         [HttpGet]
