@@ -421,7 +421,7 @@ namespace GAPT.Controllers
             }
 
             if (model.BackToTour == true)
-                return RedirectToAction("Tourpage");
+                return RedirectToAction("Tourpage", new { id = model.TourId});
 
             CustomerInfoModel paymentModel = new CustomerInfoModel()
             {
