@@ -114,6 +114,7 @@ namespace GAPT.Controllers
             Session["SearchText"] = null;
             Session["TourId"] = null;
             Session["TempOrderId"] = null;
+            Session["Tourpage"] = null;
 
             return View();
         }
@@ -983,6 +984,7 @@ namespace GAPT.Controllers
         }
 
         [HttpGet]
+        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Tourpage(int id)
         {
             Session["SelectedIslands"] = null;
@@ -994,9 +996,9 @@ namespace GAPT.Controllers
 
             Session["TourId"] = id;
 
-            TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            if (sessionModel != null)
-                return View(sessionModel);
+            //TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
+            //if (sessionModel != null)
+            //    return View(sessionModel);
 
             //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
@@ -1094,6 +1096,7 @@ namespace GAPT.Controllers
         //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search()
         {
+            Session["Tourpage"] = null;
             try
             {
                 #region Load all tours
@@ -1192,6 +1195,7 @@ namespace GAPT.Controllers
         //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search(string searchText)
         {
+            Session["Tourpage"] = null;
             try
             {
                 #region Load all tours
