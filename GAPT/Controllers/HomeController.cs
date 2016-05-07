@@ -934,7 +934,7 @@ namespace GAPT.Controllers
                 await db.SaveChangesAsync();
             }
 
-            var reviews = db.Review.Where(r => r.TourId == tourId);
+            var reviews = db.Review.Where(r => r.TourId == tourId).OrderBy(r => r.DateTimeCreated).ToList();
             var userIds = reviews.Select(r => r.UserId).ToArray();
             var reviewUsers = appdb.Users.Where(u => userIds.Contains(u.Id)).ToList();
             ReviewViewModel model = new ReviewViewModel();
