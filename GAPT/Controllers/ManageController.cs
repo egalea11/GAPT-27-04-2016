@@ -440,7 +440,7 @@ namespace GAPT.Controllers
             }
             var currUserName = User.Identity.Name;
             var userId = appdb.Users.Where(u => u.UserName == currUserName).FirstOrDefault().Id;
-            var orders = db.Order.Where(o => o.UserId == userId).ToList();
+            var orders = db.Order.Where(o => o.UserId == userId).OrderBy(o => o.DateTimeCreated).ToList();
 
             OrderHistoryModel model = new OrderHistoryModel();
             model.Orders = new List<OrderDetails>();
