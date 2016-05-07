@@ -30,11 +30,28 @@
             else
             {
                 var string = tourId + ";" + comment + ";" + $("#ratingId").val();
-                $.post('@Url.Action("InsertReview", "Home")', { review : string }, function (data) {
+                var review = { review : string};
+                $.ajax({
+                    url: "/Home/InsertReview",
+                    type: "POST",
+                    //dataType: "html",
+                    data: review,
+                    async: false,
+                    success: function (data) {
+                        $("#review-form").hide();
+                        $("#review-posted").show();
+                        $("#comments-section").html(data);
+                    },
+                    error: function () {
+                        //alert("error");
+                    }
+                });
+
+                @*$.post('@Url.Action("InsertReview", "Home")', { review : string }, function (data) {
                     $("#review-form").hide();
                     $("#review-posted").show();
                     $("#comments-section").html(data);
-                });
+                });*@
 
                 $.post('@Url.Action("RecalculateAverageRating", "Home")', { tourId : tourId }, function (data) {
                     $("#star-ratings").html(data);
