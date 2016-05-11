@@ -12,6 +12,8 @@ using GAPT.Models;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
+using static GAPT.Controllers.ManageController;
 
 namespace GAPT.Controllers
 {
@@ -172,7 +174,11 @@ namespace GAPT.Controllers
             {
                 int month = DateTime.ParseExact(model.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
                 DateTime birthDate = new DateTime(model.BirthYear, month, model.BirthDay);
-                var user = new ApplicationUser { Email = model.Email, UserName = model.UserName, Name = model.Name, Surname = model.Surname, BirthDate = birthDate, Country = model.Country, PhoneNumber = model.NumberPrefix + " " + model.PhoneNumber };
+                string phone = model.NumberPrefix + " " + model.PhoneNumber;
+                long number = Convert.ToInt64(Regex.Replace(phone, "[^0-9]", ""));
+                string finalNum = Convert.ToString(number);
+                finalNum = finalNum.Insert(0, "+");
+                var user = new ApplicationUser { Email = model.Email, UserName = model.UserName, Name = model.Name, Surname = model.Surname, BirthDate = birthDate, Country = model.Country, PhoneNumber = finalNum };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -194,7 +200,7 @@ namespace GAPT.Controllers
                 }
                 AddErrors(result);
             }
-
+            
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -455,10 +461,11 @@ namespace GAPT.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        public ActionResult LogOff(string returnUrl)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            ViewBag.ReturnUrl = returnUrl;
+            return Redirect(returnUrl);
         }
 
         //

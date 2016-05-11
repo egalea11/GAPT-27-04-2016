@@ -1,4 +1,6 @@
-﻿@{
+﻿@model GAPT.Models.IndexViewModel
+
+@{
     ViewBag.Title = "Tours-Maltin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -100,3 +102,5 @@
     <!-- /.container -->
 </div>
 <!-- /#content -->
+
+@{Html.RenderAction("Index", "Manage");}

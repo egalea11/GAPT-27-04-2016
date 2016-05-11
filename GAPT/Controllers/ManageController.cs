@@ -145,12 +145,13 @@ namespace GAPT.Controllers
         public async Task<ActionResult> EnableTwoFactorAuthentication()
         {
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), true);
+            
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (user != null)
             {
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
-            return RedirectToAction("Index", "Manage");
+            return RedirectToAction("MyAccount", "Manage");
         }
 
         //
@@ -248,6 +249,7 @@ namespace GAPT.Controllers
                 ChangePasswordViewModel model = new ChangePasswordViewModel() { ErrorMessage = "The Old Password entered is incorrect" };
                 ViewData["WrongPassword"] = model;
             }
+          
             return View();
         }
 
