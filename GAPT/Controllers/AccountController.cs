@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using static GAPT.Controllers.ManageController;
+using System.Collections.Generic;
 
 namespace GAPT.Controllers
 {
@@ -72,6 +73,7 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -80,6 +82,9 @@ namespace GAPT.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
+           
+             
+
             switch (result)
             {
                 case SignInStatus.Success:
@@ -88,7 +93,7 @@ namespace GAPT.Controllers
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
+               case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -358,6 +363,7 @@ namespace GAPT.Controllers
             }
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
+           
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -461,11 +467,11 @@ namespace GAPT.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff(string returnUrl)
+        public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            ViewBag.ReturnUrl = returnUrl;
-            return Redirect(returnUrl);
+          
+            return RedirectToAction("Index", "Home");
         }
 
         //

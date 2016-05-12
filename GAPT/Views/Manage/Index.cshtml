@@ -1,40 +1,23 @@
 ﻿@model GAPT.Models.IndexViewModel
+
 @{
-    ViewBag.Title = "Manage";
+    Layout = null;
 }
 
-<h2>@ViewBag.Title.</h2>
+@if (User.IsInRole("Admin"))
+{
+    <ul class="nav nav-pills nav-stacked" >
+        <li>
+            <dt>Two-Factor Authentication:</dt>
+            <dd>
 
-<dt>Phone Number:</dt>
-<dd>
-    @(Model.PhoneNumber ?? "None") [
-    @if (Model.PhoneNumber != null)
-    {
-        @Html.ActionLink("Change", "AddPhoneNumber")
-        @: &nbsp;|&nbsp;
-        @Html.ActionLink("Remove", "RemovePhoneNumber")
-    }
-    else
-    {
-        @Html.ActionLink("Add", "AddPhoneNumber")
-    }
-    ]
-</dd>
-
-
-
-
-
-        <dt>Two-Factor Authentication:</dt>
-        <dd>
-           
-           @if (Model.TwoFactor)
+                @if (Model.TwoFactor)
                 {
                     using (Html.BeginForm("DisableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                     {
                         @Html.AntiForgeryToken()
                         <text>Enabled
-                        <input type="submit" value="Disable" class="btn btn-link" />
+                            <input type="submit" value="Disable" class="btn btn-link" />
                         </text>
                     }
                 }
@@ -44,10 +27,12 @@
                     {
                         @Html.AntiForgeryToken()
                         <text>Disabled
-                        <input type="submit" value="Enable" class="btn btn-link" />
+                            <input type="submit" value="Enable" class="btn btn-link" />
                         </text>
                     }
                 }
-        </dd>
-    
+            </dd>
+        </li>
+    </ul>
 
+}

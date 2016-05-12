@@ -48,12 +48,12 @@ namespace GAPT
                var message = new IdentityMessage
                 {
                     //Destination is hardcoded for testing purposes, the phone numbers should be retreived from the data base.
-                    Destination = finalNum,
+                    Destination = num,
                     Body = "REMINDER: Dear " + getUserName[i] +", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin"
                 };
                 sms.SendAsync(message);
                 
-               ac.SendEmail(getUserEmail[i], "FULL INFO", finalNum + " REMINDER: Dear " + getUserName[i] + ", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin");
+               ac.SendEmail(getUserEmail[i], "FULL INFO",  " REMINDER: Dear " + getUserName[i] + ", your booked tour: " + getTourName[i] + " is tomorrow! - Tours Maltin");
                 i++;
                 */
   }
