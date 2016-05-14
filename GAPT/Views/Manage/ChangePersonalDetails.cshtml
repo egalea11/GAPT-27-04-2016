@@ -20,6 +20,7 @@
         var currentClass = $("div.selected-flag").find("div").attr("class");
         var countryClass = $("span:contains('@Model.Country')").siblings().attr("class");
         $("div.selected-flag").find("div").removeClass(currentClass).addClass(countryClass);
+        $(".flag-dropdown").find(".selected-flag").attr("title", "@Model.Country");
         $(".flag-container").find(".selected-flag").attr("title", "@Model.NumberPrefix");
 
         var numpref = $(".flag-container").find(".selected-flag").attr("title");
