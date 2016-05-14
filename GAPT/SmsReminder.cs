@@ -21,49 +21,52 @@ namespace GAPT
         {
             DateTime tomorrow = DateTime.Today.AddDays(1.0);
             var tourDates = db.TourDate.Where(td => td.DateOfTour == tomorrow).ToList();
+            if (tourDates != null && tourDates.Count != 0)
+            {
                 var tourDateIds = tourDates.Select(t => t.Id).ToArray();
                 var tourDateTimes = db.TourDateTime.Where(t => tourDateIds.Contains(t.TourDateId)).ToList();
                 var tourDateTimeIds = tourDateTimes.Select(t => t.Id).ToArray();
                 var orders = db.Order.Where(o => tourDateTimeIds.Contains(o.TourDateTimeId)).ToList();
-                var userIds = orders.Select(o => o.UserId).ToArray();
-                var users = adc.Users.Where(u => userIds.Contains(u.Id)).ToArray();
 
-                var tourDateTimeByOrderIds = orders.Select(o => o.TourDateTimeId).ToArray();
-                var tourDateByOrderIds = tourDateTimes.Where(t => tourDateTimeByOrderIds.Contains(t.Id)).ToList().Select(t => t.TourDateId).ToArray();
-                var tourIds = tourDates.Where(t => tourDateByOrderIds.Contains(t.Id)).ToList().Select(t => t.TourId).ToArray();
-                var tours = db.Tour.Where(t => tourIds.Contains(t.Id)).ToList();
-
-                foreach (var tour in tours)
+                if (orders != null && orders.Count != 0)
                 {
-                    var currTourDateIds = tourDates.Where(t => tourDateByOrderIds.Contains(t.Id) && t.TourId == tour.Id).ToList().Select(t => t.Id).ToArray();
-                    var currTourDateTimeIds = tourDateTimes.Where(t => currTourDateIds.Contains(t.TourDateId)).ToList().Select(t => t.Id).ToArray();
-                    var currTourUserIds = orders.Where(o => currTourDateTimeIds.Contains(o.TourDateTimeId)).ToList().Select(o => o.UserId).ToArray();
-                    var currUsers = users.Where(u => currTourUserIds.Contains(u.Id)).ToList();
+                    var userIds = orders.Select(o => o.UserId).ToArray();
+                    var users = adc.Users.Where(u => userIds.Contains(u.Id)).ToArray();
 
-                    foreach (var user in currUsers)
+                    var tourDateTimeByOrderIds = orders.Select(o => o.TourDateTimeId).ToArray();
+                    var tourDateByOrderIds = tourDateTimes.Where(t => tourDateTimeByOrderIds.Contains(t.Id)).ToList().Select(t => t.TourDateId).ToArray();
+                    var tourIds = tourDates.Where(t => tourDateByOrderIds.Contains(t.Id)).ToList().Select(t => t.TourId).ToArray();
+                    var tours = db.Tour.Where(t => tourIds.Contains(t.Id)).ToList();
+
+                    foreach (var tour in tours)
                     {
-                        long number = Convert.ToInt64(Regex.Replace(user.PhoneNumber, "[^0-9]", ""));
-                        string finalNum = Convert.ToString(number);
-                        finalNum = finalNum.Insert(0, "+");
+                        var currTourDateIds = tourDates.Where(t => tourDateByOrderIds.Contains(t.Id) && t.TourId == tour.Id).ToList().Select(t => t.Id).ToArray();
+                        var currTourDateTimeIds = tourDateTimes.Where(t => currTourDateIds.Contains(t.TourDateId)).ToList().Select(t => t.Id).ToArray();
+                        var currTourUserIds = orders.Where(o => currTourDateTimeIds.Contains(o.TourDateTimeId)).ToList().Select(o => o.UserId).ToArray();
+                        var currUsers = users.Where(u => currTourUserIds.Contains(u.Id)).ToList();
 
-                        //uncommenting the following code will enable reminders via sms and emails
-                        /*
-                        var message = new IdentityMessage
+                        foreach (var user in currUsers)
                         {
-                            //Destination is hardcoded for testing purposes, the phone numbers should be retreived from the data base.
-                            Destination = user.PhoneNumber,
-                            Body = "REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin"
-                        };
-                        sms.SendAsync(message);
-                        */
-                        ac.SendEmail(user.Email, "FULL INFO", " REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin");
+                            long number = Convert.ToInt64(Regex.Replace(user.PhoneNumber, "[^0-9]", ""));
+                            string finalNum = Convert.ToString(number);
+                            finalNum = finalNum.Insert(0, "+");
+
+                            //uncommenting the following code will enable reminders via sms and emails
+                            /*
+                            var message = new IdentityMessage
+                            {
+                                //Destination is hardcoded for testing purposes, the phone numbers should be retreived from the data base.
+                                Destination = user.PhoneNumber,
+                                Body = "REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin"
+                            };
+                            sms.SendAsync(message);
+                            */
+                            ac.SendEmail(user.Email, "FULL INFO", " REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin");
+                        }
+
                     }
-
                 }
-
             }
-  
-
-
         }
     }
+}
