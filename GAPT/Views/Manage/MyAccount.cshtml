@@ -1,4 +1,6 @@
-﻿@{
+﻿@model GAPT.Models.IndexViewModel
+
+@{
     ViewBag.Title = "Tours-Maltin";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -13,7 +15,7 @@
                 <ul class="breadcrumb">
 
                     <li>
-                        <a href="index.html">Home</a>
+                        <a href="http://localhost:7587/Home/Index">Home</a>
                     </li>
                     <li>My account</li>
                 </ul>
@@ -83,6 +85,9 @@
                             <li class="active">
                                 <a href="@Url.Action("MyAccount", "Manage")"><i class="fa fa-user"></i> My account</a>
                             </li>
+                            <li>
+                                @{Html.RenderAction("Index", "Manage");}
+                            </li>
                         </ul>
                     </div>
 
@@ -100,3 +105,4 @@
     <!-- /.container -->
 </div>
 <!-- /#content -->
+

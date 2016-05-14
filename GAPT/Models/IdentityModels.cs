@@ -50,6 +50,8 @@ namespace GAPT.Models
         }
     }
 
+
+
     public class CustomRoleStore : RoleStore<CustomRole, int, CustomUserRole>
     {
         public CustomRoleStore(ApplicationDbContext context)

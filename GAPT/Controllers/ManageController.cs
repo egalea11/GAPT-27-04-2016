@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Web.ApplicationServices;
+using System.Text.RegularExpressions;
 
 namespace GAPT.Controllers
 {
@@ -145,12 +146,13 @@ namespace GAPT.Controllers
         public async Task<ActionResult> EnableTwoFactorAuthentication()
         {
             await UserManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId<int>(), true);
+         
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId<int>());
             if (user != null)
             {
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
-            return RedirectToAction("Index", "Manage");
+            return RedirectToAction("MyAccount", "Manage");
         }
 
         //
@@ -165,7 +167,7 @@ namespace GAPT.Controllers
             {
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
-            return RedirectToAction("Index", "Manage");
+            return RedirectToAction("MyAccount", "Manage");
         }
 
         //
@@ -248,6 +250,7 @@ namespace GAPT.Controllers
                 ChangePasswordViewModel model = new ChangePasswordViewModel() { ErrorMessage = "The Old Password entered is incorrect" };
                 ViewData["WrongPassword"] = model;
             }
+          
             return View();
         }
 
@@ -550,13 +553,17 @@ namespace GAPT.Controllers
             DateTime birthDate = new DateTime(model.BirthYear, month, model.BirthDay);
             var phoneNumber = model.NumberPrefix + " " + model.PhoneNumber;
 
+            long number = Convert.ToInt64(Regex.Replace(phoneNumber, "[^0-9]", ""));
+            string finalNum = Convert.ToString(number);
+            finalNum = finalNum.Insert(0, "+");
+
             try
             {
                 appdb.Database.ExecuteSqlCommand("update [AspNetUsers] set [Name] = @p1, [Surname] = @p2, [Country] = @p3, [PhoneNumber] = @p4, [BirthDate] = @p5 where [Id] = @p6",
                 new System.Data.SqlClient.SqlParameter("p1", model.Name),
                 new System.Data.SqlClient.SqlParameter("p2", model.Surname),
                 new System.Data.SqlClient.SqlParameter("p3", model.Country),
-                new System.Data.SqlClient.SqlParameter("p4", phoneNumber),
+                new System.Data.SqlClient.SqlParameter("p4", finalNum),
                 new System.Data.SqlClient.SqlParameter("p5", birthDate),
                 new System.Data.SqlClient.SqlParameter("p6", updatedUser.Id));
             }

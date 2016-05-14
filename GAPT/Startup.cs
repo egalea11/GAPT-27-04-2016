@@ -2,7 +2,7 @@
 using Hangfire.SqlServer;
 using Microsoft.Owin;
 using Owin;
-using System;
+
 
 [assembly: OwinStartupAttribute(typeof(GAPT.Startup))]
 namespace GAPT
@@ -11,6 +11,7 @@ namespace GAPT
     {
 
         SmsReminder smsReminder = new SmsReminder();
+        SmsService sms = new SmsService();
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
@@ -21,12 +22,12 @@ namespace GAPT
             app.UseHangfireServer();
 
             //RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), Cron.Daily);  runs once per day
-            //RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), "*/1 * * * *"); //runs every minute (for testing purposes)
+            //RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), "*/15 * * * *"); //runs every minute (for testing purposes)
+
+
 
         }
 
-
-
-
     }
 }
+

@@ -12,6 +12,9 @@ using GAPT.Models;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
+using static GAPT.Controllers.ManageController;
+using System.Collections.Generic;
 
 namespace GAPT.Controllers
 {
@@ -70,6 +73,7 @@ namespace GAPT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -78,6 +82,9 @@ namespace GAPT.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
+           
+             
+
             switch (result)
             {
                 case SignInStatus.Success:
@@ -86,7 +93,7 @@ namespace GAPT.Controllers
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
+               case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -172,7 +179,11 @@ namespace GAPT.Controllers
             {
                 int month = DateTime.ParseExact(model.BirthMonth.ToString(), "MMMM", CultureInfo.InvariantCulture).Month;
                 DateTime birthDate = new DateTime(model.BirthYear, month, model.BirthDay);
-                var user = new ApplicationUser { Email = model.Email, UserName = model.UserName, Name = model.Name, Surname = model.Surname, BirthDate = birthDate, Country = model.Country, PhoneNumber = model.NumberPrefix + " " + model.PhoneNumber };
+                string phone = model.NumberPrefix + " " + model.PhoneNumber;
+                long number = Convert.ToInt64(Regex.Replace(phone, "[^0-9]", ""));
+                string finalNum = Convert.ToString(number);
+                finalNum = finalNum.Insert(0, "+");
+                var user = new ApplicationUser { Email = model.Email, UserName = model.UserName, Name = model.Name, Surname = model.Surname, BirthDate = birthDate, Country = model.Country, PhoneNumber = finalNum };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -194,7 +205,7 @@ namespace GAPT.Controllers
                 }
                 AddErrors(result);
             }
-
+            
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -352,6 +363,7 @@ namespace GAPT.Controllers
             }
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
+           
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
@@ -458,6 +470,7 @@ namespace GAPT.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+          
             return RedirectToAction("Index", "Home");
         }
 
