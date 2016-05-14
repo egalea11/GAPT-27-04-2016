@@ -13,9 +13,25 @@
 
 @foreach (var island in Model.Islands)
 {
-    <div class="checkbox" id="@{@island.Id}">
+    if (Model.selectedislands != null && Model.selectedislands.Contains(island.Id))
+    {
+        <div class="checkbox" id="@{@island.Id}">
+            <label>
+                <input type="checkbox" class="selectedislands" name="selectedislands" value="@{@island.Id}" checked>@island.Name
+            </label>
+        </div>
+    }
+    else
+    {
+        <div class="checkbox" id="@{@island.Id}">
+            <label>
+                <input type="checkbox" class="selectedislands" name="selectedislands" value="@{@island.Id}">@island.Name
+            </label>
+        </div>
+    }
+    @*<div class="checkbox" id="@{@island.Id}">
         <label>
             <input type="checkbox" class="selectedislands" name="selectedislands" value="@{@island.Id}">@island.Name
         </label>
-    </div>
+    </div>*@
 }

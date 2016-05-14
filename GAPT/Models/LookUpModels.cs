@@ -13,10 +13,12 @@ namespace GAPT.Models
     public class ViewModelAttractionType
     {
         public List<AttractionType> AttractionTypes { get; set; }
+        public IEnumerable<int> selectedattr { get; set; }
     }
     public class ViewModelIsland
     {
         public List<Island> Islands { get; set; }
+        public IEnumerable<int> selectedislands { get; set; }
     }
     public class ViewModelSearch
     {

@@ -987,20 +987,16 @@ namespace GAPT.Controllers
         //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Tourpage(int id)
         {
-            Session["SelectedIslands"] = null;
-            Session["SelectedAttractions"] = null;
-            Session["SelectedCategories"] = null;
-            Session["FromPrice"] = null;
-            Session["ToPrice"] = null;
-            Session["SelectedMonths"] = null;
+            //Session["SelectedIslands"] = null;
+            //Session["SelectedAttractions"] = null;
+            //Session["SelectedCategories"] = null;
+            //Session["FromPrice"] = null;
+            //Session["ToPrice"] = null;
+            //Session["SelectedMonths"] = null;
+            //Session["SearchTours"] = null;
 
             Session["TourId"] = id;
 
-            //TourpageModel sessionModel = (TourpageModel)Session["Tourpage"];
-            //if (sessionModel != null)
-            //    return View(sessionModel);
-
-            //var id = 1;
             var tour = db.Tour.Where(t => t.Id == id).FirstOrDefault();
 
             if (tour == null)
@@ -1055,45 +1051,49 @@ namespace GAPT.Controllers
         [AllowAnonymous]
         public ActionResult SearchIslands()
         {
-            var AllIslands = db.Island.ToList();
-            ViewModelIsland model = new ViewModelIsland();
-            model.Islands = AllIslands;
+            //var AllIslands = db.Island.ToList();
+            //ViewModelIsland model = new ViewModelIsland();
+            //model.Islands = AllIslands;
             //model.Islands = new List<Island>();
             //model.Islands = (List<Island>)Session["AllIslands"];
+            ViewModelIsland model = new ViewModelIsland()
+            {
+                Islands = db.Island.ToList(),
+                selectedislands = (IEnumerable<int>)Session["SelectedIslands"]
+            };
             return PartialView(model);
         }
 
         [AllowAnonymous]
         public ActionResult SearchAttractionTypes()
         {
-            ViewModelAttractionType model = new ViewModelAttractionType();
-            model.AttractionTypes = new List<AttractionType>();
-            //model.AttractionTypes = (List<AttractionType>)Session["AllAttractionTypes"];
-            model.AttractionTypes = db.AttractionType.ToList();
+            //ViewModelAttractionType model = new ViewModelAttractionType();
+            //model.AttractionTypes = new List<AttractionType>();
+ 
+            //model.AttractionTypes = db.AttractionType.ToList();
+            ViewModelAttractionType model = new ViewModelAttractionType()
+            {
+                AttractionTypes = db.AttractionType.ToList(),
+                selectedattr = (IEnumerable<int>)Session["SelectedAttractions"]
+            };
             return PartialView(model);
         }
 
         [AllowAnonymous]
         public ActionResult SearchCategories()
         {
-            //ViewModelCategory model = new ViewModelCategory() 
-            //{
-            //    Categories = (List<Category>)Session["AllCategories"],
-            //    selectedcategory = (IEnumerable<int>)Session["SelectedCategories"]
-            //};
             ViewModelCategory model = new ViewModelCategory()
             {
                 Categories = db.Category.ToList(),
                 selectedcategory = (IEnumerable<int>)Session["SelectedCategories"]
             };
-            //model.Categories = new List<Category>();
-            //model.Categories = (List<Category>)Session["AllCategories"];
+
             return PartialView(model);
         }
 
         [AllowAnonymous]
         [HttpGet]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
+        [OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search()
         {
             Session["Tourpage"] = null;
@@ -1175,9 +1175,28 @@ namespace GAPT.Controllers
                 #endregion
 
                 IEnumerable<int> selectedCategories = (IEnumerable<int>)Session["SelectedCategories"];
+                IEnumerable<int> selectedattr = (IEnumerable<int>)Session["SelectedAttractions"];
 
-                if (selectedCategories != null)
+                if (selectedCategories != null && selectedattr != null)
+                {
+                    var locationAttrs = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList();
+                    var locationByAttrsIds = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                    var timeByAttrIds = db.TourTimeTable.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                    var tourByAttrIds = db.TourTime.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+
+                    Session["SearchTours"] = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId) && tourByAttrIds.Contains(t.Id)).ToList();
+                }
+                else if (selectedCategories != null)
                     Session["SearchTours"] = ViewAllTours.Where(t => selectedCategories.Contains(t.CategoryId)).ToList();
+                else if (selectedattr != null)
+                {
+                    var locationAttrs = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList();
+                    var locationByAttrsIds = db.LocationAttraction.Where(l => selectedattr.Contains(l.AttractionTypeId)).ToList().Select(loc => loc.LocationId).ToArray();
+                    var timeByAttrIds = db.TourTimeTable.Where(t => locationByAttrsIds.Contains(t.LocationId)).ToList().Select(dt => dt.TourTimeId).ToArray();
+                    var tourByAttrIds = db.TourTime.Where(t => timeByAttrIds.Contains(t.Id)).ToList().Select(ta => ta.TourId).ToArray();
+
+                    Session["SearchTours"] = ViewAllTours.Where(t => tourByAttrIds.Contains(t.Id)).ToList();
+                }
                 else
                     Session["SearchTours"] = ViewAllTours;
 
@@ -1192,7 +1211,6 @@ namespace GAPT.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Search(string searchText)
         {
             Session["Tourpage"] = null;
@@ -1337,7 +1355,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchCategory(IEnumerable<int> id)
         {
             Session["SelectedCategories"] = id;
@@ -1379,7 +1396,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterIslands(IEnumerable<int> selectedislands)
         {
             var allTowns = db.Town.ToList();
@@ -1474,7 +1490,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterCategories(IEnumerable<int> selectedcategories)
         {
             var allTowns = db.Town.ToList();
@@ -1568,7 +1583,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterAttr(IEnumerable<int> selectedattr)
         {
             var allTowns = db.Town.ToList();
@@ -1664,7 +1678,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterMonths(IEnumerable<int> selectedmonths)
         {
             var allTowns = db.Town.ToList();
@@ -1761,7 +1774,6 @@ namespace GAPT.Controllers
         }
 
         [HttpPost]
-        //[OutputCache(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult SearchFilterPrice(IEnumerable<int> selectedprice)
         {
             var allTowns = db.Town.ToList();

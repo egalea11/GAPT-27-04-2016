@@ -13,9 +13,26 @@
 
 @foreach (var attractionType in Model.AttractionTypes)
 {
-    <div class="checkbox" id="@{@attractionType.Id}">
+    if (Model.selectedattr != null && Model.selectedattr.Contains(attractionType.Id))
+    {
+        <div class="checkbox" id="@{@attractionType.Id}">
+            <label>
+                <input type="checkbox" class="selectedattr" name="selectedattr" value="@{@attractionType.Id}" checked>@attractionType.Name
+            </label>
+        </div>
+    }
+    else
+    {
+        <div class="checkbox" id="@{@attractionType.Id}">
+            <label>
+                <input type="checkbox" class="selectedattr" name="selectedattr" value="@{@attractionType.Id}">@attractionType.Name
+            </label>
+        </div>
+    }
+
+    @*<div class="checkbox" id="@{@attractionType.Id}">
         <label>
             <input type="checkbox" class="selectedattr" name="selectedattr" value="@{@attractionType.Id}">@attractionType.Name
         </label>
-    </div>
+    </div>*@
 }
