@@ -22,7 +22,7 @@ namespace GAPT
             app.UseHangfireServer();
 
             //RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), Cron.Daily);  runs once per day
-            //RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), "*/15 * * * *"); //runs every minute (for testing purposes)
+            RecurringJob.AddOrUpdate(() => smsReminder.Reminder(), "*/15 * * * *"); //runs every minute (for testing purposes)
 
 
 
