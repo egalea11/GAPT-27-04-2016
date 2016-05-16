@@ -52,7 +52,7 @@ namespace GAPT
                             finalNum = finalNum.Insert(0, "+");
 
                             //uncommenting the following code will enable reminders via sms and emails
-                            /*
+                            
                             var message = new IdentityMessage
                             {
                                 //Destination is hardcoded for testing purposes, the phone numbers should be retreived from the data base.
@@ -60,7 +60,7 @@ namespace GAPT
                                 Body = "REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin"
                             };
                             sms.SendAsync(message);
-                            */
+                        
                             ac.SendEmail(user.Email, "FULL INFO", " REMINDER: Dear " + user.Name + ", your booked tour: " + tour.Name + " is tomorrow! - Tours Maltin");
                         }
 
