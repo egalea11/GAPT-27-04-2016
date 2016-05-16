@@ -13,14 +13,14 @@
         {
             @Html.AntiForgeryToken()
             @Html.Hidden("rememberMe", @Model.RememberMe)
-            
+
             <hr />
 
             <div class="panel-heading">
                 <h3 class="panel-title">Select Two-Factor Authentication Provider:</h3>
             </div>
-                        
-                        @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers)
+
+                        @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers, new { @class = "form-control", style = "display:inline;" })
                         <input type="submit" class="btn btn-template-main" value="Submit"/>
 
         }
