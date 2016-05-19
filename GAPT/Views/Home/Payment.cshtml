@@ -23,6 +23,13 @@
     $(document).ready(function () {
         var tourId = @Model.Tour.Id;
 
+        var vat = @Model.TotalPrice * 0.18;
+        var subtotal = +@Model.TotalPrice - +vat;
+        $("#vat").val('€'+vat);
+        $("#vat").text('€'+vat);
+        $("#subtotal").val('€'+subtotal);
+        $("#subtotal").text('€'+subtotal);
+
         var DateAndTime = $("#DateAndTime").text().split(' ');
         var TourDate = DateAndTime[0];
         var TourTime = DateAndTime[1];
@@ -324,11 +331,11 @@
                             <tbody>
                                 <tr>
                                     <td>Order subtotal</td>
-                                    <th>€@Model.TotalPrice</th>
+                                    <th id="subtotal"></th>
                                 </tr>
                                 <tr>
                                     <td>VAT (18%)</td>
-                                    <th>€0.00</th>
+                                    <th id="vat"></th>
                                 </tr>
                                 <tr class="total">
                                     <td>Total</td>

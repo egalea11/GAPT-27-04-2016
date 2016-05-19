@@ -15,6 +15,13 @@
         $(".adultTitle").val("Mr");
         $(".childTitle").val("Master");
 
+        var vat = @Model.TotalPrice * 0.18;
+        var subtotal = +@Model.TotalPrice - +vat;
+        $("#vat").val('€'+vat);
+        $("#vat").text('€'+vat);
+        $("#subtotal").val('€'+subtotal);
+        $("#subtotal").text('€'+subtotal);
+
         var DateAndTime = $("#DateAndTime").text().split(' ');
         var TourDate = DateAndTime[0];
         var TourTime = DateAndTime[1];
@@ -71,8 +78,8 @@
             var totalAmount = parseInt(+totalAdultAmount + +totalChildAmount);
             var placesLeft = parseInt($("#places-available").val());
 
-            //var totalAmount = 
-            if (totalAmount <= placesLeft) {         
+            //var totalAmount =
+            if (totalAmount <= placesLeft) {
                 $("#Payment").submit();
             } else {
                 alert ('There are only ' + placesLeft + ' places left. Please choose another date or time.');
@@ -459,11 +466,11 @@
                             <tbody>
                                 <tr>
                                     <td>Order subtotal</td>
-                                    <th>€@Model.TotalPrice</th>
+                                    <th id="subtotal"></th>
                                 </tr>
                                 <tr>
                                     <td>VAT (18%)</td>
-                                    <th>€0.00</th>
+                                    <th id="vat"></th>
                                 </tr>
                                 <tr class="total">
                                     <td>Total</td>
@@ -472,7 +479,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
             
