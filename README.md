@@ -7,3 +7,4 @@ University grouped assigned practical task - Building a soft real-time, e-commer
 - Dummy-paypal and credit card payment
 - Verification and validation integration, along with built in CSFR and sql-injection protection
 - Local database scripts
+- Mobile and email notification system
