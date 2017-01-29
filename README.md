@@ -1,5 +1,5 @@
 # toursmaltin.com
-Univeristy grouped assigned practical task - Building a soft real-time, e-commerce web application.
+University grouped assigned practical task - Building a soft real-time, e-commerce web application.
 
 - MVC architecture
 - C#, javascript and mySQL
